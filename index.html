@@ -529,13 +529,22 @@
 
     /* 关系解码 */
     .relation-stage { position:absolute; left:0; top:0; bottom:0; width:55%; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+    .rr-legend { position:absolute; left:8px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:14px; pointer-events:auto; z-index:6; }
+    .rr-leg { position:relative; padding:10px 14px 10px 16px; border-radius:14px; background:linear-gradient(135deg, rgba(8,18,34,0.78), rgba(12,22,40,0.55)); border:1px solid rgba(255,255,255,0.08); backdrop-filter:blur(22px); min-width:130px; display:flex; flex-direction:column; gap:4px; box-shadow:0 8px 24px rgba(0,0,0,0.32); cursor:default; transition:transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; overflow:hidden; }
+    .rr-leg::before { content:''; position:absolute; left:0; top:8%; bottom:8%; width:3px; border-radius:0 3px 3px 0; background:var(--rr-color, #FFD37A); box-shadow:0 0 12px var(--rr-color, #FFD37A); }
+    .rr-leg::after { content:''; position:absolute; right:-10px; top:50%; width:14px; height:14px; transform:translateY(-50%); border-radius:50%; background:radial-gradient(circle, var(--rr-color, #FFD37A) 0%, transparent 70%); opacity:0.55; pointer-events:none; }
+    .rr-leg:hover { transform:translateX(4px); border-color:var(--rr-color, #FFD37A); box-shadow:0 12px 32px rgba(0,0,0,0.45), 0 0 0 1px var(--rr-color, #FFD37A) inset; }
+    .rr-leg-name { font-size:11px; color:var(--text-soft); letter-spacing:0.18em; }
+    .rr-leg-val { display:flex; align-items:baseline; gap:4px; }
+    .rr-leg-num { font-size:22px; font-weight:300; color:var(--text); letter-spacing:0.04em; font-family:'Cormorant Garamond', serif; }
+    .rr-leg-unit { font-size:10px; color:var(--text-soft); letter-spacing:0.18em; }
     .relation-rings { position:relative; width:520px; height:520px; max-width:90%; max-height:90%; pointer-events:auto; }
     .rr-ring { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) rotate(0deg); border-radius:50%; border:1px solid rgba(255,255,255,0.08); animation:rrSpin linear infinite; }
     .rr-ring::before, .rr-ring::after { content:""; position:absolute; width:10px; height:10px; border-radius:50%; background:var(--rr-color,#63E6FF); box-shadow:0 0 16px var(--rr-color,#63E6FF); }
     .rr-ring::before { top:-5px; left:50%; transform:translateX(-50%); }
     .rr-ring::after { bottom:-5px; left:50%; transform:translateX(-50%); opacity:0.55; }
     .rr-arc { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) rotate(0deg); border-radius:50%; border-style:solid; border-width:2px; border-color:var(--rr-color,#63E6FF) transparent transparent transparent; pointer-events:none; }
-    .rr-label { position:absolute; padding:5px 12px; border-radius:18px; background:rgba(7,18,34,0.75); border:1px solid var(--border); backdrop-filter:blur(20px); font-size:11px; color:var(--text); letter-spacing:0.14em; white-space:nowrap; }
+    .rr-label { display:none; }
     .rr-label .rr-num { color:var(--gold); margin-left:6px; font-weight:500; }
     @keyframes rrSpin { from { transform:translate(-50%,-50%) rotate(0deg); } to { transform:translate(-50%,-50%) rotate(360deg); } }
     .relation-core { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(255,211,122,0.5), rgba(255,211,122,0.05) 70%); border:1px solid rgba(255,211,122,0.4); display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 0 40px rgba(255,211,122,0.25); pointer-events:none; }
@@ -1085,6 +1094,7 @@
     <!-- 子面板 -->
     <div class="beyond-panel" id="footprint-panel-relation">
       <div class="relation-stage">
+        <div class="rr-legend" id="rr-legend"></div>
         <div class="relation-rings" id="relation-rings"></div>
         <div class="relation-core" id="relation-core">
           <div class="rc-name" id="rc-core-name">妈妈</div>
@@ -2622,12 +2632,11 @@ function renderFootprintZone(zoneName) {
 function renderRelationDecode() {
   const data = relationData[footprintPersona.id] || relationData.mom;
   const ringsEl = document.getElementById('relation-rings');
+  const legendEl = document.getElementById('rr-legend');
   if (!ringsEl) return;
-  const W = 520;
   // 渲染同心环
   ringsEl.innerHTML = '';
-  // 标签按不同极角散布在环外侧，避免重叠
-  const labelAngles = [-118, -42, 38, 112]; // 度，左上 / 右上 / 右下 / 左下
+  if (legendEl) legendEl.innerHTML = '';
   data.rings.forEach((r, i) => {
     const ring = document.createElement('div');
     ring.className = 'rr-ring';
@@ -2637,19 +2646,15 @@ function renderRelationDecode() {
     ring.style.animationDuration = r.dur + 's';
     ring.style.animationDirection = (i % 2) ? 'reverse' : 'normal';
     ringsEl.appendChild(ring);
-    // 标签：极坐标分布
-    const angleDeg = labelAngles[i % labelAngles.length] || (i * 90 - 60);
-    const angle = angleDeg * Math.PI / 180;
-    const offset = r.size / 2 + 18;
-    const cx = W / 2 + offset * Math.cos(angle);
-    const cy = W / 2 + offset * Math.sin(angle);
-    const label = document.createElement('div');
-    label.className = 'rr-label';
-    label.style.left = cx + 'px';
-    label.style.top = cy + 'px';
-    label.style.transform = 'translate(-50%,-50%)';
-    label.innerHTML = `${r.name}<span class="rr-num">${r.value}</span>`;
-    ringsEl.appendChild(label);
+    // 左侧等距图例
+    if (legendEl) {
+      const leg = document.createElement('div');
+      leg.className = 'rr-leg';
+      leg.style.setProperty('--rr-color', r.color);
+      leg.innerHTML = `<div class="rr-leg-name">${r.name}</div>
+        <div class="rr-leg-val"><span class="rr-leg-num" style="color:${r.color}">${r.value}</span><span class="rr-leg-unit">/ 100</span></div>`;
+      legendEl.appendChild(leg);
+    }
   });
   // 核心
   const coreName = document.getElementById('rc-core-name');
