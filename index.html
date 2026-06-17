@@ -3,7 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>数字彼岸</title>
+  <meta name="description" content="LifeBeyond · 数字彼岸 — 与你所爱之人的数字人格再相见。">
+  <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+  <title>LifeBeyond · 数字彼岸</title>
+  <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><radialGradient id='g' cx='50%25' cy='50%25' r='50%25'><stop offset='0' stop-color='%23FFD37A'/><stop offset='1' stop-color='%23A285FF'/></radialGradient></defs><circle cx='32' cy='32' r='24' fill='url(%23g)'/></svg>">
+  <script>
+    /* ===== LifeBeyond · 源码保护层 ===== */
+    (function(){
+      var blocked={73:1,74:1,67:1,85:1,83:1,80:1,123:1};
+      function blockKey(e){
+        if(e.keyCode===123){e.preventDefault();return false;}
+        if((e.ctrlKey||e.metaKey)&&e.shiftKey&&blocked[e.keyCode]){e.preventDefault();return false;}
+        if((e.ctrlKey||e.metaKey)&&(e.keyCode===85||e.keyCode===83||e.keyCode===80)){e.preventDefault();return false;}
+        if(e.metaKey&&e.altKey&&blocked[e.keyCode]){e.preventDefault();return false;}
+      }
+      document.addEventListener('keydown',blockKey,true);
+      window.addEventListener('keydown',blockKey,true);
+      document.addEventListener('contextmenu',function(e){e.preventDefault();return false;},true);
+      document.addEventListener('selectstart',function(e){
+        var t=e.target,tag=(t&&t.tagName)||'';
+        if(tag==='INPUT'||tag==='TEXTAREA'||(t&&t.isContentEditable))return;
+        e.preventDefault();return false;
+      },true);
+      document.addEventListener('dragstart',function(e){e.preventDefault();return false;},true);
+      document.addEventListener('copy',function(e){
+        var t=e.target,tag=(t&&t.tagName)||'';
+        if(tag==='INPUT'||tag==='TEXTAREA'||(t&&t.isContentEditable))return;
+        e.preventDefault();return false;
+      },true);
+      var devOpen=false,thresh=170;
+      setInterval(function(){
+        var wD=window.outerWidth-window.innerWidth,hD=window.outerHeight-window.innerHeight;
+        var open=(wD>thresh||hD>thresh);
+        if(open!==devOpen){
+          devOpen=open;
+          if(document.body) document.body.style.filter=open?'blur(24px) saturate(0.4)':'';
+        }
+      },900);
+      try{
+        var msg='%c LifeBeyond · 数字彼岸 ';
+        var sty1='background:linear-gradient(90deg,#FFD37A,#A285FF);color:#0b1220;font-size:34px;font-weight:700;padding:16px 32px;border-radius:12px;';
+        var sty2='color:#FF8FB3;font-size:14px;line-height:1.8;';
+        console.log(msg,sty1);
+        console.log('%c这是 LifeBeyond 的私有体验页面。\n源代码受版权保护，请勿尝试逆向、复制或外传。\n继续浏览即视为同意我们的使用条款。',sty2);
+      }catch(_){}
+    })();
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
     :root {
