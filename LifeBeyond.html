@@ -1362,10 +1362,10 @@
         <div class="oracle-methods" id="oracle-methods"></div>
 
         <!-- 引导提示（始终内联可见，不会被 dock 遮挡） -->
-        <div class="oracle-result" id="oracle-result" style="flex:0 0 auto; max-height:130px;">
+        <div class="oracle-result" id="oracle-result" style="flex:0 0 auto; max-height:130px; margin-bottom:80px;">
           <div class="or-empty">
             <div class="or-empty-icon">⌬</div>
-            <div class="or-empty-text">从上方挑一种方法，让人格替你占一次。<br>每个方法首次免费，结果将在浮窗中展开。</div>
+            <div class="or-empty-text">从上方挑一种方法，替 ta 占一次。<br>每个方法首次免费，结果将在浮窗中展开。</div>
           </div>
         </div>
 
@@ -3175,7 +3175,7 @@ function renderOracle() {
   renderOracleHistory();
   // 复位结果区
   const result = document.getElementById('oracle-result');
-  if (result) result.innerHTML = '<div class="or-empty"><div class="or-empty-icon">⌬</div><div class="or-empty-text">从上方挑一种方法，让人格替你占一次。<br>每个方法首次免费。</div></div>';
+  if (result) result.innerHTML = '<div class="or-empty"><div class="or-empty-icon">⌬</div><div class="or-empty-text">从上方挑一种方法，替 ta 占一次。<br>每个方法首次免费。</div></div>';
 }
 
 function switchOracleMode(mode, el) {
