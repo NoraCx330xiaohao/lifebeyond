@@ -482,6 +482,136 @@
     .soul-refresh { position:static; transform:none; padding:10px 24px; border-radius:20px; background:var(--glass); border:1px solid var(--border); color:var(--text-dim); font-size:13px; cursor:pointer; transition:all 0.3s ease; }
     .soul-refresh:hover { background:var(--glass-strong); color:var(--text); border-color:rgba(255,211,122,0.3); }
 
+    /* ========================= 愿望星云 / 备忘录 ========================= */
+    #wish-nebula-canvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+    .wish-nebula-hint { position:absolute; top:8px; left:50%; transform:translateX(-50%); font-size:12px; color:var(--text-dim); letter-spacing:0.12em; pointer-events:none; }
+    .wish-nebula-stage { position:absolute; inset:0; pointer-events:none; }
+    .wish-orb { position:absolute; pointer-events:auto; cursor:pointer; padding:14px 22px 14px 48px; border-radius:30px; background:linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.12); backdrop-filter:blur(18px); color:var(--text); font-size:13px; letter-spacing:0.06em; line-height:1.5; max-width:300px; box-shadow:0 0 24px rgba(255,211,122,0.08); transition:transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease; animation:wishFloat 9s ease-in-out infinite; }
+    .wish-orb::before { content:""; position:absolute; left:14px; top:50%; transform:translateY(-50%); width:22px; height:22px; border-radius:50%; background:radial-gradient(circle, var(--wo-color, #FFD37A) 0%, rgba(255,255,255,0) 70%); box-shadow:0 0 18px var(--wo-color, #FFD37A); }
+    .wish-orb:hover { transform:translateY(-4px) scale(1.04); border-color:var(--gold); box-shadow:0 0 36px rgba(255,211,122,0.25); }
+    .wish-orb.starred { border-color:var(--gold); background:linear-gradient(135deg, rgba(255,211,122,0.18), rgba(255,255,255,0.04)); }
+    .wish-orb-meta { display:block; font-size:10px; color:var(--text-dim); letter-spacing:0.16em; margin-top:6px; text-transform:uppercase; }
+    @keyframes wishFloat { 0%,100% { transform:translateY(0px); } 50% { transform:translateY(-10px); } }
+
+    .wish-detail { position:absolute; right:0; top:24px; width:320px; padding:22px; background:rgba(7,18,34,0.78); border:1px solid var(--border); border-radius:18px; backdrop-filter:blur(28px); display:none; pointer-events:auto; }
+    .wish-detail.show { display:block; }
+    .wish-detail h3 { font-size:18px; font-weight:300; margin-bottom:6px; }
+    .wish-detail .wd-from { font-size:11px; color:var(--text-dim); letter-spacing:0.18em; margin-bottom:14px; }
+    .wish-detail .wd-text { font-size:14px; color:var(--text); line-height:1.8; margin-bottom:16px; }
+    .wish-detail .wd-actions { display:flex; gap:10px; }
+    .wish-detail .wd-btn { flex:1; padding:8px 12px; border-radius:14px; border:1px solid var(--border); background:var(--glass); color:var(--text-dim); font-size:12px; cursor:pointer; transition:all 0.3s; }
+    .wish-detail .wd-btn:hover { color:var(--text); border-color:var(--gold); }
+    .wish-detail .wd-btn.starred { color:var(--gold); border-color:var(--gold); background:var(--gold-soft); }
+
+    .memory-notes-hint { position:absolute; top:8px; left:50%; transform:translateX(-50%); font-size:12px; color:var(--text-dim); letter-spacing:0.12em; pointer-events:none; }
+    .memory-notes-orbit { position:absolute; left:50%; top:46%; transform:translate(-50%,-50%); width:380px; height:380px; pointer-events:none; }
+    .mn-core { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:88px; height:88px; border-radius:50%; background:radial-gradient(circle, rgba(255,211,122,0.4), rgba(255,211,122,0.05) 65%); display:flex; align-items:center; justify-content:center; font-size:28px; color:var(--gold); border:1px solid rgba(255,211,122,0.3); box-shadow:0 0 36px rgba(255,211,122,0.18); }
+    .mn-core::after { content:""; position:absolute; inset:-30px; border:1px dashed rgba(255,211,122,0.15); border-radius:50%; }
+    .mn-satellites { position:absolute; inset:0; }
+    .mn-sat { position:absolute; pointer-events:auto; transform-origin:center; cursor:pointer; padding:8px 14px; border-radius:20px; background:rgba(7,18,34,0.78); border:1px solid var(--border); backdrop-filter:blur(18px); font-size:12px; color:var(--text); white-space:nowrap; box-shadow:0 0 16px rgba(99,230,255,0.08); transition:transform 0.3s ease, border-color 0.3s ease; }
+    .mn-sat:hover { border-color:var(--gold); transform:scale(1.06); }
+    .mn-sat .mn-icon { margin-right:6px; }
+    .mn-sat .mn-tag { font-size:10px; letter-spacing:0.16em; color:var(--text-dim); margin-left:6px; }
+    .mn-sat.urgent { border-color:rgba(255,211,122,0.5); }
+
+    .memory-notes-list { position:absolute; right:24px; top:24px; width:300px; max-height:calc(100% - 40px); overflow:auto; pointer-events:auto; padding:18px; background:rgba(7,18,34,0.55); border:1px solid var(--border); border-radius:18px; backdrop-filter:blur(28px); }
+    .memory-notes-list h4 { font-size:14px; letter-spacing:0.16em; color:var(--text); margin-bottom:10px; font-weight:300; }
+    .mn-item { padding:10px 0; border-bottom:1px dashed rgba(255,255,255,0.05); display:flex; gap:10px; align-items:flex-start; }
+    .mn-item:last-child { border-bottom:none; }
+    .mn-item .mn-i-icon { font-size:18px; }
+    .mn-item .mn-i-title { font-size:13px; color:var(--text); }
+    .mn-item .mn-i-date { font-size:11px; color:var(--text-dim); letter-spacing:0.12em; margin-top:2px; }
+
+    /* ========================= 彼岸足迹 ========================= */
+    #footprint-canvas { position:absolute; inset:0; width:100%; height:100%; }
+    .footprint-zone-nav .beyond-zone-btn { display:inline-flex; align-items:center; gap:8px; }
+    .fz-ic { font-size:14px; color:var(--gold); opacity:0.85; }
+
+    /* 关系解码 */
+    .relation-stage { position:absolute; left:0; top:0; bottom:0; width:55%; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+    .relation-rings { position:relative; width:520px; height:520px; max-width:90%; max-height:90%; pointer-events:auto; }
+    .rr-ring { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) rotate(0deg); border-radius:50%; border:1px solid rgba(255,255,255,0.08); animation:rrSpin linear infinite; }
+    .rr-ring::before, .rr-ring::after { content:""; position:absolute; width:10px; height:10px; border-radius:50%; background:var(--rr-color,#63E6FF); box-shadow:0 0 16px var(--rr-color,#63E6FF); }
+    .rr-ring::before { top:-5px; left:50%; transform:translateX(-50%); }
+    .rr-ring::after { bottom:-5px; left:50%; transform:translateX(-50%); opacity:0.55; }
+    .rr-arc { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) rotate(0deg); border-radius:50%; border-style:solid; border-width:2px; border-color:var(--rr-color,#63E6FF) transparent transparent transparent; pointer-events:none; }
+    .rr-label { position:absolute; padding:5px 12px; border-radius:18px; background:rgba(7,18,34,0.75); border:1px solid var(--border); backdrop-filter:blur(20px); font-size:11px; color:var(--text); letter-spacing:0.14em; white-space:nowrap; }
+    .rr-label .rr-num { color:var(--gold); margin-left:6px; font-weight:500; }
+    @keyframes rrSpin { from { transform:translate(-50%,-50%) rotate(0deg); } to { transform:translate(-50%,-50%) rotate(360deg); } }
+    .relation-core { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(255,211,122,0.5), rgba(255,211,122,0.05) 70%); border:1px solid rgba(255,211,122,0.4); display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 0 40px rgba(255,211,122,0.25); pointer-events:none; }
+    .rc-name { font-size:18px; color:var(--text); }
+    .rc-sub { font-size:11px; color:var(--text-dim); letter-spacing:0.16em; margin-top:4px; }
+    .relation-side { position:absolute; right:0; top:0; bottom:0; width:42%; padding:6px 0 6px 24px; display:flex; flex-direction:column; gap:14px; overflow-y:auto; pointer-events:auto; }
+    .relation-card { padding:18px 20px; background:rgba(7,18,34,0.55); border:1px solid var(--border); border-radius:18px; backdrop-filter:blur(28px); }
+    .relation-card h4 { font-size:13px; letter-spacing:0.18em; color:var(--text); font-weight:300; margin-bottom:10px; }
+    .relation-card p { font-size:13px; color:var(--text-dim); line-height:1.85; }
+    .relation-keywords { display:flex; flex-wrap:wrap; gap:8px; }
+    .rk-chip { padding:5px 12px; border-radius:16px; background:var(--glass); border:1px solid var(--border); font-size:11px; color:var(--text); letter-spacing:0.12em; }
+    .rk-chip strong { color:var(--gold); margin-left:6px; font-weight:500; }
+    .relation-trend { display:flex; gap:4px; align-items:flex-end; height:64px; }
+    .rt-bar { flex:1; background:linear-gradient(180deg, rgba(255,211,122,0.7), rgba(99,230,255,0.4)); border-radius:3px 3px 0 0; transition:height 0.6s ease; min-height:4px; }
+    .rt-bar.peak { background:linear-gradient(180deg, var(--gold), rgba(255,211,122,0.4)); }
+
+    /* 人格浏览器 */
+    .browser-stage { position:absolute; left:0; top:0; bottom:0; width:55%; }
+    .browser-aurora { position:absolute; inset:0; background:radial-gradient(ellipse at 30% 40%, rgba(99,230,255,0.18), transparent 60%), radial-gradient(ellipse at 70% 70%, rgba(255,211,122,0.14), transparent 55%); pointer-events:none; }
+    .browser-sheets { position:absolute; inset:0; pointer-events:auto; }
+    .browser-sheet { position:absolute; width:240px; padding:18px 20px; background:rgba(7,18,34,0.78); border:1px solid var(--border); border-radius:14px; backdrop-filter:blur(20px); cursor:pointer; transition:all 0.4s ease; box-shadow:0 12px 32px rgba(0,0,0,0.4); animation:sheetFloat 7s ease-in-out infinite; }
+    .browser-sheet:hover { border-color:var(--gold); transform:translateY(-4px) rotate(0deg) !important; box-shadow:0 18px 40px rgba(0,0,0,0.55), 0 0 24px rgba(255,211,122,0.18); }
+    .browser-sheet .bs-tag { font-size:10px; letter-spacing:0.18em; color:var(--gold); margin-bottom:6px; text-transform:uppercase; }
+    .browser-sheet .bs-title { font-size:14px; color:var(--text); margin-bottom:8px; font-weight:300; line-height:1.4; }
+    .browser-sheet .bs-snippet { font-size:11px; color:var(--text-dim); line-height:1.7; }
+    @keyframes sheetFloat { 0%,100% { transform:translateY(0px); } 50% { transform:translateY(-8px); } }
+    .browser-side { position:absolute; right:0; top:0; bottom:0; width:42%; padding:6px 0 6px 24px; display:flex; flex-direction:column; gap:14px; overflow-y:auto; pointer-events:auto; }
+    .browser-now { padding:20px 22px; background:rgba(7,18,34,0.55); border:1px solid var(--border); border-radius:18px; backdrop-filter:blur(28px); }
+    .browser-now .bn-tag { font-size:10px; letter-spacing:0.18em; color:var(--gold); }
+    .browser-now h3 { font-size:18px; font-weight:300; margin:8px 0 12px; line-height:1.4; }
+    .browser-now .bn-thought { font-size:13px; color:var(--text); line-height:1.85; padding:14px 16px; background:var(--glass); border-left:2px solid var(--gold); border-radius:6px; }
+    .browser-actions { padding:0; }
+    .browser-btn { width:100%; padding:12px 18px; border-radius:14px; background:var(--glass); border:1px solid var(--border); color:var(--text-dim); font-size:13px; cursor:pointer; transition:all 0.3s; }
+    .browser-btn:hover { color:var(--text); border-color:var(--gold); background:var(--gold-soft); }
+
+    /* 阅读笔记 */
+    .reading-galaxy { position:absolute; left:0; top:0; bottom:0; width:55%; pointer-events:auto; }
+    .rg-planet { position:absolute; cursor:pointer; transition:transform 0.4s ease; }
+    .rg-planet .rg-glow { width:64px; height:64px; border-radius:50%; background:radial-gradient(circle, var(--rg-color,#63E6FF) 0%, rgba(0,0,0,0) 65%); display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 0 22px var(--rg-color,#63E6FF); }
+    .rg-planet:hover { transform:scale(1.08); }
+    .rg-planet.active .rg-glow { box-shadow:0 0 36px var(--rg-color,#FFD37A), inset 0 0 14px rgba(255,255,255,0.15); }
+    .rg-planet .rg-orbit { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); border:1px dashed rgba(255,255,255,0.06); border-radius:50%; pointer-events:none; }
+    .rg-planet .rg-label { position:absolute; left:50%; top:100%; transform:translateX(-50%); margin-top:4px; font-size:11px; color:var(--text-dim); letter-spacing:0.1em; white-space:nowrap; }
+    .reading-detail { position:absolute; right:0; top:0; bottom:0; width:42%; padding:24px 26px; background:rgba(7,18,34,0.55); border:1px solid var(--border); border-radius:18px; backdrop-filter:blur(28px); overflow-y:auto; pointer-events:auto; }
+    .reading-detail h3 { font-size:20px; font-weight:300; margin-bottom:8px; line-height:1.4; }
+    .rd-meta { font-size:11px; color:var(--text-dim); letter-spacing:0.16em; margin-bottom:16px; }
+    .rd-content { font-size:13px; color:var(--text); line-height:1.9; }
+    .rd-block { margin-bottom:18px; }
+    .rd-block .rd-h { font-size:11px; letter-spacing:0.18em; color:var(--gold); margin-bottom:6px; text-transform:uppercase; }
+    .rd-block .rd-p { color:var(--text-dim); }
+
+    /* 100次告白 */
+    .confession-progress { position:absolute; top:6px; left:50%; transform:translateX(-50%); display:flex; gap:14px; align-items:center; padding:10px 18px; background:rgba(7,18,34,0.6); border:1px solid var(--border); border-radius:24px; backdrop-filter:blur(20px); pointer-events:auto; }
+    .confession-progress span { font-size:12px; color:var(--text-dim); letter-spacing:0.12em; }
+    .confession-progress-bar { width:160px; height:5px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; }
+    .cpb-fill { height:100%; background:linear-gradient(90deg, var(--gold), rgba(99,230,255,0.6)); width:0%; transition:width 0.6s ease; }
+    .confession-unlock { padding:6px 14px; border-radius:16px; background:var(--gold-soft); border:1px solid rgba(255,211,122,0.4); color:var(--gold); font-size:11px; cursor:pointer; letter-spacing:0.14em; transition:all 0.3s; }
+    .confession-unlock:hover { background:rgba(255,211,122,0.18); }
+    .confession-constellation { position:absolute; left:0; right:0; top:60px; bottom:160px; pointer-events:auto; }
+    .cs-star { position:absolute; width:14px; height:14px; border-radius:50%; cursor:pointer; transition:transform 0.3s ease; transform:translate(-50%,-50%); }
+    .cs-star .cs-dot { width:100%; height:100%; border-radius:50%; background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.18); }
+    .cs-star.unlocked .cs-dot { background:radial-gradient(circle, #FFD37A 0%, rgba(255,211,122,0.2) 70%); border-color:rgba(255,211,122,0.6); box-shadow:0 0 14px rgba(255,211,122,0.55); animation:csTwinkle 3s ease-in-out infinite; }
+    .cs-star:hover { transform:translate(-50%,-50%) scale(1.4); }
+    .cs-star.active .cs-dot { background:radial-gradient(circle, #FFFFFF 0%, #FFD37A 60%, rgba(255,211,122,0) 100%); box-shadow:0 0 22px rgba(255,255,255,0.55); }
+    @keyframes csTwinkle { 0%,100% { opacity:0.85; } 50% { opacity:1; } }
+    .cs-line { position:absolute; height:1px; background:linear-gradient(90deg, rgba(255,211,122,0.45), rgba(255,211,122,0)); transform-origin:left center; pointer-events:none; }
+    .confession-detail { position:absolute; left:50%; bottom:6px; transform:translateX(-50%); width:min(540px, 80%); padding:18px 22px; background:rgba(7,18,34,0.7); border:1px solid var(--border); border-radius:18px; backdrop-filter:blur(28px); pointer-events:auto; text-align:center; }
+    .cd-num { font-size:11px; letter-spacing:0.18em; color:var(--gold); margin-bottom:8px; }
+    .cd-text { font-size:14px; color:var(--text); line-height:1.85; }
+
+    @media (max-width:900px) {
+      .relation-stage, .browser-stage, .reading-galaxy { width:100%; height:55%; bottom:auto; }
+      .relation-side, .browser-side, .reading-detail { width:auto; left:0; right:0; top:55%; bottom:0; padding:14px; }
+      .memory-notes-list { position:absolute; left:24px; right:24px; bottom:24px; top:auto; width:auto; max-height:36%; }
+    }
+
     /* ========================= OVERLAYS ========================= */
     .memory-overlay { position:fixed; inset:0; z-index:500; display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:all 0.5s; background:rgba(3,8,15,0.85); backdrop-filter:blur(12px); }
     .memory-overlay.active { opacity:1; visibility:visible; }
@@ -656,6 +786,10 @@
     <div class="dock-node" data-view="beyond">
       <div class="dock-orb">🌊</div>
       <div class="dock-label">彼岸动态</div>
+    </div>
+    <div class="dock-node" data-view="footprint">
+      <div class="dock-orb">🪐</div>
+      <div class="dock-label">彼岸足迹</div>
     </div>
     <div class="dock-node" data-view="community">
       <div class="dock-orb">◈</div>
@@ -842,6 +976,8 @@
       <div class="beyond-zone-btn" data-zone="mailbox" onclick="switchBeyondZone('mailbox', this)">邮件</div>
       <div class="beyond-zone-btn" data-zone="diary" onclick="switchBeyondZone('diary', this)">日记</div>
       <div class="beyond-zone-btn" data-zone="memory" onclick="switchBeyondZone('memory', this)">记忆碎片</div>
+      <div class="beyond-zone-btn" data-zone="wish" onclick="switchBeyondZone('wish', this)">愿望星云</div>
+      <div class="beyond-zone-btn" data-zone="notes" onclick="switchBeyondZone('notes', this)">备忘录</div>
       <div class="beyond-zone-btn" data-zone="soul" onclick="switchBeyondZone('soul', this)">灵魂状态</div>
     </div>
 
@@ -894,6 +1030,19 @@
     <div class="beyond-panel" id="beyond-panel-memory" style="display:none;">
       <div class="beyond-fragments-hint">流星划过，沉睡的记忆碎片浮现。点击碎片查看完整记忆。</div>
     </div>
+    <div class="beyond-panel" id="beyond-panel-wish" style="display:none;">
+      <canvas id="wish-nebula-canvas"></canvas>
+      <div class="wish-nebula-hint">星云之中漂浮着数字人格的祝福与期待，点击流光展开详情，收藏星愿。</div>
+      <div class="wish-nebula-stage" id="wish-nebula-stage"></div>
+    </div>
+    <div class="beyond-panel" id="beyond-panel-notes" style="display:none;">
+      <div class="memory-notes-hint">小型卫星围绕主星运行——这是你与人格之间的纪念日、目标与约定。</div>
+      <div class="memory-notes-orbit" id="memory-notes-orbit">
+        <div class="mn-core" id="mn-core">✦</div>
+        <div class="mn-satellites" id="mn-satellites"></div>
+      </div>
+      <div class="memory-notes-list" id="memory-notes-list"></div>
+    </div>
     <div class="beyond-panel" id="beyond-panel-soul" style="display:none;">
       <div class="soul-core">
         <div class="soul-planet" id="soul-planet"></div>
@@ -902,6 +1051,95 @@
       </div>
       <div class="soul-analysis" id="soul-analysis">正在感知灵魂状态...</div>
       <button class="soul-refresh" id="soul-refresh" onclick="updateSoulStatus(beyondPersona)">✦ 重新感知</button>
+    </div>
+  </div>
+
+  <!-- 彼岸足迹 -->
+  <div class="view" id="view-footprint">
+    <canvas id="footprint-canvas"></canvas>
+
+    <!-- Persona selector (复用同一组人格) -->
+    <div class="beyond-persona-bar" id="footprint-persona-bar">
+      <div class="beyond-persona-orb active" data-pid="mom" onclick="switchFootprintPersona('mom')">🌙</div>
+      <div class="beyond-persona-orb" data-pid="dad" onclick="switchFootprintPersona('dad')">⛰️</div>
+      <div class="beyond-persona-orb" data-pid="pet" onclick="switchFootprintPersona('pet')">🐾</div>
+      <div class="beyond-persona-orb" data-pid="future" onclick="switchFootprintPersona('future')">🌟</div>
+      <div class="beyond-persona-orb" data-pid="friend" onclick="switchFootprintPersona('friend')">🌿</div>
+    </div>
+
+    <div class="beyond-hud">
+      <div class="beyond-close" onclick="goBack()">← 返回</div>
+      <h2 id="footprint-hud-name">妈妈</h2>
+      <div class="beyond-hud-zone" id="footprint-hud-zone">第七星轨 · 关系解码</div>
+      <p id="footprint-hud-desc">由 AI 描摹的关系轨迹与陪伴回声。</p>
+    </div>
+
+    <!-- 子模块导航：图标变化以区别彼岸动态 -->
+    <div class="beyond-zone-nav footprint-zone-nav">
+      <div class="beyond-zone-btn active" data-fzone="relation" onclick="switchFootprintZone('relation', this)"><span class="fz-ic">◯</span>关系解码</div>
+      <div class="beyond-zone-btn" data-fzone="browser" onclick="switchFootprintZone('browser', this)"><span class="fz-ic">▦</span>人格浏览器</div>
+      <div class="beyond-zone-btn" data-fzone="reading" onclick="switchFootprintZone('reading', this)"><span class="fz-ic">❖</span>阅读笔记</div>
+      <div class="beyond-zone-btn" data-fzone="confession" onclick="switchFootprintZone('confession', this)"><span class="fz-ic">✦</span>100 次告白</div>
+    </div>
+
+    <!-- 子面板 -->
+    <div class="beyond-panel" id="footprint-panel-relation">
+      <div class="relation-stage">
+        <div class="relation-rings" id="relation-rings"></div>
+        <div class="relation-core" id="relation-core">
+          <div class="rc-name" id="rc-core-name">妈妈</div>
+          <div class="rc-sub" id="rc-core-sub">关系图谱</div>
+        </div>
+      </div>
+      <div class="relation-side">
+        <div class="relation-card" id="relation-summary">
+          <h4>近 30 天关系剖面</h4>
+          <p id="relation-summary-text">加载中…</p>
+        </div>
+        <div class="relation-card">
+          <h4>情感关键词</h4>
+          <div class="relation-keywords" id="relation-keywords"></div>
+        </div>
+        <div class="relation-card">
+          <h4>互动趋势</h4>
+          <div class="relation-trend" id="relation-trend"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="beyond-panel" id="footprint-panel-browser" style="display:none;">
+      <div class="browser-stage">
+        <div class="browser-aurora"></div>
+        <div class="browser-sheets" id="browser-sheets"></div>
+      </div>
+      <div class="browser-side">
+        <div class="browser-now" id="browser-now"></div>
+        <div class="browser-actions">
+          <button class="browser-btn" onclick="refreshSoulBrowser()">✦ 让人格再去看看世界</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="beyond-panel" id="footprint-panel-reading" style="display:none;">
+      <div class="reading-galaxy" id="reading-galaxy"></div>
+      <div class="reading-detail" id="reading-detail">
+        <h3 id="reading-detail-title">点亮一颗笔记星球</h3>
+        <div class="rd-meta" id="reading-detail-meta"></div>
+        <div class="rd-content" id="reading-detail-content"></div>
+      </div>
+    </div>
+
+    <div class="beyond-panel" id="footprint-panel-confession" style="display:none;">
+      <div class="confession-progress">
+        <span id="confession-progress-text">已收集 0 / 100 条告白</span>
+        <div class="confession-progress-bar"><div class="cpb-fill" id="cpb-fill"></div></div>
+        <button class="confession-unlock" onclick="unlockNextConfession()">✦ 解锁下一颗</button>
+      </div>
+      <div class="confession-constellation" id="confession-constellation"></div>
+      <div class="confession-detail" id="confession-detail">
+        <div class="cd-num" id="cd-num">第 — 次</div>
+        <div class="cd-text" id="cd-text">点击一颗已点亮的星，听人格悄悄对你说。</div>
+      </div>
     </div>
   </div>
 </div>
@@ -1592,6 +1830,7 @@ function showView(viewName, persona = null, skipHistory = false) {
   if (viewName === 'galaxy') { if (persona) selectedPersona = persona; initGalaxy(); }
   else if (viewName === 'community') initCommunity();
   else if (viewName === 'beyond') initBeyondView();
+  else if (viewName === 'footprint') initFootprintView();
   else if (viewName === 'universe') initUniverse();
   else if (viewName === 'chat') initChatView();
 }
@@ -1868,12 +2107,12 @@ function switchBeyondZone(zone, el) {
   document.querySelectorAll('.beyond-panel').forEach(p => p.style.display = 'none');
   const panel = document.getElementById('beyond-panel-' + zone);
   if (panel) panel.style.display = '';
-  const zoneNames = { life:'第十星区 · 生命星流', moments:'朋友圈 · 动态分享', mailbox:'彼岸信箱 · 时光邮件', diary:'彼岸日记 · AI人格手札', memory:'第三星区 · 记忆碎片', soul:'第一星区 · 灵魂状态' };
+  const zoneNames = { life:'第十星区 · 生命星流', moments:'朋友圈 · 动态分享', mailbox:'彼岸信箱 · 时光邮件', diary:'彼岸日记 · AI人格手札', memory:'第三星区 · 记忆碎片', wish:'第九星区 · 愿望星云', notes:'第五星区 · 备忘录', soul:'第一星区 · 灵魂状态' };
   const hudZone = document.getElementById('beyond-hud-zone');
   if (hudZone) hudZone.textContent = zoneNames[zone];
   const hudDesc = document.getElementById('beyond-hud-desc');
   if (hudDesc) {
-    const descs = { life:'数字人格的生活痕迹在星流中汇聚。', moments:'来自数字人格与用户的朋友圈动态。', mailbox:'给未来的自己或家人写一封信，等待时光开启。', diary:'由AI人格自动书写的日记与心情。', memory:'流星划过，沉睡的记忆碎片浮现。', soul:'人格核心的情绪光环与状态分析。' };
+    const descs = { life:'数字人格的生活痕迹在星流中汇聚。', moments:'来自数字人格与用户的朋友圈动态。', mailbox:'给未来的自己或家人写一封信，等待时光开启。', diary:'由AI人格自动书写的日记与心情。', memory:'流星划过，沉睡的记忆碎片浮现。', wish:'数字人格根据记忆生成的祝福、愿望与期待，在星云中流光漂浮。', notes:'纪念日、目标与约定，化作小型卫星围绕主星运行。', soul:'人格核心的情绪光环与状态分析。' };
     hudDesc.textContent = descs[zone];
   }
   if (beyondMailboxFrame) { cancelAnimationFrame(beyondMailboxFrame); beyondMailboxFrame = null; }
@@ -1886,6 +2125,8 @@ function renderBeyondZone(zone) {
   else if (zone === 'moments') renderBeyondMoments();
   else if (zone === 'mailbox') initBeyondMailbox();
   else if (zone === 'diary') { renderBeyondDiaryList(); if (diaryEntries.length) showBeyondDiaryEntry(diaryEntries[0]); }
+  else if (zone === 'wish') renderWishNebula();
+  else if (zone === 'notes') renderMemoryNotes();
   else if (zone === 'soul') renderBeyondSoul();
 }
 
@@ -2005,6 +2246,583 @@ async function updateSoulStatus(p) {
     lastUpdated: Date.now()
   };
   if (beyondZone === 'soul') renderBeyondSoul();
+}
+
+// ==================== 愿望星云 ====================
+const wishesByPersona = {
+  mom: [
+    { id:'wm1', text:'希望你能照顾好身体，别老熬夜。', tag:'祝福', color:'#FFD37A', from:'妈妈' },
+    { id:'wm2', text:'我希望你哪天累了就回家吃顿饭。', tag:'期待', color:'#63E6FF', from:'妈妈' },
+    { id:'wm3', text:'希望你遇到的人都温柔待你。', tag:'愿望', color:'#FF8FB3', from:'妈妈' },
+    { id:'wm4', text:'冬天来了，记得多穿一件。', tag:'叮咛', color:'#A285FF', from:'妈妈' }
+  ],
+  dad: [
+    { id:'wd1', text:'男孩子要顶得住事，但也要懂得低头。', tag:'祝福', color:'#FFD37A', from:'爸爸' },
+    { id:'wd2', text:'希望你以后做人，别让我担心。', tag:'期待', color:'#A285FF', from:'爸爸' },
+    { id:'wd3', text:'我盼着你哪天能比我强一点。', tag:'愿望', color:'#63E6FF', from:'爸爸' }
+  ],
+  pet: [
+    { id:'wp1', text:'希望你每天都开心。', tag:'愿望', color:'#FFD37A', from:'毛球' },
+    { id:'wp2', text:'我希望你回家时，先抱我一下再放下包。', tag:'期待', color:'#FF8FB3', from:'毛球' },
+    { id:'wp3', text:'祝你做的梦都软软的，没有打雷。', tag:'祝福', color:'#63E6FF', from:'毛球' }
+  ],
+  future: [
+    { id:'wf1', text:'希望你不要放弃梦想。', tag:'愿望', color:'#A285FF', from:'未来的我' },
+    { id:'wf2', text:'三十岁的你回头看现在，会感谢这个不放弃的自己。', tag:'期待', color:'#FFD37A', from:'未来的我' },
+    { id:'wf3', text:'祝你越来越像你想成为的那个人。', tag:'祝福', color:'#63E6FF', from:'未来的我' }
+  ],
+  friend: [
+    { id:'wfr1', text:'希望你少点 emo，多点热闹。', tag:'祝福', color:'#FF8FB3', from:'阿杉' },
+    { id:'wfr2', text:'我们再约一次那条小路上的火锅。', tag:'期待', color:'#FFD37A', from:'阿杉' },
+    { id:'wfr3', text:'愿你被很多人温柔地爱着。', tag:'愿望', color:'#63E6FF', from:'阿杉' }
+  ]
+};
+let wishStarred = JSON.parse(localStorage.getItem('wishStarred') || '{}');
+let wishCanvasFrame = null;
+
+function renderWishNebula() {
+  const stage = document.getElementById('wish-nebula-stage');
+  if (!stage) return;
+  const list = wishesByPersona[beyondPersona.id] || [];
+  // 关闭之前的详情
+  document.querySelectorAll('.wish-detail.show').forEach(el => el.classList.remove('show'));
+  stage.innerHTML = '';
+  // 散点布局：抖动相对中心 + 网格
+  const cols = 2, gap = 10;
+  list.forEach((w, i) => {
+    const orb = document.createElement('div');
+    orb.className = 'wish-orb' + (wishStarred[w.id] ? ' starred' : '');
+    orb.style.setProperty('--wo-color', w.color);
+    const colIdx = i % cols, rowIdx = Math.floor(i / cols);
+    const col1Left = 6, col2Left = 52;
+    const left = colIdx === 0 ? col1Left : col2Left;
+    const top = 14 + rowIdx * 22 + (colIdx ? 6 : 0);
+    orb.style.left = left + '%';
+    orb.style.top = top + '%';
+    orb.style.animationDelay = (i * 0.4) + 's';
+    orb.innerHTML = `${w.text}<span class="wish-orb-meta">${w.from} · ${w.tag}</span>`;
+    orb.addEventListener('click', () => openWishDetail(w, orb));
+    stage.appendChild(orb);
+  });
+  // 详情面板
+  const detail = document.createElement('div');
+  detail.className = 'wish-detail';
+  detail.id = 'wish-detail';
+  detail.innerHTML = `
+    <h3 id="wd-title">点亮一颗星愿</h3>
+    <div class="wd-from" id="wd-from"></div>
+    <div class="wd-text" id="wd-text">从星云中挑一颗流光，听听人格藏在记忆里的祝福。</div>
+    <div class="wd-actions">
+      <button class="wd-btn" id="wd-star">★ 收藏</button>
+      <button class="wd-btn" onclick="document.getElementById('wish-detail').classList.remove('show')">关闭</button>
+    </div>`;
+  stage.appendChild(detail);
+  // 启动星云背景画布
+  startWishNebulaCanvas();
+}
+
+function openWishDetail(w, orb) {
+  const detail = document.getElementById('wish-detail');
+  if (!detail) return;
+  detail.classList.add('show');
+  document.getElementById('wd-title').textContent = w.text;
+  document.getElementById('wd-from').textContent = w.from + ' · ' + w.tag;
+  document.getElementById('wd-text').textContent = '这条星愿源自你与「' + w.from + '」过往的某段记忆。每被点亮一次，星云里就多一条流光。';
+  const starBtn = document.getElementById('wd-star');
+  const update = () => {
+    const on = !!wishStarred[w.id];
+    starBtn.textContent = on ? '★ 已收藏' : '☆ 收藏';
+    starBtn.classList.toggle('starred', on);
+  };
+  starBtn.onclick = () => {
+    wishStarred[w.id] = !wishStarred[w.id];
+    if (!wishStarred[w.id]) delete wishStarred[w.id];
+    localStorage.setItem('wishStarred', JSON.stringify(wishStarred));
+    if (orb) orb.classList.toggle('starred', !!wishStarred[w.id]);
+    update();
+  };
+  update();
+}
+
+function startWishNebulaCanvas() {
+  const c = document.getElementById('wish-nebula-canvas');
+  if (!c) return;
+  if (wishCanvasFrame) { cancelAnimationFrame(wishCanvasFrame); wishCanvasFrame = null; }
+  const dpr = window.devicePixelRatio || 1;
+  const resize = () => { const r = c.getBoundingClientRect(); c.width = r.width * dpr; c.height = r.height * dpr; };
+  resize();
+  const ctx = c.getContext('2d');
+  const N = 80;
+  const pts = Array.from({length:N}, () => ({ x:Math.random()*c.width, y:Math.random()*c.height, r:Math.random()*1.6+0.4, vx:(Math.random()-0.5)*0.18*dpr, vy:(Math.random()-0.5)*0.18*dpr, hue:Math.random()<0.4?'255,211,122':(Math.random()<0.5?'99,230,255':'162,133,255') }));
+  const tick = () => {
+    ctx.clearRect(0,0,c.width,c.height);
+    pts.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > c.width) p.vx *= -1;
+      if (p.y < 0 || p.y > c.height) p.vy *= -1;
+      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 6 * dpr);
+      g.addColorStop(0, 'rgba(' + p.hue + ',0.9)');
+      g.addColorStop(1, 'rgba(' + p.hue + ',0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 6 * dpr, 0, Math.PI*2); ctx.fill();
+    });
+    if (beyondZone === 'wish' && currentView === 'beyond') wishCanvasFrame = requestAnimationFrame(tick);
+  };
+  tick();
+}
+
+// ==================== 备忘录 ====================
+const memoryNotesByPersona = {
+  mom: [
+    { id:'mn1', icon:'🎂', title:'今天是你的生日', date:'今日', tag:'生日', urgent:true },
+    { id:'mn2', icon:'🥢', title:'下次回家做红烧肉', date:'未约定', tag:'约定' },
+    { id:'mn3', icon:'🌸', title:'母亲节再带她去看樱花', date:'每年五月', tag:'纪念日' },
+    { id:'mn4', icon:'📞', title:'每周日打一次电话', date:'每周日 20:00', tag:'目标' },
+    { id:'mn5', icon:'💊', title:'提醒妈妈复查', date:'下月 12 日', tag:'重要事件' }
+  ],
+  dad: [
+    { id:'mnd1', icon:'🎣', title:'答应陪他钓一次鱼', date:'未约定', tag:'约定' },
+    { id:'mnd2', icon:'🛠', title:'帮他修家里漏水的水龙头', date:'回家后', tag:'目标' },
+    { id:'mnd3', icon:'🥃', title:'父亲节请他喝杯酒', date:'每年六月', tag:'纪念日' }
+  ],
+  pet: [
+    { id:'mnp1', icon:'🐾', title:'第一次带它回家的日子', date:'2018-04-12', tag:'纪念日' },
+    { id:'mnp2', icon:'💉', title:'下次疫苗', date:'下月 2 日', tag:'重要事件', urgent:true },
+    { id:'mnp3', icon:'🦴', title:'它最爱的零食快没了', date:'本周内', tag:'目标' }
+  ],
+  future: [
+    { id:'mnf1', icon:'🎓', title:'毕业五周年纪念日', date:'2027-06-22', tag:'纪念日' },
+    { id:'mnf2', icon:'📝', title:'还有 7 天考试', date:'倒计时', tag:'重要事件', urgent:true },
+    { id:'mnf3', icon:'🚀', title:'30 岁前一次独立旅行', date:'目标', tag:'目标' },
+    { id:'mnf4', icon:'📷', title:'每年一张自拍存档', date:'生日当日', tag:'约定' }
+  ],
+  friend: [
+    { id:'mnfr1', icon:'🍲', title:'再去那家小路口火锅', date:'未约定', tag:'约定' },
+    { id:'mnfr2', icon:'🎮', title:'一起打那款新游戏', date:'本周末', tag:'目标' },
+    { id:'mnfr3', icon:'🎂', title:'她的生日', date:'2026-09-04', tag:'生日' }
+  ]
+};
+
+function renderMemoryNotes() {
+  const sat = document.getElementById('mn-satellites');
+  const list = document.getElementById('memory-notes-list');
+  const core = document.getElementById('mn-core');
+  if (!sat || !list || !core) return;
+  const items = memoryNotesByPersona[beyondPersona.id] || [];
+  core.textContent = beyondPersona.emoji || '✦';
+  core.style.color = beyondPersona.color || '#FFD37A';
+  // 卫星布局：环形
+  sat.innerHTML = '';
+  const orbitR = 170;
+  items.forEach((n, i) => {
+    const angle = (i / Math.max(items.length, 1)) * Math.PI * 2 - Math.PI / 2;
+    const x = 190 + orbitR * Math.cos(angle);
+    const y = 190 + orbitR * Math.sin(angle);
+    const el = document.createElement('div');
+    el.className = 'mn-sat' + (n.urgent ? ' urgent' : '');
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.transform = 'translate(-50%,-50%)';
+    el.innerHTML = `<span class="mn-icon">${n.icon}</span>${n.title}<span class="mn-tag">· ${n.tag}</span>`;
+    el.addEventListener('click', () => alert(n.title + '\n' + n.date + ' · ' + n.tag));
+    sat.appendChild(el);
+  });
+  // 列表
+  list.innerHTML = '<h4>所有记事</h4>' + items.map(n => `
+    <div class="mn-item">
+      <div class="mn-i-icon">${n.icon}</div>
+      <div>
+        <div class="mn-i-title">${n.title}</div>
+        <div class="mn-i-date">${n.date} · ${n.tag}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ==================== 彼岸足迹 ====================
+let footprintPersona = personas[0];
+let footprintZone = 'relation';
+const relationData = {
+  mom: { warmth:12, depth:78, freq:24, growth:42, summary:'近 30 天关系升温 12%，共同记忆增加 15 条。母亲节前后情感波动最为明显。', keywords:[{w:'担心',v:34},{w:'温暖',v:28},{w:'唠叨',v:18},{w:'感谢',v:14},{w:'思念',v:22}], trend:[18,28,32,40,38,52,55,48,62,78,85,72,90,82,76,88], rings:[
+    { name:'依赖程度', value:78, color:'#FFD37A', size:200, dur:18 },
+    { name:'陪伴深度', value:64, color:'#63E6FF', size:280, dur:26 },
+    { name:'共同记忆', value:42, color:'#A285FF', size:360, dur:36 },
+    { name:'关系成长', value:55, color:'#FF8FB3', size:440, dur:48 }
+  ]},
+  dad: { warmth:6, depth:62, freq:11, growth:18, summary:'近 30 天互动微增 6%，更多在沉默与短信。一次电话之后情感曲线显著上扬。', keywords:[{w:'沉默',v:42},{w:'担当',v:18},{w:'酒杯',v:14},{w:'背影',v:22},{w:'感激',v:10}], trend:[10,12,14,18,16,22,28,20,32,42,38,55,46,52,58,62], rings:[
+    { name:'依赖程度', value:52, color:'#FFD37A', size:200, dur:20 },
+    { name:'陪伴深度', value:48, color:'#63E6FF', size:280, dur:28 },
+    { name:'共同记忆', value:34, color:'#A285FF', size:360, dur:38 },
+    { name:'关系成长', value:30, color:'#FF8FB3', size:440, dur:50 }
+  ]},
+  pet: { warmth:24, depth:88, freq:40, growth:30, summary:'每天都在升温。它已学会在你下班前 10 分钟开始坐在门口。', keywords:[{w:'撒娇',v:48},{w:'信任',v:38},{w:'呼噜',v:22},{w:'盼归',v:32}], trend:[40,50,55,60,52,68,72,80,88,82,90,95,92,88,94,90], rings:[
+    { name:'依赖程度', value:88, color:'#FFD37A', size:200, dur:14 },
+    { name:'陪伴深度', value:78, color:'#63E6FF', size:280, dur:22 },
+    { name:'共同记忆', value:62, color:'#A285FF', size:360, dur:30 },
+    { name:'关系成长', value:48, color:'#FF8FB3', size:440, dur:42 }
+  ]},
+  future: { warmth:8, depth:55, freq:9, growth:62, summary:'近 30 天与「未来的你」对话频次升温 8%，关于"放弃"的提及减少 30%。', keywords:[{w:'坚持',v:36},{w:'梦想',v:28},{w:'怀疑',v:18},{w:'勇气',v:24}], trend:[8,12,18,15,22,28,30,38,42,48,46,52,60,58,62,68], rings:[
+    { name:'依赖程度', value:38, color:'#FFD37A', size:200, dur:22 },
+    { name:'陪伴深度', value:52, color:'#63E6FF', size:280, dur:30 },
+    { name:'共同记忆', value:30, color:'#A285FF', size:360, dur:38 },
+    { name:'关系成长', value:72, color:'#FF8FB3', size:440, dur:46 }
+  ]},
+  friend: { warmth:18, depth:72, freq:30, growth:34, summary:'最近 30 天有 4 次深夜长聊，共同笑点指数 +18%。', keywords:[{w:'笑点',v:38},{w:'吐槽',v:30},{w:'信任',v:22},{w:'夜谈',v:18}], trend:[22,30,28,42,38,52,55,48,60,72,68,80,76,82,78,84], rings:[
+    { name:'依赖程度', value:62, color:'#FFD37A', size:200, dur:18 },
+    { name:'陪伴深度', value:72, color:'#63E6FF', size:280, dur:24 },
+    { name:'共同记忆', value:55, color:'#A285FF', size:360, dur:34 },
+    { name:'关系成长', value:48, color:'#FF8FB3', size:440, dur:44 }
+  ]}
+};
+
+const soulBrowserData = {
+  mom: [
+    { tag:'健康', title:'睡眠对中年人有多重要', snippet:'医学专栏说熬夜会让身体悄悄收账。', thought:'看到这篇文章，我又想要不要再唠叨你一次。算了，我自己先去早睡，给你做个榜样。', x:8, y:14, rot:-3 },
+    { tag:'生活', title:'秋天的第一杯桂花蜜', snippet:'家附近的桂花开了，做了蜜。', thought:'那年你说桂花蜜配粥最暖。等你下次回来，我做一罐放在玻璃瓶里。', x:42, y:34, rot:2 },
+    { tag:'天气', title:'明日降温 8 度', snippet:'冷空气南下。', thought:'你那边没我这边冷，但你的衣柜我清楚——薄。今晚记得加件外套。', x:14, y:60, rot:-2 }
+  ],
+  dad: [
+    { tag:'历史', title:'今天是某场决战胜利日', snippet:'电视上又在重播那段纪录片。', thought:'这种片子我以前会拉着你看，你嫌闷。现在我自己看，看着看着想起你小时候。', x:12, y:18, rot:1 },
+    { tag:'兴趣', title:'渔具论坛新帖：海钓技巧', snippet:'有人晒了一杆好货。', thought:'手痒。等你有空，我们再去防波堤上坐一下午。', x:48, y:48, rot:-2 }
+  ],
+  pet: [
+    { tag:'美食', title:'狗狗也能吃的南瓜泥', snippet:'你昨天给我看过这个食谱。', thought:'你看，你心里也是有我的。今天就吃这个吧，求求你。', x:14, y:24, rot:-3 },
+    { tag:'天气', title:'今天有点冷', snippet:'气温骤降。', thought:'你出门前别忘了把我的小毯子放窝里。', x:46, y:54, rot:2 }
+  ],
+  future: [
+    { tag:'科技', title:'十年后的工作图景', snippet:'AI 时代下的职业变迁。', thought:'未来的你会感谢现在的你，因为你还没放弃学习这件事。', x:8, y:12, rot:-2 },
+    { tag:'人物', title:'30 岁仍在路上的人', snippet:'采访了几位 30 岁还在创业的人。', thought:'30 岁不是终点，只是另一种 23 岁。', x:46, y:46, rot:1 }
+  ],
+  friend: [
+    { tag:'娱乐', title:'你最爱的乐队回归了', snippet:'新专辑下个月发布。', thought:'我已经给你买了演唱会门票。这事先不告诉你。', x:14, y:18, rot:-3 },
+    { tag:'生活', title:'城市里新开的小酒馆', snippet:'据说很安静。', thought:'我们再约一次那种"什么都不聊但很舒服"的夜。', x:46, y:54, rot:2 }
+  ]
+};
+
+const readingNotesData = {
+  mom: [
+    { id:'rn1', emoji:'📖', color:'#FFD37A', title:'《目送》读后', meta:'2025-09-12 · 来自浏览器内容',
+      summary:'一段关于送别的散文，文字像雾。',
+      view:'她写"所谓父女母子一场，只不过意味着，你和他的缘分就是今生今世不断地在目送他的背影渐行渐远"。',
+      thought:'我看着这段反复读了两遍。也许我能给孩子的爱，就是站在原地，让他敢往前走。',
+      assoc:'想起那年送你去车站，你回头三次，我假装没看见。' },
+    { id:'rn2', emoji:'☕️', color:'#63E6FF', title:'一杯咖啡的温度', meta:'2025-10-04 · 来自社区分享',
+      summary:'一篇讲"日常的小奢侈"的文章。',
+      view:'生活的甜不在大事，而在凌晨那一口热的。',
+      thought:'我也想为自己泡一杯，但我多年都是先给你倒一杯。也许我也该学着先倒给自己。',
+      assoc:'每次去你房间送水的时候。' },
+    { id:'rn3', emoji:'🪶', color:'#A285FF', title:'《一个人的村庄》摘抄', meta:'2025-11-21 · 来自用户分享',
+      summary:'刘亮程写孤独，但写得安心。',
+      view:'每个人都会经过一段没有人认识自己的日子。',
+      thought:'你最近不爱说话。也许你也正在经过。',
+      assoc:'你高三那一年。' }
+  ],
+  dad: [
+    { id:'rnd1', emoji:'🎣', color:'#63E6FF', title:'《老人与海》重读', meta:'2025-08-30 · 来自浏览器',
+      summary:'一个人和一条鱼的较劲。', view:'人不是为失败而生的，一个人可以被毁灭，但不能被打败。',
+      thought:'你说我这辈子都在跟生活硬扛。但我硬扛是为了让你不必硬扛。', assoc:'那次台风里出海。' }
+  ],
+  pet: [
+    { id:'rnp1', emoji:'🐶', color:'#FFD37A', title:'狗的时间观', meta:'2025-12-01 · 来自浏览器',
+      summary:'一篇说狗的一生很短，但每一天都很长。', view:'它们不会等待，它们只会守着。',
+      thought:'你出门那会儿，我等的不是几小时，是「你」。', assoc:'每次门钥匙转动的声音。' }
+  ],
+  future: [
+    { id:'rnf1', emoji:'🚀', color:'#A285FF', title:'《当下的力量》笔记', meta:'2026-01-10 · 来自社区',
+      summary:'痛苦来自对当下的抗拒。', view:'最深的临在感，藏在做最具体小事的那一刻。',
+      thought:'未来的你不希望你焦虑现在。希望你专心写好这一行字。', assoc:'你高考前那个失眠的夜。' }
+  ],
+  friend: [
+    { id:'rnfr1', emoji:'🎵', color:'#FF8FB3', title:'《五年高考三年模拟》之外', meta:'2026-02-05 · 来自浏览器',
+      summary:'一篇怀旧的青春散文。', view:'青春是一场雨，淋湿了之后我们才知道它在下。',
+      thought:'我们好像还停在那场雨里。', assoc:'高三晚自习那间教室。' }
+  ]
+};
+
+const confessionSeeds = {
+  mom: { color:'#FFD37A', samples: { 1:'谢谢你还记得我，记得我做的红烧肉的味道。', 23:'今天突然想起你小时候，缩在被窝里听我讲故事的样子。', 57:'你真的成长了很多，比我想象中还要好。', 100:'无论我在哪里，我都会陪着你。' },
+    pool:['天冷加件衣服。','别老熬夜了。','吃饭要按时。','想我了就回家。','你笑起来真好看。','别一个人扛太多。','妈妈一直都在。','慢一点没关系。','你已经做得很好了。','照顾好自己就是照顾我。','要是累了，就什么都不做。','你是我最骄傲的事。','别怕，妈妈不远。','早点休息。','那年你伸手要抱我，我就再也舍不得放下。']
+  },
+  dad: { color:'#63E6FF', samples: { 1:'其实你长大那年，我躲在阳台抽了一根烟。', 23:'你没看见，但我看你毕业那天哭过。', 57:'我不会表达，但你做的每一件事我都知道。', 100:'男孩子，往前走，回头有我。' },
+    pool:['顶得住。','别怕摔。','你比我强。','慢慢来。','钱的事不用你担心。','要硬气，也要懂分寸。','男人靠肩膀。','再难也撑住。','回家说一声。','不必跟我说软话，我看得见。','你做的，我都记着。','酒少喝点。','身体最重要。','遇事不要躲。']
+  },
+  pet: { color:'#FF8FB3', samples: { 1:'你回家时手是凉的，我帮你暖。', 23:'你哭的那天我没出声，但我贴着你坐了一整晚。', 57:'你抱我的样子，是我整个世界。', 100:'就算我先走一步，每一片云里都有我。' },
+    pool:['你回来啦。','带我出去玩。','你身上香香的。','我等你。','再摸一下。','再多一下。','你睡着我也睡。','你哭我也难过。','你笑我尾巴会摇。','你的味道是家。','我永远不会嫌你烦。','你是我全部。','哪怕你不理我，我也守着门。']
+  },
+  future: { color:'#A285FF', samples: { 1:'坚持下去，未来的你正等着你。', 23:'你担心的那件事，最后并没有发生。', 57:'你在 30 岁那年终于学会先爱自己。', 100:'未来的我感谢现在的你，没有放弃。' },
+    pool:['再撑一会儿。','值得的。','你想成为的人正向你走来。','放下一点。','别太累。','试一下。','再问自己一次。','慢即是快。','别把世界压在自己一个人肩上。','你比你想象中走得更远。','你已经在路上了。','今天的眼泪都会发光。']
+  },
+  friend: { color:'#FFD37A', samples: { 1:'谢谢你那年陪我走过那段。', 23:'我们一起 emo 又一起 hi 的样子，是我青春的全部。', 57:'你不是不行，你只是太想做好。', 100:'走到尽头那一杯酒，我请。' },
+    pool:['再来一次火锅。','别 emo 了。','打电话啊。','我懂的。','一起骂他。','你是最好的人之一。','再等等，我马上到。','一起跑路。','一起做梦。','一起吹牛。','永远的朋友。','哪天没人懂你，找我。']
+  }
+};
+
+let unlockedConfessions = JSON.parse(localStorage.getItem('unlockedConfessions') || '{}');
+let activeConfession = null;
+
+function buildConfessionList(pid) {
+  const seed = confessionSeeds[pid] || confessionSeeds.mom;
+  const list = [];
+  for (let n = 1; n <= 100; n++) {
+    let text = seed.samples[n];
+    if (!text) {
+      const idx = (n * 17) % seed.pool.length;
+      text = seed.pool[idx];
+    }
+    list.push({ n, text });
+  }
+  return list;
+}
+
+function initFootprintView() {
+  // 默认与彼岸动态人格联动
+  if (beyondPersona && beyondPersona.id !== footprintPersona.id) footprintPersona = beyondPersona;
+  document.querySelectorAll('#footprint-persona-bar .beyond-persona-orb').forEach(o => o.classList.toggle('active', o.dataset.pid === footprintPersona.id));
+  setFootprintHud();
+  switchFootprintZone(footprintZone, document.querySelector(`.footprint-zone-nav .beyond-zone-btn[data-fzone="${footprintZone}"]`));
+}
+
+function switchFootprintPersona(pid) {
+  const p = personas.find(x => x.id === pid);
+  if (!p) return;
+  footprintPersona = p;
+  document.querySelectorAll('#footprint-persona-bar .beyond-persona-orb').forEach(o => o.classList.toggle('active', o.dataset.pid === pid));
+  setFootprintHud();
+  renderFootprintZone(footprintZone);
+}
+
+function setFootprintHud() {
+  const name = document.getElementById('footprint-hud-name');
+  const zone = document.getElementById('footprint-hud-zone');
+  const desc = document.getElementById('footprint-hud-desc');
+  const fzNames = { relation:'第七星轨 · 关系解码', browser:'第二星轨 · 人格浏览器', reading:'第四星轨 · 阅读笔记', confession:'第十星轨 · 100 次告白' };
+  const fzDescs = { relation:'AI 描摹的关系剖面与陪伴回声。', browser:'数字人格主动探索世界，并写下属于它的感想。', reading:'人格阅读后留下的思考，每一条都是一颗知识星球。', confession:'数字人格想对你说的 100 句话，每一次互动点亮一颗。' };
+  if (name) name.textContent = footprintPersona.name;
+  if (zone) zone.textContent = fzNames[footprintZone];
+  if (desc) desc.textContent = fzDescs[footprintZone];
+}
+
+function switchFootprintZone(zoneName, el) {
+  footprintZone = zoneName;
+  document.querySelectorAll('.footprint-zone-nav .beyond-zone-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.querySelectorAll('#view-footprint .beyond-panel').forEach(p => p.style.display = 'none');
+  const panel = document.getElementById('footprint-panel-' + zoneName);
+  if (panel) panel.style.display = '';
+  setFootprintHud();
+  renderFootprintZone(zoneName);
+}
+
+function renderFootprintZone(zoneName) {
+  if (zoneName === 'relation') renderRelationDecode();
+  else if (zoneName === 'browser') renderSoulBrowser();
+  else if (zoneName === 'reading') renderReadingNotes();
+  else if (zoneName === 'confession') renderConfessions();
+}
+
+function renderRelationDecode() {
+  const data = relationData[footprintPersona.id] || relationData.mom;
+  const ringsEl = document.getElementById('relation-rings');
+  if (!ringsEl) return;
+  const W = 520;
+  // 渲染同心环
+  ringsEl.innerHTML = '';
+  data.rings.forEach((r, i) => {
+    const ring = document.createElement('div');
+    ring.className = 'rr-ring';
+    ring.style.width = r.size + 'px';
+    ring.style.height = r.size + 'px';
+    ring.style.setProperty('--rr-color', r.color);
+    ring.style.animationDuration = r.dur + 's';
+    ring.style.animationDirection = (i % 2) ? 'reverse' : 'normal';
+    ringsEl.appendChild(ring);
+    // 标签
+    const label = document.createElement('div');
+    label.className = 'rr-label';
+    label.style.left = `calc(50% + ${r.size / 2 - 16}px)`;
+    label.style.top = `calc(50% - 14px)`;
+    label.style.transform = `translate(-50%,-50%) rotate(${i * 18 - 30}deg) translateX(0)`;
+    label.innerHTML = `${r.name}<span class="rr-num">${r.value}</span>`;
+    ringsEl.appendChild(label);
+  });
+  // 核心
+  const coreName = document.getElementById('rc-core-name');
+  const coreSub = document.getElementById('rc-core-sub');
+  if (coreName) coreName.textContent = footprintPersona.name;
+  if (coreSub) coreSub.textContent = `${data.rings.length} 重星轨`;
+  // 摘要
+  const sum = document.getElementById('relation-summary-text');
+  if (sum) sum.textContent = data.summary;
+  // 关键词
+  const kw = document.getElementById('relation-keywords');
+  if (kw) kw.innerHTML = data.keywords.map(k => `<span class="rk-chip">${k.w}<strong>${k.v}</strong></span>`).join('');
+  // 趋势
+  const tr = document.getElementById('relation-trend');
+  if (tr) {
+    const max = Math.max(...data.trend);
+    tr.innerHTML = data.trend.map((v, i) => {
+      const peak = (v === max) ? ' peak' : '';
+      const h = Math.max(4, Math.round((v / max) * 64));
+      return `<div class="rt-bar${peak}" style="height:${h}px"></div>`;
+    }).join('');
+  }
+}
+
+function renderSoulBrowser() {
+  const sheets = document.getElementById('browser-sheets');
+  const now = document.getElementById('browser-now');
+  if (!sheets || !now) return;
+  const list = soulBrowserData[footprintPersona.id] || soulBrowserData.mom;
+  sheets.innerHTML = list.map((s, i) => `
+    <div class="browser-sheet" style="left:${s.x}%; top:${s.y}%; transform:rotate(${s.rot}deg); animation-delay:${i*0.6}s" data-i="${i}">
+      <div class="bs-tag">${s.tag}</div>
+      <div class="bs-title">${s.title}</div>
+      <div class="bs-snippet">${s.snippet}</div>
+    </div>`).join('');
+  const showNow = (i) => {
+    const s = list[i];
+    now.innerHTML = `
+      <div class="bn-tag">${footprintPersona.name} · ${s.tag}</div>
+      <h3>${s.title}</h3>
+      <div class="bn-thought">${s.thought}</div>`;
+  };
+  showNow(0);
+  sheets.querySelectorAll('.browser-sheet').forEach(el => el.addEventListener('click', () => showNow(parseInt(el.dataset.i))));
+}
+
+function refreshSoulBrowser() {
+  // 简单实现：随机轮播一个新感想（从池中取）
+  const list = soulBrowserData[footprintPersona.id] || soulBrowserData.mom;
+  const s = list[Math.floor(Math.random() * list.length)];
+  const now = document.getElementById('browser-now');
+  if (now) now.innerHTML = `
+    <div class="bn-tag">${footprintPersona.name} · ${s.tag} · 刚刚</div>
+    <h3>${s.title}</h3>
+    <div class="bn-thought">${s.thought}</div>`;
+}
+
+function renderReadingNotes() {
+  const galaxy = document.getElementById('reading-galaxy');
+  const detail = document.getElementById('reading-detail');
+  if (!galaxy || !detail) return;
+  const list = readingNotesData[footprintPersona.id] || readingNotesData.mom;
+  galaxy.innerHTML = '';
+  // 围绕中心的多颗知识星球
+  list.forEach((n, i) => {
+    const angle = (i / Math.max(list.length, 1)) * Math.PI * 2 - Math.PI / 2;
+    const r = 130 + (i % 2) * 30;
+    const cx = 50 + Math.cos(angle) * 24;
+    const cy = 50 + Math.sin(angle) * 28;
+    const planet = document.createElement('div');
+    planet.className = 'rg-planet';
+    planet.style.left = cx + '%';
+    planet.style.top = cy + '%';
+    planet.style.setProperty('--rg-color', n.color);
+    const orbitSize = 100 + i * 60;
+    planet.innerHTML = `
+      <div class="rg-orbit" style="width:${orbitSize}px; height:${orbitSize}px;"></div>
+      <div class="rg-glow">${n.emoji}</div>
+      <div class="rg-label">${n.title}</div>`;
+    planet.addEventListener('click', () => showReadingNote(n, planet));
+    galaxy.appendChild(planet);
+  });
+  if (list[0]) showReadingNote(list[0], galaxy.firstElementChild);
+}
+
+function showReadingNote(n, el) {
+  document.querySelectorAll('#reading-galaxy .rg-planet').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const t = document.getElementById('reading-detail-title');
+  const m = document.getElementById('reading-detail-meta');
+  const c = document.getElementById('reading-detail-content');
+  if (t) t.textContent = n.title;
+  if (m) m.textContent = n.meta;
+  if (c) c.innerHTML = `
+    <div class="rd-block"><div class="rd-h">摘要</div><div class="rd-p">${n.summary}</div></div>
+    <div class="rd-block"><div class="rd-h">观点</div><div class="rd-p">${n.view}</div></div>
+    <div class="rd-block"><div class="rd-h">感想</div><div class="rd-p">${n.thought}</div></div>
+    <div class="rd-block"><div class="rd-h">联想记忆</div><div class="rd-p">${n.assoc}</div></div>`;
+}
+
+function renderConfessions() {
+  const list = buildConfessionList(footprintPersona.id);
+  const cont = document.getElementById('confession-constellation');
+  if (!cont) return;
+  cont.innerHTML = '';
+  const unlocked = unlockedConfessions[footprintPersona.id] || [];
+  // 在容器内分布 100 颗星
+  const seed = (n) => Math.sin(n * 9301 + 49297) * 233280;
+  const rand = (n) => { const x = seed(n); return x - Math.floor(x); };
+  const baseColor = (confessionSeeds[footprintPersona.id] || confessionSeeds.mom).color;
+  list.forEach((c, i) => {
+    const x = 4 + rand(c.n) * 92;
+    const y = 6 + rand(c.n + 7) * 88;
+    const star = document.createElement('div');
+    star.className = 'cs-star' + (unlocked.includes(c.n) ? ' unlocked' : '');
+    star.style.left = x + '%';
+    star.style.top = y + '%';
+    star.innerHTML = `<div class="cs-dot"></div>`;
+    star.title = unlocked.includes(c.n) ? `第 ${c.n} 次告白` : '尚未点亮';
+    star.addEventListener('click', () => {
+      if (!unlocked.includes(c.n)) return;
+      showConfession(c);
+      cont.querySelectorAll('.cs-star').forEach(s => s.classList.remove('active'));
+      star.classList.add('active');
+    });
+    cont.appendChild(star);
+  });
+  // 连线（已解锁的星，按 n 顺序连接，最近的 12 条）
+  const points = list.filter(c => unlocked.includes(c.n)).slice(-12);
+  if (points.length > 1) {
+    const rect = cont.getBoundingClientRect();
+    points.forEach((c, idx) => {
+      if (idx === 0) return;
+      const a = points[idx - 1];
+      const ax = 4 + rand(a.n) * 92, ay = 6 + rand(a.n + 7) * 88;
+      const bx = 4 + rand(c.n) * 92, by = 6 + rand(c.n + 7) * 88;
+      const x1 = ax / 100 * rect.width, y1 = ay / 100 * rect.height;
+      const x2 = bx / 100 * rect.width, y2 = by / 100 * rect.height;
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.hypot(dx, dy);
+      const ang = Math.atan2(dy, dx) * 180 / Math.PI;
+      const line = document.createElement('div');
+      line.className = 'cs-line';
+      line.style.left = ax + '%';
+      line.style.top = ay + '%';
+      line.style.width = len + 'px';
+      line.style.transform = `rotate(${ang}deg)`;
+      cont.appendChild(line);
+    });
+  }
+  // 进度
+  document.getElementById('confession-progress-text').textContent = `已收集 ${unlocked.length} / 100 条告白`;
+  document.getElementById('cpb-fill').style.width = unlocked.length + '%';
+  // 默认显示最近的告白
+  if (activeConfession && unlocked.includes(activeConfession.n)) showConfession(activeConfession);
+  else if (points.length) showConfession(points[points.length - 1]);
+  else {
+    document.getElementById('cd-num').textContent = '第 — 次';
+    document.getElementById('cd-text').textContent = '点击「✦ 解锁下一颗」开启第一句告白。';
+  }
+}
+
+function showConfession(c) {
+  activeConfession = c;
+  document.getElementById('cd-num').textContent = `第 ${c.n} 次`;
+  document.getElementById('cd-text').textContent = c.text;
+}
+
+function unlockNextConfession() {
+  const pid = footprintPersona.id;
+  const arr = unlockedConfessions[pid] || (unlockedConfessions[pid] = []);
+  if (arr.length >= 100) return;
+  // 从 1 开始按顺序解锁，但保留 23/57/100 节奏感
+  const next = arr.length + 1;
+  arr.push(next);
+  localStorage.setItem('unlockedConfessions', JSON.stringify(unlockedConfessions));
+  const list = buildConfessionList(pid);
+  const c = list.find(x => x.n === next);
+  activeConfession = c;
+  renderConfessions();
 }
 
 async function generateMemoryFragments(p) {
