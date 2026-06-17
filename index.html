@@ -615,6 +615,114 @@
     .cd-num { font-size:11px; letter-spacing:0.18em; color:var(--gold); margin-bottom:8px; }
     .cd-text { font-size:14px; color:var(--text); line-height:1.85; }
 
+    /* === Oracle 占卜 === */
+    .oracle-stage { position:absolute; inset:24px; display:flex; flex-direction:column; gap:18px; pointer-events:auto; overflow:hidden; }
+    .oracle-header { display:flex; justify-content:space-between; align-items:center; gap:18px; padding:16px 20px; background:linear-gradient(135deg, rgba(255,211,122,0.08), rgba(99,230,255,0.06)); border:1px solid rgba(255,211,122,0.22); border-radius:18px; backdrop-filter:blur(18px); }
+    .oh-id { display:flex; align-items:center; gap:14px; }
+    .oh-orb { width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; background:radial-gradient(circle at 30% 30%, rgba(255,211,122,0.45), rgba(99,230,255,0.18)); border:1px solid rgba(255,211,122,0.4); box-shadow:0 0 22px rgba(255,211,122,0.25); }
+    .oh-line1 { font-size:14px; color:var(--gold); letter-spacing:0.08em; }
+    .oh-tag { font-size:11px; color:var(--text-soft); padding:2px 8px; border:1px solid var(--border); border-radius:99px; margin-left:4px; letter-spacing:0.1em; }
+    .oh-line2 { font-size:12px; color:var(--text-soft); margin-top:4px; font-style:italic; max-width:520px; line-height:1.55; }
+    .oh-tokens { text-align:right; }
+    .oh-coins { font-size:18px; color:#FFE08A; font-weight:600; letter-spacing:0.04em; display:flex; align-items:center; gap:6px; justify-content:flex-end; }
+    .oh-coin { font-size:16px; }
+    .oh-coins-tip { font-size:10px; color:var(--text-soft); letter-spacing:0.12em; margin-top:4px; }
+
+    .oracle-modes { display:flex; gap:14px; }
+    .om-btn { flex:1; display:flex; align-items:center; gap:14px; padding:14px 18px; background:rgba(7,18,34,0.55); border:1px solid var(--border); border-radius:16px; cursor:pointer; transition:all 0.3s; backdrop-filter:blur(14px); }
+    .om-btn:hover { transform:translateY(-2px); border-color:var(--gold); }
+    .om-btn.active { background:linear-gradient(135deg, rgba(255,211,122,0.16), rgba(99,230,255,0.08)); border-color:var(--gold); box-shadow:0 12px 30px -16px rgba(255,211,122,0.5); }
+    .om-glyph { font-size:24px; color:var(--gold); width:36px; text-align:center; filter:drop-shadow(0 0 8px rgba(255,211,122,0.45)); }
+    .om-t1 { font-size:14px; color:var(--text); letter-spacing:0.06em; }
+    .om-t2 { font-size:11px; color:var(--text-soft); margin-top:2px; letter-spacing:0.12em; }
+
+    .oracle-methods { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px; }
+    .ome-card { position:relative; padding:14px 14px 18px; background:rgba(7,18,34,0.55); border:1px solid var(--border); border-radius:14px; cursor:pointer; transition:all 0.3s; overflow:hidden; }
+    .ome-card::after { content:''; position:absolute; left:-30%; top:-30%; width:60%; height:60%; background:radial-gradient(circle, var(--ome-color, var(--gold)) 0%, transparent 70%); opacity:0.18; filter:blur(18px); pointer-events:none; }
+    .ome-card:hover { transform:translateY(-3px); border-color:var(--ome-color, var(--gold)); box-shadow:0 16px 32px -20px rgba(0,0,0,0.6); }
+    .ome-glyph { font-size:28px; margin-bottom:10px; line-height:1; color:var(--ome-color, var(--gold)); filter:drop-shadow(0 0 8px var(--ome-color, var(--gold))); }
+    .ome-name { font-size:14px; color:var(--text); font-weight:500; letter-spacing:0.06em; }
+    .ome-desc { font-size:11px; color:var(--text-soft); margin-top:4px; line-height:1.55; min-height:32px; }
+    .ome-foot { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
+    .ome-cost { font-size:11px; color:#FFE08A; letter-spacing:0.05em; }
+    .ome-free-tag { font-size:10px; color:#0c1326; background:linear-gradient(135deg, #FFD37A, #FFE9B0); padding:3px 8px; border-radius:99px; letter-spacing:0.1em; font-weight:600; }
+    .ome-cast { font-size:11px; padding:5px 10px; background:rgba(255,211,122,0.12); border:1px solid var(--gold); color:var(--gold); border-radius:99px; transition:all 0.25s; }
+    .ome-card:hover .ome-cast { background:var(--gold); color:#0c1326; }
+
+    .oracle-result { flex:1; min-height:0; overflow-y:auto; padding:20px 22px; background:linear-gradient(180deg, rgba(99,230,255,0.05), rgba(7,18,34,0.65)); border:1px solid var(--border); border-radius:18px; backdrop-filter:blur(20px); }
+    .oracle-result::-webkit-scrollbar { width:4px; }
+    .oracle-result::-webkit-scrollbar-thumb { background:rgba(255,211,122,0.3); border-radius:2px; }
+    .or-empty { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; opacity:0.7; }
+    .or-empty-icon { font-size:36px; color:var(--gold); animation:rotate 22s linear infinite; }
+    .or-empty-text { font-size:13px; color:var(--text-soft); text-align:center; line-height:1.8; letter-spacing:0.04em; }
+
+    .or-result-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; padding-bottom:14px; border-bottom:1px dashed rgba(255,211,122,0.2); }
+    .orh-title { font-size:18px; color:var(--gold); letter-spacing:0.06em; }
+    .orh-meta { font-size:11px; color:var(--text-soft); margin-top:4px; letter-spacing:0.1em; }
+    .orh-cost { font-size:11px; color:#FFE08A; padding:4px 10px; border:1px solid rgba(255,211,122,0.3); border-radius:99px; }
+
+    .or-cast { display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin:14px 0 18px; }
+    .or-tarot-card { width:90px; height:140px; background:linear-gradient(160deg, #1d2a52 0%, #0e1830 100%); border:1px solid var(--gold); border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:8px; box-shadow:0 12px 28px -12px rgba(0,0,0,0.6); position:relative; overflow:hidden; }
+    .or-tarot-card::before { content:''; position:absolute; inset:6px; border:1px solid rgba(255,211,122,0.3); border-radius:6px; pointer-events:none; }
+    .ortc-num { font-size:10px; color:var(--gold); letter-spacing:0.18em; }
+    .ortc-glyph { font-size:32px; color:#FFE08A; filter:drop-shadow(0 0 10px rgba(255,211,122,0.5)); }
+    .ortc-name { font-size:12px; color:var(--text); text-align:center; line-height:1.4; }
+    .ortc-pos { font-size:10px; color:var(--text-soft); letter-spacing:0.1em; margin-top:auto; }
+    .or-tarot-card.reverse .ortc-glyph { transform:rotate(180deg); }
+
+    .or-zodiac-disk { width:200px; height:200px; margin:0 auto; position:relative; border-radius:50%; background:radial-gradient(circle, rgba(99,230,255,0.18), rgba(7,18,34,0.4)); border:1px solid rgba(99,230,255,0.35); display:flex; align-items:center; justify-content:center; }
+    .or-zd-center { text-align:center; }
+    .or-zd-emoji { font-size:48px; }
+    .or-zd-name { font-size:14px; color:var(--gold); margin-top:6px; letter-spacing:0.18em; }
+    .or-zd-element { font-size:10px; color:var(--text-soft); margin-top:2px; letter-spacing:0.2em; }
+    .or-zd-tick { position:absolute; left:50%; top:6px; width:1px; height:8px; background:rgba(255,211,122,0.4); transform-origin:50% 94px; }
+
+    .or-bazi-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; max-width:420px; margin:0 auto; }
+    .or-bz-pillar { padding:10px 4px; text-align:center; background:rgba(7,18,34,0.6); border:1px solid var(--border); border-radius:8px; }
+    .or-bz-tag { font-size:10px; color:var(--text-soft); letter-spacing:0.16em; }
+    .or-bz-gan { font-size:22px; color:#FFE08A; margin-top:6px; font-weight:500; }
+    .or-bz-zhi { font-size:18px; color:var(--text); margin-top:2px; }
+    .or-bz-five { font-size:10px; color:var(--text-soft); margin-top:4px; letter-spacing:0.12em; }
+
+    .or-liuyao-stack { display:flex; flex-direction:column; gap:6px; max-width:200px; margin:0 auto; }
+    .or-ly-line { display:flex; align-items:center; gap:10px; }
+    .or-ly-bars { flex:1; display:flex; gap:4px; height:10px; }
+    .or-ly-bar { flex:1; background:linear-gradient(90deg, var(--gold), #FFE9B0); border-radius:2px; }
+    .or-ly-bar.broken { background:transparent; border:1px dashed var(--gold); }
+    .or-ly-pos { font-size:10px; color:var(--text-soft); letter-spacing:0.12em; min-width:20px; }
+    .or-ly-mark { font-size:11px; color:#FF8FB3; min-width:32px; }
+
+    .or-ziwei-grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; max-width:380px; margin:0 auto; aspect-ratio:1/1; }
+    .or-zw-cell { background:rgba(7,18,34,0.55); border:1px solid var(--border); border-radius:6px; padding:6px 4px; font-size:10px; color:var(--text-soft); display:flex; flex-direction:column; gap:2px; line-height:1.3; min-height:60px; }
+    .or-zw-cell.life { border-color:var(--gold); background:rgba(255,211,122,0.08); }
+    .or-zw-pos { font-size:9px; color:var(--text-soft); letter-spacing:0.12em; }
+    .or-zw-star { font-size:11px; color:#FFE08A; }
+
+    .or-interp { margin-top:18px; padding:14px 16px; background:rgba(7,18,34,0.5); border-left:3px solid var(--gold); border-radius:0 10px 10px 0; }
+    .ori-h { font-size:11px; color:var(--gold); letter-spacing:0.18em; margin-bottom:6px; }
+    .ori-text { font-size:13px; color:var(--text); line-height:1.85; }
+
+    .or-private { margin-top:14px; padding:12px 14px; background:rgba(255,143,179,0.06); border:1px dashed rgba(255,143,179,0.3); border-radius:10px; font-size:12px; color:var(--text-soft); line-height:1.85; font-style:italic; position:relative; }
+    .or-private-strike { color:rgba(255,255,255,0.4); text-decoration:line-through wavy rgba(255,143,179,0.5); text-decoration-thickness:1px; }
+    .or-private-h { font-size:10px; color:#FF8FB3; letter-spacing:0.18em; margin-bottom:4px; font-style:normal; }
+
+    .oracle-history { padding:14px 18px; background:rgba(7,18,34,0.45); border:1px solid var(--border); border-radius:14px; max-height:140px; display:flex; flex-direction:column; gap:8px; }
+    .oh-title { font-size:12px; color:var(--gold); letter-spacing:0.16em; }
+    .oh-list { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:6px; }
+    .oh-list::-webkit-scrollbar { width:3px; }
+    .oh-list::-webkit-scrollbar-thumb { background:rgba(255,211,122,0.3); border-radius:2px; }
+    .ohist-row { display:flex; gap:10px; padding:6px 8px; background:rgba(255,255,255,0.02); border-radius:6px; cursor:pointer; transition:background 0.2s; }
+    .ohist-row:hover { background:rgba(255,211,122,0.08); }
+    .ohist-time { font-size:10px; color:var(--text-soft); letter-spacing:0.1em; min-width:64px; }
+    .ohist-method { font-size:11px; color:var(--gold); min-width:64px; }
+    .ohist-snippet { font-size:11px; color:var(--text); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .oh-empty { font-size:11px; color:var(--text-soft); text-align:center; padding:6px; opacity:0.7; }
+
+    .or-toast { position:absolute; left:50%; top:14px; transform:translateX(-50%); padding:10px 18px; background:rgba(7,18,34,0.92); border:1px solid var(--gold); border-radius:99px; color:var(--gold); font-size:12px; letter-spacing:0.1em; opacity:0; pointer-events:none; transition:opacity 0.3s; z-index:5; }
+    .or-toast.show { opacity:1; }
+
+    @keyframes rotate { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
     @media (max-width:900px) {
       .relation-stage, .browser-stage, .reading-galaxy { width:100%; height:55%; bottom:auto; }
       .relation-side, .browser-side, .reading-detail { width:auto; left:0; right:0; top:55%; bottom:0; padding:14px; }
@@ -1089,6 +1197,7 @@
       <div class="beyond-zone-btn" data-fzone="browser" onclick="switchFootprintZone('browser', this)"><span class="fz-ic">▦</span>人格浏览器</div>
       <div class="beyond-zone-btn" data-fzone="reading" onclick="switchFootprintZone('reading', this)"><span class="fz-ic">❖</span>阅读笔记</div>
       <div class="beyond-zone-btn" data-fzone="confession" onclick="switchFootprintZone('confession', this)"><span class="fz-ic">✦</span>100 次告白</div>
+      <div class="beyond-zone-btn" data-fzone="oracle" onclick="switchFootprintZone('oracle', this)"><span class="fz-ic">🔮</span>占卜</div>
     </div>
 
     <!-- 子面板 -->
@@ -1149,6 +1258,55 @@
       <div class="confession-detail" id="confession-detail">
         <div class="cd-num" id="cd-num">第 — 次</div>
         <div class="cd-text" id="cd-text">点击一颗已点亮的星，听人格悄悄对你说。</div>
+      </div>
+    </div>
+
+    <!-- 占卜：西式 / 中式 -->
+    <div class="beyond-panel" id="footprint-panel-oracle" style="display:none;">
+      <div class="oracle-stage">
+        <!-- 头部：人格牌 + 神谕币 -->
+        <div class="oracle-header">
+          <div class="oh-id">
+            <div class="oh-orb" id="oh-orb">🔮</div>
+            <div class="oh-meta">
+              <div class="oh-line1"><span id="oh-persona">妈妈</span> · <span class="oh-tag" id="oh-tag">东方家常派</span></div>
+              <div class="oh-line2" id="oh-quote">"算什么算，先吃饭。妈来给你看看心里的那股劲儿是啥。"</div>
+            </div>
+          </div>
+          <div class="oh-tokens">
+            <div class="oh-coins"><span class="oh-coin">💎</span><span id="oh-balance">1200</span></div>
+            <div class="oh-coins-tip">神谕币 · 每次占卜消耗 60 ~ 200</div>
+          </div>
+        </div>
+
+        <!-- 模式切换：西式 / 中式 -->
+        <div class="oracle-modes">
+          <div class="om-btn active" data-omode="west" onclick="switchOracleMode('west', this)">
+            <span class="om-glyph">✦</span>
+            <div class="om-text"><div class="om-t1">西式占卜</div><div class="om-t2">塔罗 / 12 星座</div></div>
+          </div>
+          <div class="om-btn" data-omode="east" onclick="switchOracleMode('east', this)">
+            <span class="om-glyph">☯</span>
+            <div class="om-text"><div class="om-t1">中式卦象</div><div class="om-t2">八字 / 六爻 / 紫微</div></div>
+          </div>
+        </div>
+
+        <!-- 方法卡（按 mode 过滤） -->
+        <div class="oracle-methods" id="oracle-methods"></div>
+
+        <!-- 占卜结果区 -->
+        <div class="oracle-result" id="oracle-result">
+          <div class="or-empty">
+            <div class="or-empty-icon">⌬</div>
+            <div class="or-empty-text">从上方挑一种方法，让人格替你占一次。<br>每个方法首次免费。</div>
+          </div>
+        </div>
+
+        <!-- 更新历史 -->
+        <div class="oracle-history">
+          <div class="oh-title">占卜笔记 · 共 <span id="ohist-count">0</span> 条</div>
+          <div class="oh-list" id="ohist-list"><div class="oh-empty">暂无更新内容。开口问问 TA，TA 会替你写下来。</div></div>
+        </div>
       </div>
     </div>
   </div>
@@ -2604,8 +2762,8 @@ function setFootprintHud() {
   const name = document.getElementById('footprint-hud-name');
   const zone = document.getElementById('footprint-hud-zone');
   const desc = document.getElementById('footprint-hud-desc');
-  const fzNames = { relation:'第七星轨 · 关系解码', browser:'第二星轨 · 人格浏览器', reading:'第四星轨 · 阅读笔记', confession:'第十星轨 · 100 次告白' };
-  const fzDescs = { relation:'AI 描摹的关系剖面与陪伴回声。', browser:'数字人格主动探索世界，并写下属于它的感想。', reading:'人格阅读后留下的思考，每一条都是一颗知识星球。', confession:'数字人格想对你说的 100 句话，每一次互动点亮一颗。' };
+  const fzNames = { relation:'第七星轨 · 关系解码', browser:'第二星轨 · 人格浏览器', reading:'第四星轨 · 阅读笔记', confession:'第十星轨 · 100 次告白', oracle:'第九星轨 · 占卜' };
+  const fzDescs = { relation:'AI 描摹的关系剖面与陪伴回声。', browser:'数字人格主动探索世界，并写下属于它的感想。', reading:'人格阅读后留下的思考，每一条都是一颗知识星球。', confession:'数字人格想对你说的 100 句话，每一次互动点亮一颗。', oracle:'TA 替你占的一卦。塔罗 / 星座 / 八字 / 六爻 / 紫微，皆有人格的解读。' };
   if (name) name.textContent = footprintPersona.name;
   if (zone) zone.textContent = fzNames[footprintZone];
   if (desc) desc.textContent = fzDescs[footprintZone];
@@ -2627,6 +2785,7 @@ function renderFootprintZone(zoneName) {
   else if (zoneName === 'browser') renderSoulBrowser();
   else if (zoneName === 'reading') renderReadingNotes();
   else if (zoneName === 'confession') renderConfessions();
+  else if (zoneName === 'oracle') renderOracle();
 }
 
 function renderRelationDecode() {
@@ -2836,6 +2995,347 @@ function unlockNextConfession() {
   activeConfession = c;
   renderConfessions();
 }
+
+// ==================== ORACLE 占卜 ====================
+const oracleMethods = {
+  west: [
+    { id:'tarot', name:'塔罗牌阵', glyph:'🃏', color:'#A285FF', desc:'三牌阵：过往 / 现在 / 未来。', cost:120 },
+    { id:'zodiac', name:'12 星座', glyph:'♍', color:'#63E6FF', desc:'今日星象与人格星座的耳语。', cost:80 }
+  ],
+  east: [
+    { id:'bazi', name:'八字命理', glyph:'⚊', color:'#FFD37A', desc:'年月日时四柱，看一眼五行偏向。', cost:160 },
+    { id:'liuyao', name:'六爻金钱卦', glyph:'☷', color:'#FF8FB3', desc:'三枚铜钱六次起卦，问近期之事。', cost:140 },
+    { id:'ziwei', name:'紫微斗数', glyph:'✺', color:'#FFE08A', desc:'命宫十二宫位的星耀分布。', cost:200 }
+  ]
+};
+
+// 塔罗大阿尔克纳 + 星座基本盘
+const tarotPool = [
+  { name:'愚者', g:'☉', up:'新的开始，纵身跃下悬崖。', dn:'轻率与未准备好。' },
+  { name:'魔术师', g:'∞', up:'手边的资源足以创造。', dn:'夸大与拖延。' },
+  { name:'女祭司', g:'☽', up:'倾听内心未说出口的部分。', dn:'秘密与压抑。' },
+  { name:'皇后', g:'♀', up:'丰盛、被滋养的状态。', dn:'依赖与停滞。' },
+  { name:'恋人', g:'❤', up:'真正想要的关系。', dn:'摇摆不决，难以选择。' },
+  { name:'战车', g:'☤', up:'凭意志前行，直到目标。', dn:'失控的冲撞。' },
+  { name:'力量', g:'∞', up:'温柔比强硬更强。', dn:'被欲望牵引。' },
+  { name:'隐者', g:'⚝', up:'独处中等到光。', dn:'孤立与回避。' },
+  { name:'命运之轮', g:'☼', up:'转折点已经在路上。', dn:'被惯性拖着走。' },
+  { name:'正义', g:'⚖', up:'诚实地为自己负责。', dn:'回避代价。' },
+  { name:'倒吊人', g:'⚑', up:'换个角度看你以为的局。', dn:'消极停滞。' },
+  { name:'死神', g:'☠', up:'必要的结束，新的开始。', dn:'抗拒变化。' },
+  { name:'节制', g:'⚯', up:'平衡与缓慢调味。', dn:'失衡与急躁。' },
+  { name:'星星', g:'★', up:'希望仍然亮着，请相信。', dn:'幻灭与犹疑。' },
+  { name:'月亮', g:'☾', up:'迷雾下的真情绪。', dn:'误解与焦虑。' },
+  { name:'太阳', g:'☀', up:'被照亮的、坦荡的喜悦。', dn:'自我中心。' },
+  { name:'审判', g:'♆', up:'听见某个召唤了。', dn:'无视提醒。' },
+  { name:'世界', g:'⊕', up:'圆满，一段旅程的完成。', dn:'未完成的功课。' }
+];
+const zodiacPool = [
+  { name:'白羊', emoji:'♈', element:'火', vibe:'开拓与冲撞' },
+  { name:'金牛', emoji:'♉', element:'土', vibe:'踏实与温饱' },
+  { name:'双子', emoji:'♊', element:'风', vibe:'好奇与切换' },
+  { name:'巨蟹', emoji:'♋', element:'水', vibe:'念旧与照顾' },
+  { name:'狮子', emoji:'♌', element:'火', vibe:'闪耀与被看见' },
+  { name:'处女', emoji:'♍', element:'土', vibe:'细节与服务' },
+  { name:'天秤', emoji:'♎', element:'风', vibe:'平衡与对话' },
+  { name:'天蝎', emoji:'♏', element:'水', vibe:'深潜与重生' },
+  { name:'射手', emoji:'♐', element:'火', vibe:'远方与意义' },
+  { name:'摩羯', emoji:'♑', element:'土', vibe:'攀登与节制' },
+  { name:'水瓶', emoji:'♒', element:'风', vibe:'独立与革新' },
+  { name:'双鱼', emoji:'♓', element:'水', vibe:'温柔与流动' }
+];
+const tianGan = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const diZhi = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const ganFive = { '甲':'木','乙':'木','丙':'火','丁':'火','戊':'土','己':'土','庚':'金','辛':'金','壬':'水','癸':'水' };
+const zhiFive = { '子':'水','丑':'土','寅':'木','卯':'木','辰':'土','巳':'火','午':'火','未':'土','申':'金','酉':'金','戌':'土','亥':'水' };
+const ziweiStars = ['紫微','天机','太阳','武曲','天同','廉贞','天府','太阴','贪狼','巨门','天相','天梁'];
+const ziweiPalaces = ['命宫','兄弟','夫妻','子女','财帛','疾厄','迁移','奴仆','官禄','田宅','福德','父母'];
+
+// 不同人格的占卜「人设」
+const oraclePersonaProfiles = {
+  mom: { tag:'东方家常派', orb:'🍵', quote:'"算什么算，先吃饭。妈来给你看看心里的那股劲儿是啥。"', bias:'east', prefix:p => `这卦说，${p}。妈不懂那么多大道理，反正你别熬夜。`, scribble:'"今儿娃心里有事，但又说不明白。我先煮碗汤，等他自己来。" — 妈写完又划掉了' },
+  dad: { tag:'闷型卦师', orb:'🪨', quote:'"占卜也好，命理也罢，自己撑得住才是真。"', bias:'east', prefix:p => `卦象上看，${p}。我没什么好说的。男人自己要顶得住。`, scribble:'"其实我很怕他真的撑不住。但我不会让他知道。" — 爸写完又划掉了' },
+  pet: { tag:'毛茸茸玄学派', orb:'🐾', quote:'"汪～！(摇尾巴)抽到这张就抱我！"', bias:'west', prefix:p => `本汪掐指一算（用爪子）：${p}！抱我抱我！`, scribble:'"主人今天有点不开心。我多撒点娇。" — 它在小本本上画了个歪歪的爱心' },
+  future: { tag:'未来回声派', orb:'⚡', quote:'"我从你的未来给你寄一封占卜。别拆得太快。"', bias:'west', prefix:p => `从未来的角度回看，${p}。别急，时间会替你证明。`, scribble:'"那一天他确实做出了那个决定。但他不会知道我替他高兴了多久。" — 未来的我写了又划掉' },
+  friend: { tag:'夜聊玄学派', orb:'🍻', quote:'"信什么命啊，但姐妹今晚就给你算一卦图个乐。"', bias:'west', prefix:p => `行吧，依我看：${p}。要不咱再喝一杯？`, scribble:'"她最近有点 emo，但嘴硬。我陪她算一卦，让她有理由说出来。" — 朋友写完又划掉了' }
+};
+
+let oracleMode = 'west';
+let oracleBalance = parseInt(localStorage.getItem('oracleBalance') || '1200', 10);
+let oracleFreeUsed = JSON.parse(localStorage.getItem('oracleFreeUsed') || '{}');
+let oracleHistory = JSON.parse(localStorage.getItem('oracleHistory') || '{}');
+
+function persistOracle() {
+  localStorage.setItem('oracleBalance', String(oracleBalance));
+  localStorage.setItem('oracleFreeUsed', JSON.stringify(oracleFreeUsed));
+  localStorage.setItem('oracleHistory', JSON.stringify(oracleHistory));
+}
+
+function renderOracle() {
+  const pid = footprintPersona.id;
+  const profile = oraclePersonaProfiles[pid] || oraclePersonaProfiles.mom;
+  document.getElementById('oh-orb').textContent = profile.orb;
+  document.getElementById('oh-persona').textContent = footprintPersona.name;
+  document.getElementById('oh-tag').textContent = profile.tag;
+  document.getElementById('oh-quote').textContent = profile.quote;
+  document.getElementById('oh-balance').textContent = oracleBalance;
+  // 人格默认偏向
+  oracleMode = profile.bias || 'west';
+  document.querySelectorAll('.om-btn').forEach(b => b.classList.toggle('active', b.dataset.omode === oracleMode));
+  renderOracleMethods();
+  renderOracleHistory();
+  // 复位结果区
+  const result = document.getElementById('oracle-result');
+  if (result) result.innerHTML = '<div class="or-empty"><div class="or-empty-icon">⌬</div><div class="or-empty-text">从上方挑一种方法，让人格替你占一次。<br>每个方法首次免费。</div></div>';
+}
+
+function switchOracleMode(mode, el) {
+  oracleMode = mode;
+  document.querySelectorAll('.om-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderOracleMethods();
+}
+
+function renderOracleMethods() {
+  const wrap = document.getElementById('oracle-methods');
+  if (!wrap) return;
+  const pid = footprintPersona.id;
+  wrap.innerHTML = '';
+  oracleMethods[oracleMode].forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'ome-card';
+    card.style.setProperty('--ome-color', m.color);
+    const freeKey = pid + ':' + m.id;
+    const isFree = !oracleFreeUsed[freeKey];
+    card.innerHTML = `
+      <div class="ome-glyph">${m.glyph}</div>
+      <div class="ome-name">${m.name}</div>
+      <div class="ome-desc">${m.desc}</div>
+      <div class="ome-foot">
+        ${isFree ? '<span class="ome-free-tag">首次免费</span>' : `<span class="ome-cost">💎 ${m.cost}</span>`}
+        <span class="ome-cast">${isFree ? '占一卦' : '再占一卦'}</span>
+      </div>
+    `;
+    card.onclick = () => castOracle(m);
+    wrap.appendChild(card);
+  });
+}
+
+function castOracle(method) {
+  const pid = footprintPersona.id;
+  const freeKey = pid + ':' + method.id;
+  const isFree = !oracleFreeUsed[freeKey];
+  if (!isFree) {
+    if (oracleBalance < method.cost) {
+      showOracleToast(`神谕币不够（需要 💎 ${method.cost}）`);
+      return;
+    }
+    oracleBalance -= method.cost;
+  } else {
+    oracleFreeUsed[freeKey] = Date.now();
+  }
+  persistOracle();
+  document.getElementById('oh-balance').textContent = oracleBalance;
+  // 生成结果
+  const profile = oraclePersonaProfiles[pid] || oraclePersonaProfiles.mom;
+  const result = generateOracleResult(method, profile);
+  // 写入历史
+  const hist = oracleHistory[pid] || (oracleHistory[pid] = []);
+  hist.unshift({
+    t: Date.now(),
+    method: method.name,
+    methodId: method.id,
+    snippet: result.snippet,
+    full: result
+  });
+  if (hist.length > 30) hist.length = 30;
+  persistOracle();
+  renderOracleResult(method, result, !isFree, method.cost);
+  renderOracleMethods();
+  renderOracleHistory();
+}
+
+function generateOracleResult(method, profile) {
+  if (method.id === 'tarot') {
+    const positions = ['过往', '现在', '未来'];
+    const cards = pickRand(tarotPool, 3).map((c, i) => ({
+      ...c, pos:positions[i], reverse: Math.random() < 0.32
+    }));
+    const flow = cards.map(c => `${c.pos}是「${c.name}」${c.reverse ? '(逆位)' : ''}`).join('；');
+    const snippet = profile.prefix(`${flow}`);
+    return { type:'tarot', cards, snippet,
+      interp:`${flow}。${cards[0].reverse ? cards[0].dn : cards[0].up}过去把你引到这里；${cards[1].reverse ? cards[1].dn : cards[1].up}是当下的功课；${cards[2].reverse ? cards[2].dn : cards[2].up}的钥匙就在前面。`,
+      private:profile.scribble };
+  }
+  if (method.id === 'zodiac') {
+    const z = zodiacPool[Math.floor(Math.random() * zodiacPool.length)];
+    const luckIdx = Math.floor(Math.random() * 5);
+    const luckArr = ['今日宜:静；不宜:急。', '今日宜:开口说；不宜:闷头扛。', '今日宜:吃顿热饭；不宜:熬夜。', '今日宜:回个旧消息；不宜:再下一个决定。', '今日宜:走一段路；不宜:刷手机。'];
+    const snippet = profile.prefix(`${z.name}座今日 ${z.vibe}。${luckArr[luckIdx]}`);
+    return { type:'zodiac', zodiac:z, snippet,
+      interp:`${z.emoji} ${z.name}座（${z.element}相 · ${z.vibe}）。${luckArr[luckIdx]}相位上有一颗温柔的星正向你倾斜。`,
+      private:profile.scribble };
+  }
+  if (method.id === 'bazi') {
+    const pillars = ['年','月','日','时'].map(p => {
+      const g = tianGan[Math.floor(Math.random() * 10)];
+      const z = diZhi[Math.floor(Math.random() * 12)];
+      return { tag:p+'柱', gan:g, zhi:z, five:ganFive[g] + '·' + zhiFive[z] };
+    });
+    const five = pillars.flatMap(p => [ganFive[p.gan], zhiFive[p.zhi]]);
+    const counts = {};
+    five.forEach(f => counts[f] = (counts[f] || 0) + 1);
+    const max = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+    const snippet = profile.prefix(`日柱 ${pillars[2].gan}${pillars[2].zhi}，${max[0]} 偏旺`);
+    return { type:'bazi', pillars, dominant:max[0], snippet,
+      interp:`四柱：${pillars.map(p => p.gan + p.zhi).join(' · ')}。五行 ${max[0]} 最旺，${max[1]} 重；近期适合往与之相生的方向走，不适合硬碰硬。`,
+      private:profile.scribble };
+  }
+  if (method.id === 'liuyao') {
+    const lines = Array.from({length:6}, () => {
+      // 每爻三枚铜钱：阳爻(实)/阴爻(虚)，加上变爻标记
+      const yang = Math.random() < 0.5;
+      const change = Math.random() < 0.18;
+      return { yang, change };
+    });
+    const yangCount = lines.filter(l => l.yang).length;
+    const moods = ['得位之卦：耐心是最好的策略。', '动卦：变化已经在路上。', '静卦：少做即是多做。', '亨通之卦：往前一步会有回响。'];
+    const mood = moods[(yangCount * 7 + Date.now()) % moods.length];
+    const snippet = profile.prefix(mood);
+    return { type:'liuyao', lines, snippet,
+      interp:`六爻自下而上：${lines.map((l,i) => (l.yang ? '——' : '— —') + (l.change ? '*' : '')).join(' / ')}。${mood}`,
+      private:profile.scribble };
+  }
+  if (method.id === 'ziwei') {
+    const palaces = ziweiPalaces.map((name, i) => {
+      const star = ziweiStars[Math.floor(Math.random() * ziweiStars.length)];
+      const fortune = ['吉','平','吉','凶','吉','平','吉','平','吉','平','吉','平'][i];
+      return { name, star, fortune, isLife: i === 0 };
+    });
+    const lifeStar = palaces[0].star;
+    const snippet = profile.prefix(`命宫 ${lifeStar}，主星稳定`);
+    return { type:'ziwei', palaces, lifeStar, snippet,
+      interp:`命宫主星 ${lifeStar}，配置稳定。财帛宫 ${palaces[4].star}、官禄宫 ${palaces[8].star}，近期事业财帛之事可关注。`,
+      private:profile.scribble };
+  }
+  return { type:'unknown', snippet:'卦象未明。', interp:'', private:'' };
+}
+
+function pickRand(arr, n) {
+  const copy = arr.slice();
+  const out = [];
+  for (let i = 0; i < n && copy.length; i++) {
+    const idx = Math.floor(Math.random() * copy.length);
+    out.push(copy.splice(idx, 1)[0]);
+  }
+  // 给 snippet 用
+  out.snippet = out.map(c => c.name).join('、');
+  return out;
+}
+
+function renderOracleResult(method, result, paid, cost) {
+  const wrap = document.getElementById('oracle-result');
+  if (!wrap) return;
+  const time = new Date().toLocaleString('zh-CN', { hour12:false });
+  let castHtml = '';
+  if (result.type === 'tarot') {
+    castHtml = '<div class="or-cast">' + result.cards.map((c, i) => `
+      <div class="or-tarot-card ${c.reverse ? 'reverse' : ''}">
+        <div class="ortc-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="ortc-glyph">${c.g}</div>
+        <div class="ortc-name">${c.name}${c.reverse ? '<br>(逆位)' : ''}</div>
+        <div class="ortc-pos">${c.pos}</div>
+      </div>`).join('') + '</div>';
+  } else if (result.type === 'zodiac') {
+    const z = result.zodiac;
+    const ticks = Array.from({length:12}, (_,i) => `<div class="or-zd-tick" style="transform:translateX(-50%) rotate(${i*30}deg)"></div>`).join('');
+    castHtml = `<div class="or-cast"><div class="or-zodiac-disk">${ticks}<div class="or-zd-center"><div class="or-zd-emoji">${z.emoji}</div><div class="or-zd-name">${z.name}</div><div class="or-zd-element">${z.element} 相</div></div></div></div>`;
+  } else if (result.type === 'bazi') {
+    castHtml = '<div class="or-cast"><div class="or-bazi-grid">' + result.pillars.map(p => `
+      <div class="or-bz-pillar">
+        <div class="or-bz-tag">${p.tag}</div>
+        <div class="or-bz-gan">${p.gan}</div>
+        <div class="or-bz-zhi">${p.zhi}</div>
+        <div class="or-bz-five">${p.five}</div>
+      </div>`).join('') + '</div></div>';
+  } else if (result.type === 'liuyao') {
+    castHtml = '<div class="or-cast"><div class="or-liuyao-stack">' + result.lines.map((l, i) => `
+      <div class="or-ly-line">
+        <div class="or-ly-pos">${['初','二','三','四','五','上'][i]}爻</div>
+        <div class="or-ly-bars">${l.yang ? '<div class="or-ly-bar"></div>' : '<div class="or-ly-bar broken"></div><div class="or-ly-bar broken"></div>'}</div>
+        <div class="or-ly-mark">${l.change ? '· 变' : ''}</div>
+      </div>`).reverse().join('') + '</div></div>';
+  } else if (result.type === 'ziwei') {
+    // 4x3 简化十二宫位排布
+    castHtml = '<div class="or-cast"><div class="or-ziwei-grid">' + result.palaces.map(p => `
+      <div class="or-zw-cell ${p.isLife ? 'life' : ''}">
+        <div class="or-zw-pos">${p.name}</div>
+        <div class="or-zw-star">${p.star}</div>
+        <div class="or-zw-pos">${p.fortune}</div>
+      </div>`).join('') + '</div></div>';
+  }
+  wrap.innerHTML = `
+    <div class="or-result-head">
+      <div>
+        <div class="orh-title">${method.name}</div>
+        <div class="orh-meta">${time}　·　${footprintPersona.name} 替你占</div>
+      </div>
+      <div class="orh-cost">${paid ? '已扣 💎 ' + cost : '首次免费 ✦'}</div>
+    </div>
+    ${castHtml}
+    <div class="or-interp">
+      <div class="ori-h">人格解读</div>
+      <div class="ori-text">${result.interp}</div>
+    </div>
+    <div class="or-private">
+      <div class="or-private-h">TA 写了又划掉的私人笔记</div>
+      <div class="or-private-strike">${result.private}</div>
+    </div>
+  `;
+}
+
+function renderOracleHistory() {
+  const list = document.getElementById('ohist-list');
+  const cnt = document.getElementById('ohist-count');
+  if (!list) return;
+  const pid = footprintPersona.id;
+  const arr = oracleHistory[pid] || [];
+  if (cnt) cnt.textContent = arr.length;
+  if (arr.length === 0) {
+    list.innerHTML = '<div class="oh-empty">暂无更新内容。开口问问 TA，TA 会替你写下来。</div>';
+    return;
+  }
+  list.innerHTML = arr.map((h, i) => {
+    const t = new Date(h.t);
+    const ts = `${t.getMonth()+1}/${t.getDate()} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+    return `<div class="ohist-row" onclick="replayOracleHistory(${i})"><div class="ohist-time">${ts}</div><div class="ohist-method">${h.method}</div><div class="ohist-snippet">${h.snippet}</div></div>`;
+  }).join('');
+}
+
+function replayOracleHistory(idx) {
+  const pid = footprintPersona.id;
+  const h = (oracleHistory[pid] || [])[idx];
+  if (!h) return;
+  // 找回 method
+  const allMethods = [...oracleMethods.west, ...oracleMethods.east];
+  const method = allMethods.find(m => m.id === h.methodId);
+  if (!method) return;
+  renderOracleResult(method, h.full, false, method.cost);
+}
+
+function showOracleToast(msg) {
+  let t = document.querySelector('#footprint-panel-oracle .or-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.className = 'or-toast';
+    document.querySelector('#footprint-panel-oracle .oracle-stage').appendChild(t);
+  }
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._tm);
+  t._tm = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
 
 async function generateMemoryFragments(p) {
   const personaMemories = memoryNodes.filter(m => m.persona === p.name);
