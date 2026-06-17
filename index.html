@@ -670,9 +670,9 @@
     .cd-text { font-size:14px; color:var(--text); line-height:1.85; }
 
     /* === Oracle 占卜 === */
-    .oracle-stage { position:absolute; inset:24px; bottom:100px; display:flex; flex-direction:column; gap:18px; pointer-events:auto; overflow-y:auto; overflow-x:hidden; }
+    .oracle-stage { position:absolute; inset:24px; display:flex; flex-direction:column; gap:16px; pointer-events:auto; overflow-y:auto; overflow-x:hidden; }
     /* 占卜面板单独抬高，让"让 ta 占一次"提示卡稳定显示在 dock 上方 */
-    #footprint-panel-oracle { bottom:220px !important; }
+    #footprint-panel-oracle { bottom:180px !important; }
     .oracle-header { display:flex; justify-content:space-between; align-items:center; gap:18px; padding:16px 20px; background:linear-gradient(135deg, rgba(255,211,122,0.08), rgba(99,230,255,0.06)); border:1px solid rgba(255,211,122,0.22); border-radius:18px; backdrop-filter:blur(18px); }
     .oh-id { display:flex; align-items:center; gap:14px; }
     .oh-orb { width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; background:radial-gradient(circle at 30% 30%, rgba(255,211,122,0.45), rgba(99,230,255,0.18)); border:1px solid rgba(255,211,122,0.4); box-shadow:0 0 22px rgba(255,211,122,0.25); }
@@ -718,9 +718,9 @@
     .oracle-modal-close { position:absolute; top:14px; right:18px; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-2); transition:all 0.25s; font-size:18px; line-height:1; z-index:2; }
     .oracle-modal-close:hover { background:rgba(255,140,109,0.18); color:#fff; border-color:rgba(255,140,109,0.5); transform:rotate(90deg); }
     .oracle-modal-glow { position:absolute; top:-1px; left:50%; transform:translateX(-50%); width:140px; height:3px; background:linear-gradient(90deg, transparent, var(--gold), transparent); border-radius:2px; box-shadow:0 0 14px var(--gold); }
-    .oracle-result { position:absolute; bottom:14px; left:24px; right:24px; z-index:30; display:flex; align-items:center; justify-content:center; min-height:72px; background:rgba(10,20,40,0.82); backdrop-filter:blur(18px); border:1px solid rgba(162,133,255,0.25); border-radius:16px; pointer-events:auto; box-shadow:0 4px 24px rgba(0,0,0,0.4); }
+    .oracle-result { flex-shrink:0; display:flex; align-items:center; justify-content:center; min-height:72px; padding:14px 20px; background:rgba(10,20,40,0.82); backdrop-filter:blur(18px); border:1px solid rgba(162,133,255,0.25); border-radius:16px; pointer-events:auto; box-shadow:0 4px 24px rgba(0,0,0,0.4); }
     .or-empty { display:flex; flex-direction:row; align-items:center; gap:14px; opacity:0.88; padding:10px 20px; }
-    .or-empty-icon { font-size:22px; color:var(--gold); animation:rotate 22s linear infinite; flex-shrink:0; }
+    .or-empty-icon { font-size:48px; color:var(--gold); animation:rotate 22s linear infinite; flex-shrink:0; filter:drop-shadow(0 0 14px rgba(255,211,122,0.55)); }
     .or-empty-text { font-size:12.5px; color:var(--text-soft); text-align:left; line-height:1.7; letter-spacing:0.04em; }
 
     .or-result-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; padding-bottom:14px; border-bottom:1px dashed rgba(255,211,122,0.2); }
@@ -1364,20 +1364,12 @@
         <!-- 方法卡（按 mode 过滤） -->
         <div class="oracle-methods" id="oracle-methods"></div>
 
-        <!-- 引导提示（绝对定位在面板底部，不参与 flex 抢占） -->
-        <!-- oracle-result 已移至面板底部，见下方 -->
-
-        <!-- 更新历史 -->
-        <div class="oracle-history">
-          <div class="oh-title">占卜笔记 · 共 <span id="ohist-count">0</span> 条</div>
-          <div class="oh-list" id="ohist-list"><div class="oh-empty">暂无更新内容。开口问问 TA，TA 会替你写下来。</div></div>
-        </div>
-      </div>
-      <!-- 引导提示：绝对定位在面板底部，不参与 flex 抢占，永远不会被 dock 遮挡 -->
-      <div class="oracle-result" id="oracle-result">
-        <div class="or-empty">
-          <div class="or-empty-icon">⌬</div>
-          <div class="or-empty-text">从上方挑一种方法，让 ta 占一次。<br>每个方法首次免费，结果将在浮窗中展开。</div>
+        <!-- 引导提示（flex 子项，自然排在方法卡下方） -->
+        <div class="oracle-result" id="oracle-result">
+          <div class="or-empty">
+            <div class="or-empty-icon">⌬</div>
+            <div class="or-empty-text">从上方挑一种方法，让 ta 占一次。<br>每个方法首次免费，结果将在浮窗中展开。</div>
+          </div>
         </div>
       </div>
     </div>
