@@ -671,6 +671,8 @@
 
     /* === Oracle 占卜 === */
     .oracle-stage { position:absolute; inset:24px; display:flex; flex-direction:column; gap:18px; pointer-events:auto; overflow:hidden; }
+    /* 占卜面板单独抬高，让"让 ta 占一次"提示卡稳定显示在 dock 上方 */
+    #footprint-panel-oracle { bottom:220px !important; }
     .oracle-header { display:flex; justify-content:space-between; align-items:center; gap:18px; padding:16px 20px; background:linear-gradient(135deg, rgba(255,211,122,0.08), rgba(99,230,255,0.06)); border:1px solid rgba(255,211,122,0.22); border-radius:18px; backdrop-filter:blur(18px); }
     .oh-id { display:flex; align-items:center; gap:14px; }
     .oh-orb { width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; background:radial-gradient(circle at 30% 30%, rgba(255,211,122,0.45), rgba(99,230,255,0.18)); border:1px solid rgba(255,211,122,0.4); box-shadow:0 0 22px rgba(255,211,122,0.25); }
@@ -1362,10 +1364,10 @@
         <div class="oracle-methods" id="oracle-methods"></div>
 
         <!-- 引导提示（始终内联可见，不会被 dock 遮挡） -->
-        <div class="oracle-result" id="oracle-result" style="flex:0 0 auto; max-height:130px; margin-bottom:80px;">
+        <div class="oracle-result" id="oracle-result" style="flex:0 0 auto; max-height:140px; min-height:120px; margin-bottom:0;">
           <div class="or-empty">
             <div class="or-empty-icon">⌬</div>
-            <div class="or-empty-text">从上方挑一种方法，替 ta 占一次。<br>每个方法首次免费，结果将在浮窗中展开。</div>
+            <div class="or-empty-text">从上方挑一种方法，让 ta 占一次。<br>每个方法首次免费，结果将在浮窗中展开。</div>
           </div>
         </div>
 
@@ -3175,7 +3177,7 @@ function renderOracle() {
   renderOracleHistory();
   // 复位结果区
   const result = document.getElementById('oracle-result');
-  if (result) result.innerHTML = '<div class="or-empty"><div class="or-empty-icon">⌬</div><div class="or-empty-text">从上方挑一种方法，替 ta 占一次。<br>每个方法首次免费。</div></div>';
+  if (result) result.innerHTML = '<div class="or-empty"><div class="or-empty-icon">⌬</div><div class="or-empty-text">从上方挑一种方法，让 ta 占一次。<br>每个方法首次免费。</div></div>';
 }
 
 function switchOracleMode(mode, el) {
