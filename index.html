@@ -340,11 +340,21 @@
     }
     .post-card-img::after {
       content:''; position:absolute; inset:0; z-index:1;
-      background:linear-gradient(180deg, rgba(7,20,38,0.05) 0%, rgba(7,20,38,0.55) 100%);
+      background:linear-gradient(180deg, rgba(7,20,38,0.0) 35%, rgba(7,20,38,0.55) 70%, rgba(7,20,38,0.85) 100%);
       opacity:0; transition:opacity 0.5s ease; pointer-events:none;
     }
     .post-card-img.has-image::after { opacity:1; }
     .post-card-img.has-image .pc-emoji { opacity:0.92; }
+    .post-card-img .pc-overlay-title {
+      position:absolute; left:14px; right:14px; bottom:12px; z-index:2;
+      font-size:14px; font-weight:600; line-height:1.4; letter-spacing:0.2px;
+      color:#fff; text-shadow:0 2px 12px rgba(0,0,0,0.65), 0 0 4px rgba(0,0,0,0.5);
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+      opacity:0; transform:translateY(4px); transition:opacity 0.5s ease, transform 0.5s ease;
+      pointer-events:none;
+    }
+    .post-card-img.has-image .pc-overlay-title { opacity:1; transform:translateY(0); }
+    .post-card-img.has-image .pc-emoji { right:auto; left:12px; top:12px; bottom:auto; font-size:20px; }
     .post-card-body { padding:16px; }
     .post-card-author { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
     .post-card-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; }
@@ -1174,24 +1184,27 @@ const starVertexShader = `
     pos.xy += normalize(mouseDir) * gravity * (0.6 + aDepth * 0.4);
     pos.xy += tangent * orbit;
 
-    // ===== Mouse-move wave ripple: stars get pushed outward like waves spread =====
+    // ===== Mouse-move wave ripple: gentle outward spread, no harsh push =====
     float waveBoost = 0.0;
     for (int i = 0; i < 6; i++) {
       vec4 w = uWaves[i];
       if (w.w <= 0.001) continue;
       float age = uTime - w.z;
-      if (age < 0.0 || age > 0.85) continue;
-      float radius = age * 120.0;
+      if (age < 0.0 || age > 1.1) continue;
+      float radius = age * 95.0;
       vec2 d = pos.xy - w.xy;
       float dist = length(d) + 0.0001;
       float ringDist = dist - radius;
-      float thickness = 7.5;
+      float thickness = 11.0;
       float gauss = exp(-(ringDist * ringDist) / (thickness * thickness));
-      float decay = 1.0 - smoothstep(0.0, 0.85, age);
+      // Smoother fade-in / fade-out so the ripple feels like water, not a kick.
+      float ramp = smoothstep(0.0, 0.18, age);
+      float decay = 1.0 - smoothstep(0.45, 1.1, age);
+      float envelope = ramp * decay * w.w;
       vec2 dir = d / dist;
-      float push = gauss * decay * w.w * (4.5 + aDepth * 4.5);
+      float push = gauss * envelope * (1.4 + aDepth * 1.2);
       pos.xy += dir * push;
-      waveBoost += gauss * decay * (0.6 + aDepth * 0.4);
+      waveBoost += gauss * envelope * (0.35 + aDepth * 0.25);
     }
 
     pos.z += sin(uTime * 0.9 + aPhase + length(pos.xy)*0.04) * 0.6;
@@ -1199,10 +1212,10 @@ const starVertexShader = `
     gl_Position = projectionMatrix * mvPosition;
     float attenuation = 260.0 / -mvPosition.z;
     gl_PointSize = aSize * attenuation * (0.8 + aDepth * 0.5);
-    gl_PointSize *= (1.0 + waveBoost * 0.55);
-    gl_PointSize = clamp(gl_PointSize, 0.5, 22.0);
+    gl_PointSize *= (1.0 + waveBoost * 0.22);
+    gl_PointSize = clamp(gl_PointSize, 0.5, 20.0);
     vAlpha = 0.35 + 0.45 * sin(uTime * 1.4 + aPhase) * (0.5 + aDepth * 0.5);
-    vAlpha += waveBoost * 0.5;
+    vAlpha += waveBoost * 0.22;
   }
 `;
 const starFragmentShader = `
@@ -3293,8 +3306,9 @@ function renderCommunityPosts(posts) {
   if (!feed) return;
   feed.innerHTML = posts.map(post => {
     const safeImg = post.image ? String(post.image).replace(/"/g, '&quot;') : '';
+    const safeTitle = String(post.title || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     const imgHtml = post.image
-      ? `<img class="pc-thumb" src="${safeImg}" alt="" loading="lazy" referrerpolicy="no-referrer" onload="this.classList.add('loaded')" onerror="this.remove(); this.parentNode && this.parentNode.classList.remove('has-image');"><span class="pc-emoji">${post.emoji}</span>`
+      ? `<img class="pc-thumb" src="${safeImg}" alt="" loading="lazy" referrerpolicy="no-referrer" onload="this.classList.add('loaded')" onerror="this.remove(); this.parentNode && this.parentNode.classList.remove('has-image');"><span class="pc-emoji">${post.emoji}</span><div class="pc-overlay-title">${safeTitle}</div>`
       : `<span class="pc-emoji" style="position:static;font-size:36px;filter:none;">${post.emoji}</span>`;
     return `
     <div class="post-card" onclick="openPostDetailById(${post.id})">
@@ -4041,8 +4055,8 @@ window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.cli
 let __waveSlot = 0;
 let __lastWaveTime = 0;
 let __lastWaveX = -9999, __lastWaveY = -9999;
-const __waveMinInterval = 70;          // ms between wave emissions
-const __waveMinDistance = 22;          // px the cursor must travel before a new wave is emitted
+const __waveMinInterval = 130;         // ms between wave emissions (gentler cadence)
+const __waveMinDistance = 38;          // px the cursor must travel before a new wave is emitted
 function emitMouseWave(clientX, clientY) {
   if (!sharedUniforms || !sharedUniforms.uWaves) return;
   const now = performance.now();
@@ -4058,7 +4072,8 @@ function emitMouseWave(clientX, clientY) {
   const wx = mx * 55;
   const wy = -my * 38;
   const slot = sharedUniforms.uWaves.value[__waveSlot];
-  slot.set(wx, wy, time, 1.0);
+  // Lower base strength → softer, water-like ripple instead of harsh shove.
+  slot.set(wx, wy, time, 0.55);
   __waveSlot = (__waveSlot + 1) % sharedUniforms.uWaves.value.length;
 }
 window.addEventListener('mousemove', e => emitMouseWave(e.clientX, e.clientY), { passive: true });
