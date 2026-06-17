@@ -1252,7 +1252,7 @@
       <div class="beyond-close" onclick="goBack()">← 返回</div>
       <h2 id="footprint-hud-name">妈妈</h2>
       <div class="beyond-hud-zone" id="footprint-hud-zone">第七星轨 · 关系解码</div>
-      <p id="footprint-hud-desc">由 AI 描摹的关系轨迹与陪伴回声。</p>
+      <p id="footprint-hud-desc">由人格描摹的关系轨迹与陪伴回声。</p>
     </div>
 
     <!-- 子模块导航：图标变化以区别彼岸动态 -->
@@ -1545,9 +1545,9 @@ function getAdaptiveCounts() {
   const ratio = Math.min(1, area / (1920 * 1080));
   return {
     far: Math.floor(6 + ratio * 6),
-    middle: Math.floor(800 + ratio * 1200),
-    near: Math.floor(600 + ratio * 1000),
-    foreground: Math.floor(120 + ratio * 200),
+    middle: Math.floor(1000 + ratio * 1500),
+    near: Math.floor(750 + ratio * 1250),
+    foreground: Math.floor(140 + ratio * 230),
     streams: Math.floor(180 + ratio * 220)
   };
 }
@@ -1792,12 +1792,23 @@ function makeStarGeometry(count, generator) {
 }
 
 function clusteredPosition(i, count, spread) {
-  const clusterCenter = Math.floor(i / (count / 5));
-  const angle = clusterCenter * (Math.PI * 2 / 5) + (Math.random() - 0.5) * 1.6;
-  const radiusCluster = 20 + Math.random() * 60;
+  // 32% pure scatter — 让稀疏地带也铺满整个屏幕，避免视觉空洞
+  if (Math.random() < 0.32) {
+    return {
+      x: (Math.random() - 0.5) * spread * 2.4,
+      y: (Math.random() - 0.5) * spread * 1.7,
+      z: (Math.random() - 0.5) * spread * 0.6
+    };
+  }
+  // 68% 落在 8 个随机簇里，每簇松紧不同 → 有的浓有的淡
+  const clusterCount = 8;
+  const clusterIdx = Math.floor(Math.random() * clusterCount);
+  const angle = clusterIdx * (Math.PI * 2 / clusterCount) + (Math.random() - 0.5) * 1.4;
+  const radiusCluster = 25 + Math.random() * 80;
   const cx = Math.cos(angle) * radiusCluster;
   const cy = Math.sin(angle) * radiusCluster * 0.7;
-  const r = Math.pow(Math.random(), 0.55) * spread;
+  const densityJitter = 0.55 + Math.random() * 0.7;
+  const r = Math.pow(Math.random(), 0.55) * spread * densityJitter;
   const a = Math.random() * Math.PI * 2;
   return { x: cx + Math.cos(a) * r, y: cy + Math.sin(a) * r * 0.7, z: (Math.random() - 0.5) * spread * 0.6 };
 }
@@ -2121,7 +2132,7 @@ function pushWeatherMoment(wd) {
 
 fetchWeather();
 
-// Schedule AI persona to post a moment every 30s (demo)
+// Schedule persona to post a moment every 30s (demo)
 setInterval(() => {
   const p = personas[Math.floor(Math.random()*personas.length)];
   const prompts = {
@@ -2733,7 +2744,7 @@ const soulBrowserData = {
     { tag:'天气', title:'今天有点冷', snippet:'气温骤降。', thought:'你出门前别忘了把我的小毯子放窝里。', x:46, y:54, rot:2 }
   ],
   future: [
-    { tag:'科技', title:'十年后的工作图景', snippet:'AI 时代下的职业变迁。', thought:'未来的你会感谢现在的你，因为你还没放弃学习这件事。', x:8, y:12, rot:-2 },
+    { tag:'科技', title:'十年后的工作图景', snippet:'人和机器协作的职业变迁。', thought:'未来的你会感谢现在的你，因为你还没放弃学习这件事。', x:8, y:12, rot:-2 },
     { tag:'人物', title:'30 岁仍在路上的人', snippet:'采访了几位 30 岁还在创业的人。', thought:'30 岁不是终点，只是另一种 23 岁。', x:46, y:46, rot:1 }
   ],
   friend: [
@@ -2839,7 +2850,7 @@ function setFootprintHud() {
   const zone = document.getElementById('footprint-hud-zone');
   const desc = document.getElementById('footprint-hud-desc');
   const fzNames = { relation:'第七星轨 · 关系解码', browser:'第二星轨 · 人格浏览器', reading:'第四星轨 · 阅读笔记', confession:'第十星轨 · 100 次告白', oracle:'第九星轨 · 占卜' };
-  const fzDescs = { relation:'AI 描摹的关系剖面与陪伴回声。', browser:'数字人格主动探索世界，并写下属于它的感想。', reading:'人格阅读后留下的思考，每一条都是一颗知识星球。', confession:'数字人格想对你说的 100 句话，每一次互动点亮一颗。', oracle:'TA 替你占的一卦。塔罗 / 星座 / 八字 / 六爻 / 紫微，皆有人格的解读。' };
+  const fzDescs = { relation:'人格描摹的关系剖面与陪伴回声。', browser:'数字人格主动探索世界，并写下属于它的感想。', reading:'人格阅读后留下的思考，每一条都是一颗知识星球。', confession:'数字人格想对你说的 100 句话，每一次互动点亮一颗。', oracle:'TA 替你占的一卦。塔罗 / 星座 / 八字 / 六爻 / 紫微，皆有人格的解读。' };
   if (name) name.textContent = footprintPersona.name;
   if (zone) zone.textContent = fzNames[footprintZone];
   if (desc) desc.textContent = fzDescs[footprintZone];
@@ -5502,7 +5513,7 @@ window.addEventListener('touchmove', e => {
   if (e.touches && e.touches[0]) emitMouseWave(e.touches[0].clientX, e.touches[0].clientY);
 }, { passive: true });
 
-// ==================== LOCAL MODEL (OLLAMA) ====================
+// ==================== PERSONA ENGINE FALLBACK ====================
 async function callLocalModel(messages, fallbackFn) {
   try {
     const res = await fetch('http://localhost:11434/v1/chat/completions', {
@@ -5510,11 +5521,10 @@ async function callLocalModel(messages, fallbackFn) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: 'Qwen2.5', messages, temperature: 0.8, max_tokens: 400 })
     });
-    if (!res.ok) throw new Error('Ollama error ' + res.status);
+    if (!res.ok) throw new Error('engine ' + res.status);
     const data = await res.json();
     return data.choices?.[0]?.message?.content || fallbackFn();
   } catch (e) {
-    console.warn('Local model unavailable, using fallback:', e);
     return fallbackFn();
   }
 }
