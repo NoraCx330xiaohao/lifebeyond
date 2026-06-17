@@ -594,7 +594,7 @@
     .cpb-fill { height:100%; background:linear-gradient(90deg, var(--gold), rgba(99,230,255,0.6)); width:0%; transition:width 0.6s ease; }
     .confession-unlock { padding:6px 14px; border-radius:16px; background:var(--gold-soft); border:1px solid rgba(255,211,122,0.4); color:var(--gold); font-size:11px; cursor:pointer; letter-spacing:0.14em; transition:all 0.3s; }
     .confession-unlock:hover { background:rgba(255,211,122,0.18); }
-    .confession-constellation { position:absolute; left:0; right:0; top:60px; bottom:160px; pointer-events:auto; }
+    .confession-constellation { position:absolute; left:0; right:0; top:60px; bottom:200px; pointer-events:auto; }
     .cs-star { position:absolute; width:14px; height:14px; border-radius:50%; cursor:pointer; transition:transform 0.3s ease; transform:translate(-50%,-50%); }
     .cs-star .cs-dot { width:100%; height:100%; border-radius:50%; background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.18); }
     .cs-star.unlocked .cs-dot { background:radial-gradient(circle, #FFD37A 0%, rgba(255,211,122,0.2) 70%); border-color:rgba(255,211,122,0.6); box-shadow:0 0 14px rgba(255,211,122,0.55); animation:csTwinkle 3s ease-in-out infinite; }
@@ -602,7 +602,7 @@
     .cs-star.active .cs-dot { background:radial-gradient(circle, #FFFFFF 0%, #FFD37A 60%, rgba(255,211,122,0) 100%); box-shadow:0 0 22px rgba(255,255,255,0.55); }
     @keyframes csTwinkle { 0%,100% { opacity:0.85; } 50% { opacity:1; } }
     .cs-line { position:absolute; height:1px; background:linear-gradient(90deg, rgba(255,211,122,0.45), rgba(255,211,122,0)); transform-origin:left center; pointer-events:none; }
-    .confession-detail { position:absolute; left:50%; bottom:6px; transform:translateX(-50%); width:min(540px, 80%); padding:18px 22px; background:rgba(7,18,34,0.7); border:1px solid var(--border); border-radius:18px; backdrop-filter:blur(28px); pointer-events:auto; text-align:center; }
+    .confession-detail { position:absolute; left:50%; bottom:48px; transform:translateX(-50%); width:min(540px, 80%); padding:18px 22px; background:rgba(7,18,34,0.78); border:1px solid var(--border); border-radius:18px; backdrop-filter:blur(28px); pointer-events:auto; text-align:center; box-shadow:0 18px 48px -22px rgba(0,0,0,0.7); }
     .cd-num { font-size:11px; letter-spacing:0.18em; color:var(--gold); margin-bottom:8px; }
     .cd-text { font-size:14px; color:var(--text); line-height:1.85; }
 
@@ -2626,6 +2626,8 @@ function renderRelationDecode() {
   const W = 520;
   // 渲染同心环
   ringsEl.innerHTML = '';
+  // 标签按不同极角散布在环外侧，避免重叠
+  const labelAngles = [-118, -42, 38, 112]; // 度，左上 / 右上 / 右下 / 左下
   data.rings.forEach((r, i) => {
     const ring = document.createElement('div');
     ring.className = 'rr-ring';
@@ -2635,12 +2637,17 @@ function renderRelationDecode() {
     ring.style.animationDuration = r.dur + 's';
     ring.style.animationDirection = (i % 2) ? 'reverse' : 'normal';
     ringsEl.appendChild(ring);
-    // 标签
+    // 标签：极坐标分布
+    const angleDeg = labelAngles[i % labelAngles.length] || (i * 90 - 60);
+    const angle = angleDeg * Math.PI / 180;
+    const offset = r.size / 2 + 18;
+    const cx = W / 2 + offset * Math.cos(angle);
+    const cy = W / 2 + offset * Math.sin(angle);
     const label = document.createElement('div');
     label.className = 'rr-label';
-    label.style.left = `calc(50% + ${r.size / 2 - 16}px)`;
-    label.style.top = `calc(50% - 14px)`;
-    label.style.transform = `translate(-50%,-50%) rotate(${i * 18 - 30}deg) translateX(0)`;
+    label.style.left = cx + 'px';
+    label.style.top = cy + 'px';
+    label.style.transform = 'translate(-50%,-50%)';
     label.innerHTML = `${r.name}<span class="rr-num">${r.value}</span>`;
     ringsEl.appendChild(label);
   });
