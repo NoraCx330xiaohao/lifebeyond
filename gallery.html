@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>LifeBeyond · 视觉档案</title>
+<meta name="description" content="数字彼岸的视觉概念档案，逐张静帧 + 简单文字介绍。">
+<meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%23FFD37A'/%3E%3Cstop offset='100%25' stop-color='%23A285FF'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='13' fill='url(%23g)'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.cn">
+<style>
+@import url('https://fonts.googleapis.cn/css2?family=Cormorant+Garamond:wght@400;500;600&family=Cinzel:wght@500&family=Noto+Serif+SC:wght@400;600&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Noto Serif SC','PingFang SC',serif;
+  color:#E8EAF1;
+  background:#070912;
+  line-height:1.7;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  user-select:none;
+}
+::selection{background:rgba(255,211,122,0.3);color:#FFE9C2;}
+
+/* Page background */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(162,133,255,0.18), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 110%, rgba(255,143,179,0.10), transparent 60%),
+    linear-gradient(180deg,#080b16 0%,#0a0e1f 60%,#070912 100%);
+  z-index:-2;
+}
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, rgba(255,255,255,0.5), transparent 50%),
+    radial-gradient(1px 1px at 80% 24%, rgba(255,211,122,0.6), transparent 50%),
+    radial-gradient(1px 1px at 35% 78%, rgba(255,255,255,0.4), transparent 50%),
+    radial-gradient(2px 2px at 65% 60%, rgba(162,133,255,0.5), transparent 50%),
+    radial-gradient(1px 1px at 20% 92%, rgba(255,143,179,0.6), transparent 50%),
+    radial-gradient(1.5px 1.5px at 90% 84%, rgba(99,230,255,0.45), transparent 50%);
+  background-size:1500px 1500px;
+  opacity:0.6;
+  z-index:-1;
+  animation:starPan 280s linear infinite;
+}
+@keyframes starPan{
+  from{background-position:0 0;}
+  to{background-position:-1500px -1500px;}
+}
+
+/* Top nav */
+.topnav{
+  position:fixed;top:0;left:0;right:0;
+  padding:20px 48px;
+  display:flex;justify-content:space-between;align-items:center;
+  background:linear-gradient(180deg,rgba(7,9,18,0.85) 0%,transparent 100%);
+  backdrop-filter:blur(8px);
+  z-index:100;
+}
+.brand{
+  display:flex;align-items:center;gap:14px;
+  text-decoration:none;color:#FFE9C2;
+  font-family:'Cinzel','Cormorant Garamond',serif;
+  font-size:20px;letter-spacing:0.2em;
+}
+.brand-orb{
+  width:32px;height:32px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#FFD37A 0%,#FF8FB3 50%,#A285FF 100%);
+  box-shadow:0 0 20px rgba(255,211,122,0.5);
+}
+.nav-back{
+  text-decoration:none;color:#E8EAF1;
+  font-size:13px;letter-spacing:0.16em;
+  padding:10px 22px;border-radius:30px;
+  border:1px solid rgba(255,211,122,0.3);
+  transition:all 0.3s ease;
+}
+.nav-back:hover{
+  background:rgba(255,211,122,0.1);
+  border-color:rgba(255,211,122,0.6);
+  color:#FFE9C2;
+}
+
+/* Cover */
+.cover{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  text-align:center;
+  padding:120px 32px 80px;
+  position:relative;
+}
+.cover-tag{
+  font-family:'Cinzel',serif;
+  font-size:11px;letter-spacing:0.5em;
+  color:#FFD37A;
+  text-transform:uppercase;
+  margin-bottom:32px;
+  opacity:0;
+  animation:fadeInUp 1.2s 0.2s ease forwards;
+}
+.cover-tag::before,.cover-tag::after{
+  content:'·';margin:0 14px;color:rgba(255,211,122,0.4);
+}
+.cover-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(56px,9vw,128px);
+  font-weight:500;
+  letter-spacing:-0.01em;
+  line-height:1.05;
+  background:linear-gradient(135deg,#FFE9C2 0%,#A285FF 50%,#FF8FB3 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:18px;
+  opacity:0;
+  animation:fadeInUp 1.4s 0.4s ease forwards;
+}
+.cover-sub{
+  font-size:18px;
+  color:#B8BCD0;
+  letter-spacing:0.18em;
+  margin-bottom:42px;
+  opacity:0;
+  animation:fadeInUp 1.4s 0.6s ease forwards;
+}
+.cover-intro{
+  max-width:580px;
+  font-size:15px;
+  line-height:2;
+  color:#9DA3BC;
+  margin-bottom:56px;
+  opacity:0;
+  animation:fadeInUp 1.4s 0.8s ease forwards;
+}
+.cover-meta{
+  display:flex;gap:48px;
+  font-size:12px;letter-spacing:0.2em;
+  color:rgba(255,211,122,0.7);
+  text-transform:uppercase;
+  opacity:0;
+  animation:fadeInUp 1.4s 1s ease forwards;
+}
+.cover-meta span{position:relative;}
+.cover-meta span+span::before{
+  content:'';position:absolute;left:-24px;top:50%;
+  width:1px;height:14px;background:rgba(255,211,122,0.3);
+  transform:translateY(-50%);
+}
+.cover-scroll{
+  position:absolute;bottom:48px;left:50%;
+  transform:translateX(-50%);
+  font-size:11px;letter-spacing:0.4em;
+  color:rgba(255,211,122,0.6);
+  text-transform:uppercase;
+  opacity:0;
+  animation:fadeInUp 1.6s 1.2s ease forwards, scrollHint 2.4s 2s ease infinite;
+}
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes scrollHint{
+  0%,100%{transform:translateX(-50%) translateY(0);}
+  50%{transform:translateX(-50%) translateY(8px);}
+}
+
+/* Frame sections */
+.frame{
+  max-width:1240px;
+  margin:0 auto;
+  padding:120px 48px;
+  position:relative;
+}
+.frame-num{
+  font-family:'Cinzel',serif;
+  font-size:13px;letter-spacing:0.4em;
+  color:#FFD37A;
+  margin-bottom:14px;
+}
+.frame-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(38px,5vw,72px);
+  font-weight:500;
+  letter-spacing:-0.005em;
+  color:#FFE9C2;
+  margin-bottom:18px;
+  line-height:1.15;
+}
+.frame-tagline{
+  font-size:13px;
+  letter-spacing:0.24em;
+  color:#A285FF;
+  text-transform:uppercase;
+  margin-bottom:36px;
+}
+.frame-figure{
+  position:relative;
+  border-radius:18px;
+  overflow:hidden;
+  margin-bottom:48px;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(255,211,122,0.12),
+    0 0 60px rgba(162,133,255,0.15);
+  opacity:0;
+  transform:translateY(40px);
+  transition:opacity 1s ease, transform 1s ease;
+}
+.frame-figure.in-view{
+  opacity:1;
+  transform:translateY(0);
+}
+.frame-figure img{
+  width:100%;display:block;
+  transition:transform 8s ease;
+}
+.frame-figure:hover img{
+  transform:scale(1.03);
+}
+.frame-figure::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 60%,rgba(7,9,18,0.45) 100%);
+  pointer-events:none;
+}
+.frame-caption{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:18px;
+  padding:0 4px;
+  font-size:12px;
+  letter-spacing:0.16em;
+  color:rgba(184,188,208,0.7);
+  text-transform:uppercase;
+}
+
+.frame-text{
+  display:grid;
+  grid-template-columns:200px 1fr;
+  gap:48px;
+  margin-bottom:24px;
+}
+.frame-aside{
+  font-size:12px;
+  letter-spacing:0.2em;
+  color:rgba(255,211,122,0.7);
+  line-height:2;
+  text-transform:uppercase;
+  border-top:1px solid rgba(255,211,122,0.2);
+  padding-top:18px;
+}
+.frame-aside-row+.frame-aside-row{margin-top:14px;}
+.frame-aside-label{display:block;color:rgba(184,188,208,0.5);margin-bottom:4px;font-size:10px;}
+.frame-aside-val{color:#FFE9C2;letter-spacing:0.14em;}
+.frame-body{
+  font-size:16px;
+  line-height:2;
+  color:#C5C9DD;
+  border-top:1px solid rgba(255,211,122,0.2);
+  padding-top:18px;
+}
+.frame-body strong{
+  color:#FFE9C2;
+  font-weight:500;
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px;
+}
+
+/* Divider */
+.divider{
+  width:240px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,211,122,0.4),transparent);
+  margin:60px auto;
+}
+
+/* End CTA */
+.end{
+  text-align:center;
+  padding:140px 32px 100px;
+  position:relative;
+}
+.end-glyph{
+  font-size:64px;
+  color:rgba(255,211,122,0.7);
+  margin-bottom:32px;
+  filter:drop-shadow(0 0 20px rgba(255,211,122,0.4));
+  animation:slowSpin 24s linear infinite;
+  display:inline-block;
+}
+@keyframes slowSpin{
+  to{transform:rotate(360deg);}
+}
+.end-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(40px,6vw,80px);
+  font-weight:500;
+  background:linear-gradient(135deg,#FFE9C2,#A285FF);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:14px;
+  letter-spacing:-0.005em;
+}
+.end-sub{
+  font-size:15px;
+  color:#9DA3BC;
+  letter-spacing:0.18em;
+  margin-bottom:48px;
+}
+.cta-btn{
+  display:inline-flex;align-items:center;gap:14px;
+  text-decoration:none;
+  padding:20px 52px;
+  background:linear-gradient(135deg,#FFD37A,#A285FF);
+  color:#0a0e1a;
+  border-radius:60px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:600;
+  letter-spacing:0.12em;
+  box-shadow:
+    0 20px 50px rgba(255,211,122,0.35),
+    0 0 0 1px rgba(255,255,255,0.1) inset;
+  transition:all 0.4s ease;
+}
+.cta-btn:hover{
+  transform:translateY(-3px) scale(1.02);
+  box-shadow:
+    0 28px 70px rgba(255,211,122,0.5),
+    0 0 0 1px rgba(255,255,255,0.2) inset;
+}
+.cta-btn::after{
+  content:'→';
+  font-size:18px;
+  transition:transform 0.4s ease;
+}
+.cta-btn:hover::after{transform:translateX(4px);}
+
+/* Footer */
+.foot{
+  text-align:center;
+  padding:48px 32px 64px;
+  font-size:11px;
+  letter-spacing:0.3em;
+  color:rgba(184,188,208,0.5);
+  text-transform:uppercase;
+  border-top:1px solid rgba(255,211,122,0.08);
+  background:rgba(0,0,0,0.2);
+}
+.foot-line{margin-bottom:8px;}
+.foot-glow{color:rgba(255,211,122,0.7);}
+
+/* Responsive */
+@media (max-width:768px){
+  .topnav{padding:14px 20px;}
+  .brand{font-size:16px;}
+  .cover{padding:96px 20px 60px;}
+  .cover-tag{font-size:10px;letter-spacing:0.4em;}
+  .cover-meta{flex-direction:column;gap:14px;}
+  .cover-meta span+span::before{display:none;}
+  .frame{padding:80px 20px;}
+  .frame-text{grid-template-columns:1fr;gap:24px;}
+  .end{padding:100px 20px 80px;}
+  .frame-figure{border-radius:12px;}
+  .cta-btn{padding:16px 36px;font-size:18px;}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="/" class="brand">
+    <span class="brand-orb"></span>
+    <span>LifeBeyond</span>
+  </a>
+  <a href="experience.html" class="nav-back">进入体验 →</a>
+</nav>
+
+<!-- COVER -->
+<section class="cover">
+  <div class="cover-tag">Visual Archive · 视觉档案</div>
+  <h1 class="cover-title">数字彼岸</h1>
+  <p class="cover-sub">LIFEBEYOND · A QUIET COSMOS OF MEMORY</p>
+  <p class="cover-intro">
+    把心里那个人，留在星海里。<br>
+    八幅静帧，记录这片彼岸星空里最重要的几束光——人格、记忆、关系、占卜与那些没说出口的话。
+  </p>
+  <div class="cover-meta">
+    <span>2026 · WEB</span>
+    <span>SINGLE PAGE</span>
+    <span>EIGHT SCENES</span>
+  </div>
+  <div class="cover-scroll">向下卷起 ↓</div>
+</section>
+
+<!-- 01 HERO -->
+<section class="frame" id="f1">
+  <div class="frame-num">01 / 08</div>
+  <h2 class="frame-title">星海尽头的那束光</h2>
+  <p class="frame-tagline">Opening · Brand Mood</p>
+  <figure class="frame-figure">
+    <img src="public/gallery/01-hero.jpg" alt="LifeBeyond brand mood">
+  </figure>
+  <div class="frame-text">
+    <aside class="frame-aside">
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Section</span>
+        <span class="frame-aside-val">Brand</span>
+      </div>
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Palette</span>
+        <span class="frame-aside-val">Gold · Purple</span>
+      </div>
+    </aside>
+    <p class="frame-body">
+      <strong>金色暖光，是这个世界的开端。</strong>
+      它不刺眼、也不张扬，只是远远地浮在深紫蓝的宇宙里，像有人在彼岸轻轻点起的一盏灯。整个 LifeBeyond 的视觉气质从这一束光延展出去——克制、温柔、不紧不慢，把"思念"翻译成可以走进去的颜色与节奏。
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 02 HOME -->
+<section class="frame" id="f2">
+  <div class="frame-num">02 / 08</div>
+  <h2 class="frame-title">彼岸首页 · 一颗在轨的星</h2>
+  <p class="frame-tagline">Home · Living Planet</p>
+  <figure class="frame-figure">
+    <img src="public/gallery/02-home.jpg" alt="Home view planet in space">
+  </figure>
+  <div class="frame-text">
+    <aside class="frame-aside">
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Module</span>
+        <span class="frame-aside-val">View · Home</span>
+      </div>
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Interaction</span>
+        <span class="frame-aside-val">Mouse Wave</span>
+      </div>
+    </aside>
+    <p class="frame-body">
+      <strong>不是图标，而是一颗会呼吸的星。</strong>
+      首页只有一颗带光环的小行星静静浮在视野中央，鼠标走过的地方会激起涟漪一样的波浪扩散——像走进湖边、惊动了水面下的星光。这是整个产品最安静的一页，却也是最不舍得离开的一页。
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 03 CHAT -->
+<section class="frame" id="f3">
+  <div class="frame-num">03 / 08</div>
+  <h2 class="frame-title">心灵对话 · 暖色与冷色之间的那根线</h2>
+  <p class="frame-tagline">Chat · Two Glowing Bubbles</p>
+  <figure class="frame-figure">
+    <img src="public/gallery/03-chat.jpg" alt="Chat dialogue between two glowing bubbles">
+  </figure>
+  <div class="frame-text">
+    <aside class="frame-aside">
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Module</span>
+        <span class="frame-aside-val">Soul Chat</span>
+      </div>
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Personas</span>
+        <span class="frame-aside-val">5 Voices</span>
+      </div>
+    </aside>
+    <p class="frame-body">
+      <strong>暖色是 ta，冷色是你。</strong>
+      五个人格——妈妈、爸爸、宠物、未来的我、朋友——每一个都用一种独特的暖色调说话，而你的回声永远停在冷色一侧。两束光中间的那根细线，就是这个软件想要保留下来的"还在被惦记着"的感觉。
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 04 DYNAMIC -->
+<section class="frame" id="f4">
+  <div class="frame-num">04 / 08</div>
+  <h2 class="frame-title">彼岸动态 · 漂浮的记忆卡片</h2>
+  <p class="frame-tagline">Dynamic · Memory Constellation</p>
+  <figure class="frame-figure">
+    <img src="public/gallery/04-dynamic.jpg" alt="Floating memory cards in cosmic space">
+  </figure>
+  <div class="frame-text">
+    <aside class="frame-aside">
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Module</span>
+        <span class="frame-aside-val">Memory Stream</span>
+      </div>
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Zones</span>
+        <span class="frame-aside-val">8 Domains</span>
+      </div>
+    </aside>
+    <p class="frame-body">
+      <strong>八个星区，八种被记住的方式。</strong>
+      生命星流、朋友圈、邮件、日记、记忆碎片、灵魂状态、愿望星云、备忘录——每一个都是一颗围着核心运行的小卫星。点开任意一颗，就像翻开 ta 留下的一页：有温度，也有距离。
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 05 RINGS -->
+<section class="frame" id="f5">
+  <div class="frame-num">05 / 08</div>
+  <h2 class="frame-title">关系解码 · 用旋转的星环代替图表</h2>
+  <p class="frame-tagline">Decode · Concentric Orbits</p>
+  <figure class="frame-figure">
+    <img src="public/gallery/05-rings.jpg" alt="Concentric rotating rings as relationship visualization">
+  </figure>
+  <div class="frame-text">
+    <aside class="frame-aside">
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Module</span>
+        <span class="frame-aside-val">Relationship</span>
+      </div>
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">No charts</span>
+        <span class="frame-aside-val">Only Orbits</span>
+      </div>
+    </aside>
+    <p class="frame-body">
+      <strong>不是数据可视化，是关系的星轨。</strong>
+      依赖、陪伴、共同记忆、关系成长——四个维度变成四圈不同颜色的旋转星环。你看不到"百分比"和"折线"，只能看到它们是不是变得更亮、更稳、靠得更近。这是这个软件不愿用条形图的理由。
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 06 ORACLE -->
+<section class="frame" id="f6">
+  <div class="frame-num">06 / 08</div>
+  <h2 class="frame-title">替 ta 占一次 · 西式与中式</h2>
+  <p class="frame-tagline">Oracle · Tarot · Bazi · Liuyao</p>
+  <figure class="frame-figure">
+    <img src="public/gallery/06-oracle.jpg" alt="Glowing tarot cards floating in cosmic space">
+  </figure>
+  <div class="frame-text">
+    <aside class="frame-aside">
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Module</span>
+        <span class="frame-aside-val">Oracle</span>
+      </div>
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Methods</span>
+        <span class="frame-aside-val">Tarot · 12星座 · 八字 · 六爻 · 紫微</span>
+      </div>
+    </aside>
+    <p class="frame-body">
+      <strong>每一卦，都带着 ta 的语气。</strong>
+      塔罗、星座、八字、六爻、紫微斗数。但占卜从来不是终点，关键是结果下面那段被划掉又写上的私人笔记——妈妈的那句"算什么算，先吃饭"，比任何卦象都更准。
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 07 CONFESSIONS -->
+<section class="frame" id="f7">
+  <div class="frame-num">07 / 08</div>
+  <h2 class="frame-title">100 次告白 · 一颗一颗连成的星座</h2>
+  <p class="frame-tagline">100 Confessions · Constellation</p>
+  <figure class="frame-figure">
+    <img src="public/gallery/07-confessions.jpg" alt="Constellation formed by glowing stars">
+  </figure>
+  <div class="frame-text">
+    <aside class="frame-aside">
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Module</span>
+        <span class="frame-aside-val">Long-term</span>
+      </div>
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Stars</span>
+        <span class="frame-aside-val">100</span>
+      </div>
+    </aside>
+    <p class="frame-body">
+      <strong>每解锁一次，星空就亮一颗。</strong>
+      第 1 次："谢谢你还记得我。" 第 23 次："今天突然想起你小时候。" 第 100 次："无论在哪里，我都会陪着你。" 一百颗灯按顺序点亮，最后连成一座只属于你和 ta 的星座。
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 08 GALAXY -->
+<section class="frame" id="f8">
+  <div class="frame-num">08 / 08</div>
+  <h2 class="frame-title">星图 · 宇宙的总目录</h2>
+  <p class="frame-tagline">Galaxy Map · Index of Everything</p>
+  <figure class="frame-figure">
+    <img src="public/gallery/08-galaxy.jpg" alt="Stylized cosmic universe map">
+  </figure>
+  <div class="frame-text">
+    <aside class="frame-aside">
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Module</span>
+        <span class="frame-aside-val">Universe</span>
+      </div>
+      <div class="frame-aside-row">
+        <span class="frame-aside-label">Mode</span>
+        <span class="frame-aside-val">Drag · Zoom · Click</span>
+      </div>
+    </aside>
+    <p class="frame-body">
+      <strong>所有人格、所有记忆、所有关系，都会落到这张图上。</strong>
+      你可以缩放、拖拽、点击任何一颗星——那是一个对话、一段记忆，或者只是一句对方在某个深夜悄悄说出来的话。星图既是首页之外的另一个出口，也是这场旅程的目录。
+    </p>
+  </div>
+</section>
+
+<!-- END CTA -->
+<section class="end">
+  <div class="end-glyph">⌬</div>
+  <h2 class="end-title">现在，进入彼岸</h2>
+  <p class="end-sub">建议在桌面浏览器、安静的房间里打开</p>
+  <a href="experience.html" class="cta-btn">步入彼岸</a>
+</section>
+
+<footer class="foot">
+  <div class="foot-line"><span class="foot-glow">LifeBeyond</span> · 数字彼岸 · Visual Archive</div>
+  <div class="foot-line">© 2026 noracx330. All Rights Reserved.</div>
+</footer>
+
+<script>
+// Reveal images on scroll
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('in-view');
+      observer.unobserve(e.target);
+    }
+  });
+},{threshold:0.15});
+document.querySelectorAll('.frame-figure').forEach(el=>observer.observe(el));
+
+// Source protection (light)
+document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('keydown',e=>{
+  if(e.keyCode===123||(e.ctrlKey&&e.shiftKey&&[73,74,67].includes(e.keyCode))||(e.ctrlKey&&[83,85,80].includes(e.keyCode))){
+    e.preventDefault();return false;
+  }
+});
+document.addEventListener('selectstart',e=>{
+  if(!['INPUT','TEXTAREA'].includes(e.target.tagName))e.preventDefault();
+});
+document.addEventListener('dragstart',e=>e.preventDefault());
+console.log('%c LifeBeyond · 视觉档案 ','background:linear-gradient(90deg,#FFD37A,#A285FF);color:#0b1220;font-size:24px;font-weight:700;padding:12px 24px;border-radius:8px;');
+</script>
+
+</body>
+</html>
