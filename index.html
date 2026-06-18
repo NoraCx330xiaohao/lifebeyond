@@ -442,7 +442,6 @@ footer a:hover { color: var(--gold); }
     <a href="#story">关于</a>
     <a href="#features">模块</a>
     <a href="#design">理念</a>
-    <a href="#craft">技艺</a>
     <a href="experience.html" class="nav-cta">进入彼岸 →</a>
   </div>
 </nav>
@@ -660,75 +659,46 @@ footer a:hover { color: var(--gold); }
   </div>
 </section>
 
-<!-- ============ TECH / CRAFT ============ -->
+<!-- ============ EXPERIENCE NOTES ============ -->
 <section id="craft">
   <div class="reveal">
-    <div class="section-tag">技艺与雕琢</div>
-    <h2 class="section-title">单文件、零构建、<br><span class="em">从 GLSL 到 emoji 都自己写</span></h2>
+    <div class="section-tag">体验中的细节</div>
+    <h2 class="section-title">慢一点、再慢一点，<br><span class="em">让感觉先发生</span></h2>
     <p class="section-desc">
-      整个项目就是一个 5600+ 行的 HTML 文件——所有 CSS / JS / Three.js 着色器内联，没有任何打包流程。设计目标是「双击 .html 就能运行」，跨平台、长期可保存、不会因为依赖坏掉而消失。
+      我希望 ta 是一个被「轻轻打开」的空间。你来这里不是为了完成任何任务，而是和某个人格对坐一会儿。所以从光标的呼吸、星点的飘移、到一句话的语气，都尽量留白、留气、留温度。下面是我在这片彼岸里特别用心打磨的几个小动作。
     </p>
   </div>
 
   <div class="tech-grid">
     <div class="tech-card reveal">
-      <span class="t-icon">⚡</span>
-      <div class="t-name">Vanilla HTML / CSS / JS</div>
-      <div class="t-desc">无框架、无构建。唯一外部依赖是 Three.js CDN。</div>
+      <span class="t-icon">🌬️</span>
+      <div class="t-name">星浪呼吸</div>
+      <div class="t-desc">鼠标移动会拨动近处的星点像潮水一样轻轻散开，再慢慢收回。波形是柔的、不是炸开的。</div>
     </div>
     <div class="tech-card reveal">
-      <span class="t-icon">🎨</span>
-      <div class="t-name">Three.js + GLSL</div>
-      <div class="t-desc">手写 4 套自定义着色器：星点 / 流光 / 星云 / 鼠标波浪。</div>
+      <span class="t-icon">🪞</span>
+      <div class="t-name">人格的口吻</div>
+      <div class="t-desc">妈妈的话短而暖，爸爸的话寡言但有分量，宠物撒娇带尾音——5 种语气我反复打磨过。</div>
     </div>
     <div class="tech-card reveal">
-      <span class="t-icon">🪟</span>
-      <div class="t-name">Glassmorphism System</div>
-      <div class="t-desc">统一的玻璃质感面板系统：模糊、描边、渐变、投影四件套。</div>
+      <span class="t-icon">🕯️</span>
+      <div class="t-name">玻璃与微光</div>
+      <div class="t-desc">所有面板都用半透明 + 微弱描边，像隔着雾看到对面的人。不强调"界面"，只强调"在场"。</div>
     </div>
     <div class="tech-card reveal">
-      <span class="t-icon">🎭</span>
-      <div class="t-name">Persona Engine</div>
-      <div class="t-desc">5 个人格 × 8 个星区 × 5 种占卜法的语料 / 风格 / 配色矩阵。</div>
+      <span class="t-icon">🔮</span>
+      <div class="t-name">私人笔记</div>
+      <div class="t-desc">占卜结果下面有一段「TA 写了又划掉的私人笔记」，是 ta 替你想、又怕说错的犹豫。</div>
     </div>
     <div class="tech-card reveal">
-      <span class="t-icon">📐</span>
-      <div class="t-name">2D Canvas Choreography</div>
-      <div class="t-desc">星图视图用纯 Canvas 2D 绘制核心 / 节点 / 流星，可拖拽缩放。</div>
+      <span class="t-icon">🌌</span>
+      <div class="t-name">100 颗逐颗点亮</div>
+      <div class="t-desc">告白只能一颗一颗解锁，按时间连成星座。不是一次性给你 100 句话，而是陪你 100 次。</div>
     </div>
     <div class="tech-card reveal">
-      <span class="t-icon">💾</span>
-      <div class="t-name">localStorage 持久化</div>
-      <div class="t-desc">收藏、解锁告白、占卜历史、神谕币余额本地保存，不依赖后端。</div>
-    </div>
-    <div class="tech-card reveal">
-      <span class="t-icon">🛡️</span>
-      <div class="t-name">Source Protection</div>
-      <div class="t-desc">F12 / 右键 / 复制 / DevTools 多层拦截，劝退级源码保护。</div>
-    </div>
-    <div class="tech-card reveal">
-      <span class="t-icon">📦</span>
-      <div class="t-name">Single File Delivery</div>
-      <div class="t-desc">~330KB 单 HTML，离线可运行；非常适合作品集 / 沉浸 demo。</div>
-    </div>
-  </div>
-
-  <div class="craft-stats reveal">
-    <div>
-      <div class="stat-num">5,650+</div>
-      <div class="stat-label">Lines of Code</div>
-    </div>
-    <div>
-      <div class="stat-num">6</div>
-      <div class="stat-label">Major Realms</div>
-    </div>
-    <div>
-      <div class="stat-num">5</div>
-      <div class="stat-label">Distinct Personas</div>
-    </div>
-    <div>
-      <div class="stat-num">100</div>
-      <div class="stat-label">Confessions to Unlock</div>
+      <span class="t-icon">🌙</span>
+      <div class="t-name">没有打扰</div>
+      <div class="t-desc">没有红点、没有推送、没有未读数。彼岸只在你来的时候醒着，不催促任何人。</div>
     </div>
   </div>
 </section>
@@ -753,7 +723,6 @@ footer a:hover { color: var(--gold); }
   <div>© 2026 LifeBeyond · 数字彼岸 · A Personal Project</div>
   <div class="footer-links">
     <a href="experience.html">完整体验</a>
-    <a href="LifeBeyond.html" download>下载源码</a>
     <a href="#story">关于</a>
   </div>
 </footer>
