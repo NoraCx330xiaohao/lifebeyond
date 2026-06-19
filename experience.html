@@ -6012,13 +6012,13 @@ function initCivilizationStarfield() {
   }
   function spiralPos() {
     const armIdx = Math.floor(Math.random() * arms);
-    const t = Math.pow(Math.random(), 0.6); // 偏向远端
+    const t = Math.pow(Math.random(), 0.55); // 偏向远端
     const armOffset = (armIdx / arms) * Math.PI*2;
     const r = armR0 + t * armRMax;
     const angle = armOffset + t * armTurn * Math.PI*2;
-    // 加一点扰动让臂有"羽毛"感
-    const jitter = (Math.random() - 0.5) * minDim * 0.08 * (0.4 + t);
-    const aJitter = (Math.random() - 0.5) * 0.5;
+    // 紧致的"羽毛"扰动 — 让旋臂线在视觉上清晰可见
+    const jitter = (Math.random() - 0.5) * minDim * 0.035 * (0.3 + t);
+    const aJitter = (Math.random() - 0.5) * 0.18;
     const x = cx + Math.cos(angle + aJitter) * r + jitter;
     const y = cy + Math.sin(angle + aJitter) * r * 0.62 + jitter * 0.6;
     return { x, y };
@@ -6059,20 +6059,20 @@ function initCivilizationStarfield() {
       };
     });
   }
-  // === 五层星海，总数 ~9000（远 → 近，光点但有光感，能看见） ===
-  const deep = makeStar(0, 2400, [0.3, 1.0], [0.28, 0.55], 0.01, spiralPos)
-    .concat(makeStar(0, 800, [0.3, 1.0], [0.28, 0.55], 0.01, clusterPos))
-    .concat(makeStar(0, 800, [0.3, 1.0], [0.28, 0.55], 0.01, haloPos));
-  const mid = makeStar(1, 1900, [0.55, 1.5], [0.42, 0.7], 0.02, spiralPos)
-    .concat(makeStar(1, 520, [0.55, 1.5], [0.42, 0.7], 0.02, clusterPos))
-    .concat(makeStar(1, 380, [0.55, 1.5], [0.42, 0.7], 0.02, haloPos));
-  const near = makeStar(2, 880, [0.9, 2.0], [0.55, 0.85], 0.04, spiralPos)
-    .concat(makeStar(2, 320, [0.9, 2.0], [0.55, 0.85], 0.04, clusterPos))
-    .concat(makeStar(2, 180, [0.9, 2.0], [0.55, 0.85], 0.04, haloPos));
+  // === 五层星海，总数 ~9000（80% 沿旋臂，15% 团簇，5% halo —— 让"银河"形状清晰）===
+  const deep = makeStar(0, 3200, [0.3, 1.0], [0.28, 0.55], 0.01, spiralPos)
+    .concat(makeStar(0, 600, [0.3, 1.0], [0.28, 0.55], 0.01, clusterPos))
+    .concat(makeStar(0, 200, [0.3, 1.0], [0.28, 0.55], 0.01, haloPos));
+  const mid = makeStar(1, 2400, [0.55, 1.5], [0.42, 0.7], 0.02, spiralPos)
+    .concat(makeStar(1, 320, [0.55, 1.5], [0.42, 0.7], 0.02, clusterPos))
+    .concat(makeStar(1, 100, [0.55, 1.5], [0.42, 0.7], 0.02, haloPos));
+  const near = makeStar(2, 1100, [0.9, 2.0], [0.55, 0.85], 0.04, spiralPos)
+    .concat(makeStar(2, 200, [0.9, 2.0], [0.55, 0.85], 0.04, clusterPos))
+    .concat(makeStar(2, 60, [0.9, 2.0], [0.55, 0.85], 0.04, haloPos));
   // Layer 3 用 depth=1.25 让视差更夸张
-  const fore = makeStar(2, 270, [1.5, 3.0], [0.7, 0.95], 0.06, spiralPos)
-    .concat(makeStar(2, 90, [1.5, 3.0], [0.7, 0.95], 0.06, clusterPos))
-    .concat(makeStar(2, 50, [1.5, 3.0], [0.7, 0.95], 0.06, haloPos));
+  const fore = makeStar(2, 360, [1.5, 3.0], [0.7, 0.95], 0.06, spiralPos)
+    .concat(makeStar(2, 60, [1.5, 3.0], [0.7, 0.95], 0.06, clusterPos))
+    .concat(makeStar(2, 20, [1.5, 3.0], [0.7, 0.95], 0.06, haloPos));
   fore.forEach(s => { s.depth = 1.25; s.layer = 3; });
   // Layer 4 焦点超亮（不形成大气泡）
   const anchor = makeStar(2, 70, [2.8, 4.8], [0.88, 1.0], 0.08, haloPos);
@@ -6560,20 +6560,18 @@ function drawCivilizationView() {
   civilizationConnections.forEach((c, idx) => {
     const filt = isFigureFiltered(c.a) || isFigureFiltered(c.b);
     const hot = c.a.hover || c.b.hover;
-    // ⬆️ 大幅提升 alpha：让网络结构清晰可见
-    const baseA = c.kind === 'influence'
-      ? (0.32 + Math.random() * 0.12)   // 私人影响：0.32-0.44
-      : (0.18 + Math.random() * 0.08);  // 子群星链：0.18-0.26
-    const alpha = filt ? 0.04 : (hot ? 0.78 : baseA);
+    // 固定 alpha（不再 random，否则会闪），让人物之间的星座线稳定可见
+    const baseA = c.kind === 'influence' ? 0.55 : 0.34;
+    const alpha = filt ? 0.05 : (hot ? 0.95 : baseA);
     const mx = (c.a.x + c.b.x)/2;
     const my = (c.a.y + c.b.y)/2 - (c.kind === 'influence' ? 12 : 4);
     const colorRef = c.a.parentRef ? c.a.parentRef.color : '#FFD37A';
-    // 主线
+    // 主线：加粗让"线串起来"清晰
     civCtx.beginPath();
     civCtx.moveTo(c.a.x, c.a.y);
     civCtx.quadraticCurveTo(mx, my, c.b.x, c.b.y);
     civCtx.strokeStyle = hexToRgba(colorRef, alpha);
-    civCtx.lineWidth = hot ? 1.6 : (c.kind === 'influence' ? 0.95 : 0.7);
+    civCtx.lineWidth = hot ? 2.0 : (c.kind === 'influence' ? 1.3 : 1.0);
     civCtx.stroke();
     // 流动光斑：沿 quadratic 曲线滑动，给"神经网络"流动感
     if (!filt && c.kind === 'influence') {
@@ -6678,21 +6676,40 @@ function drawCivilizationView() {
 
   // ====== Layer 8：人物星点 —— 真正的"星海" ======
   civilizationFigureNodes.forEach(f => {
-    // 微小漂移：让每颗星轻微围绕原位呼吸 (1~2px)，制造"星海呼吸"
-    const drift = 0.6 + 0.4*Math.sin(civilizationOrbitTime*4 + f.driftSeed);
-    const wobble = 1.4;
-    f.x = (civilizationShellMeta.cx) + Math.cos(f.baseAngle)*f.baseR + Math.cos(civilizationOrbitTime*1.2 + f.driftSeed)*wobble;
-    f.y = (civilizationShellMeta.cy) + Math.sin(f.baseAngle)*f.baseR*0.78 + Math.sin(civilizationOrbitTime*1.2 + f.driftSeed*1.3)*wobble*0.7;
+    // 位置完全固定（不再每帧 wobble），让命中区稳定，能精准点击
+    f.x = (civilizationShellMeta.cx) + Math.cos(f.baseAngle)*f.baseR;
+    f.y = (civilizationShellMeta.cy) + Math.sin(f.baseAngle)*f.baseR*0.78;
 
     const filtered = isFigureFiltered(f);
-    const a = filtered ? 0.15 : 1;
-    const tw = 0.7 + 0.3*Math.sin(civilizationOrbitTime*15 + f.twinkle);
-    const r = f.radius * (f.hover?1.8:1) * tw * drift;
+    const a = filtered ? 0.18 : 1;
+    // 闪烁完全静默：恒定亮度，仅 hover 变化
+    const r = f.radius * (f.hover ? 1.7 : 1);
     const colorRef = f.parentRef ? f.parentRef.color : '#FFD37A';
 
-    // === 闪光亮点（取代原"气泡"渐变外晕）===
-    const rotF = (civilizationOrbitTime*0.6 + (f.driftSeed||0)) % (Math.PI*2);
-    drawCivStarburst(civCtx, f.x, f.y, r * (f.hover?1.25:1.0), colorRef, (f.hover?1:0.85) * a, rotF, f.hover?6.5:5.2);
+    // === 银河中的"特殊星" —— 实心亮核 + 细十字 spike，无大光晕、不再是气泡 ===
+    civCtx.save();
+    // 1) 极薄圈辉光（仅 1 圈、半径很小，让它能在银河中被看见但不形成气泡）
+    const halo = civCtx.createRadialGradient(f.x, f.y, 0, f.x, f.y, r * 1.6);
+    halo.addColorStop(0, hexToRgba(colorRef, (f.hover?0.5:0.32) * a));
+    halo.addColorStop(0.55, hexToRgba(colorRef, (f.hover?0.18:0.10) * a));
+    halo.addColorStop(1, hexToRgba(colorRef, 0));
+    civCtx.fillStyle = halo;
+    civCtx.beginPath(); civCtx.arc(f.x, f.y, r * 1.6, 0, Math.PI*2); civCtx.fill();
+    // 2) 中心亮核（白心 + 色边）
+    civCtx.fillStyle = hexToRgba(colorRef, (f.hover?1:0.95) * a);
+    civCtx.beginPath(); civCtx.arc(f.x, f.y, r * 0.9, 0, Math.PI*2); civCtx.fill();
+    civCtx.fillStyle = `rgba(255,253,242,${(f.hover?1:0.92)*a})`;
+    civCtx.beginPath(); civCtx.arc(f.x, f.y, Math.max(0.6, r * 0.55), 0, Math.PI*2); civCtx.fill();
+    // 3) 细十字 spike：极短极清晰，让它"是颗有钉子的星"，区别于背景银河尘
+    civCtx.lineCap = 'round';
+    civCtx.strokeStyle = hexToRgba(colorRef, (f.hover?0.85:0.55) * a);
+    civCtx.lineWidth = Math.max(0.5, r * 0.18);
+    const spikeLen = r * (f.hover ? 3.2 : 2.4);
+    civCtx.beginPath();
+    civCtx.moveTo(f.x - spikeLen, f.y); civCtx.lineTo(f.x + spikeLen, f.y);
+    civCtx.moveTo(f.x, f.y - spikeLen); civCtx.lineTo(f.x, f.y + spikeLen);
+    civCtx.stroke();
+    civCtx.restore();
 
     // hover 时的名字浮窗
     if(f.hover) {
@@ -6967,7 +6984,7 @@ function drawCivilizationStarfield() {
   const chHalf = civCanvas.height / 2;
   for (let i = 0, len = civilizationStarfield.length; i < len; i++) {
     const s = civilizationStarfield[i];
-    const tw = 0.9 + 0.08*Math.sin(civilizationFlowTime*6*s.speed + s.twinkle);
+    const tw = 0.95 + 0.04*Math.sin(civilizationFlowTime*2.5*s.speed + s.twinkle);
     // 整体旋转：每颗星绕画布中心旋转（depth 越大转得越明显）
     const rotAng = civilizationGalaxyRot * (0.35 + s.depth * 0.65);
     const cosR = Math.cos(rotAng), sinR = Math.sin(rotAng);
@@ -7282,7 +7299,7 @@ function civEraAt(pos) {
   }
   return null;
 }
-// 命中容差：基础 +9，且当前已 hover 的星点享受额外 +6 粘性区，避免边缘抖动让 tooltip/标签闪烁
+// 命中容差：基础 +20，且当前已 hover 的星点享受额外 +10 粘性区，确保点击优先于"虚空捞记忆"
 let civLastHoverFigureName = null;
 function civFigureAt(pos) {
   // 先检查上次命中（粘性，扩大命中半径让它"咬住"不闪）
@@ -7290,12 +7307,12 @@ function civFigureAt(pos) {
     const last = civilizationFigureNodes.find(f => f.name === civLastHoverFigureName);
     if (last) {
       const dx = pos.x - last.x, dy = pos.y - last.y;
-      if (Math.sqrt(dx*dx + dy*dy) < last.radius + 15) return last;
+      if (Math.sqrt(dx*dx + dy*dy) < last.radius + 30) return last;
     }
   }
   for(const f of civilizationFigureNodes) {
     const dx = pos.x - f.x, dy = pos.y - f.y;
-    if(Math.sqrt(dx*dx + dy*dy) < f.radius + 9) {
+    if(Math.sqrt(dx*dx + dy*dy) < f.radius + 20) {
       civLastHoverFigureName = f.name;
       return f;
     }
