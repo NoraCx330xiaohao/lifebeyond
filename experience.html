@@ -527,12 +527,39 @@
     #view-civilization.civ-immersive .civilization-toolbar,
     #view-civilization.civ-immersive .civilization-legend,
     #view-civilization.civ-immersive .civ-onboarding-overlay,
+    #view-civilization.civ-immersive .civilization-hint,
+    #view-civilization.civ-immersive .civ-quality-toggle,
     #view-civilization.civ-immersive .civ-detail-panel { opacity:0; pointer-events:none; transition:opacity 480ms ease; }
     #view-civilization .civilization-hud,
     #view-civilization .civilization-toolbar,
     #view-civilization .civilization-legend { transition:opacity 480ms ease; }
     .civ-immersive-hint { position:absolute; left:50%; bottom:120px; transform:translateX(-50%); z-index:30; padding:8px 18px; font-size:11px; letter-spacing:0.18em; color:rgba(255,200,160,0.75); background:rgba(8,4,20,0.45); border:1px solid rgba(255,176,122,0.18); border-radius:999px; backdrop-filter:blur(18px); pointer-events:none; opacity:0; transition:opacity 600ms ease; }
     #view-civilization.civ-immersive .civ-immersive-hint { opacity:0.85; }
+
+    /* Cinema 影院巡游 — 借鉴 shiyun Cinema.tsx 的相机自动游览 */
+    .civ-cinema-btn { padding:6px 12px; background:rgba(255,176,122,0.12); border:1px solid rgba(255,176,122,0.35); border-radius:999px; color:#FFB07A; font-size:11px; letter-spacing:0.12em; cursor:pointer; transition:all 240ms ease; }
+    .civ-cinema-btn:hover { background:rgba(255,176,122,0.22); }
+    .civ-cinema-btn.active { background:rgba(255,176,122,0.32); color:#fff; box-shadow:0 0 14px rgba(255,176,122,0.4); }
+    .civ-cinema-banner { position:absolute; left:50%; bottom:200px; transform:translate(-50%, 18px); z-index:32; min-width:280px; max-width:520px; padding:16px 28px; background:rgba(8,4,20,0.66); backdrop-filter:blur(28px); border:1px solid rgba(255,176,122,0.28); border-radius:18px; box-shadow:0 0 42px rgba(255,176,122,0.12); text-align:center; pointer-events:none; opacity:0; transition:opacity 700ms ease, transform 700ms ease; }
+    .civ-cinema-banner.show { opacity:1; transform:translate(-50%, 0); }
+    .civ-cinema-step { font-size:10.5px; letter-spacing:0.32em; color:#FFB07A; opacity:0.78; margin-bottom:6px; }
+    .civ-cinema-title { font-size:18px; font-weight:300; letter-spacing:0.18em; color:#fff; margin-bottom:8px; text-shadow:0 0 22px rgba(255,176,122,0.3); }
+    .civ-cinema-narration { font-size:12.5px; line-height:1.85; color:rgba(255,255,255,0.74); font-family:"Noto Serif SC","Source Han Serif SC","KaiTi",STKaiti,serif; letter-spacing:0.08em; }
+    .civ-cinema-progress { margin-top:12px; height:1.5px; background:rgba(255,176,122,0.15); border-radius:2px; overflow:hidden; }
+    .civ-cinema-progress span { display:block; height:100%; background:linear-gradient(90deg, transparent, #FFB07A, transparent); transform:translateX(-100%); transition:transform var(--civ-cin-dur, 5000ms) linear; }
+    .civ-cinema-banner.show .civ-cinema-progress span { transform:translateX(100%); }
+
+    /* Hover Label — 借鉴 shiyun PoemHoverLabel.tsx */
+    .civ-hover-label { position:absolute; z-index:33; padding:5px 11px; background:rgba(8,4,20,0.78); backdrop-filter:blur(14px); border:1px solid rgba(255,176,122,0.28); border-radius:999px; font-size:11px; letter-spacing:0.08em; color:#fff; pointer-events:none; opacity:0; transform:translate(14px, -28px); transition:opacity 220ms ease; white-space:nowrap; }
+    .civ-hover-label.show { opacity:0.96; }
+    .civ-hover-label-sub { color:#FFB07A; opacity:0.78; margin-left:6px; font-size:10px; }
+
+    /* HUD 画质指示 — 借鉴 shiyun HUD.tsx */
+    .civ-quality-toggle { position:absolute; left:48px; bottom:48px; z-index:25; display:flex; gap:6px; padding:6px 10px; background:rgba(8,4,20,0.55); backdrop-filter:blur(18px); border:1px solid rgba(255,176,122,0.18); border-radius:999px; font-size:10.5px; letter-spacing:0.12em; }
+    .civ-quality-toggle .civ-q-btn { padding:3px 10px; border-radius:999px; cursor:pointer; color:rgba(255,255,255,0.55); transition:all 200ms ease; }
+    .civ-quality-toggle .civ-q-btn:hover { color:#fff; }
+    .civ-quality-toggle .civ-q-btn.active { background:rgba(255,176,122,0.22); color:#FFB07A; }
+    @media (max-width:900px) { .civ-quality-toggle { left:24px; bottom:80px; } }
 
     @media (max-width:900px) {
       .civilization-hud { top:24px; left:24px; max-width:240px; padding:14px 16px; }
@@ -1224,6 +1251,7 @@
         <input id="civ-search" type="text" placeholder="搜索人物 · 关键词 · 时代..." oninput="onCivSearch(this.value)">
         <span class="civ-search-hint" id="civ-search-hint"></span>
         <button class="civ-reset" onclick="resetCivilizationView()" title="清空筛选并归位">重置</button>
+        <button class="civ-cinema-btn" id="civ-cinema-btn" onclick="toggleCivCinema()" title="自动巡游六大星系与七个时代">▶ 巡游</button>
       </div>
     </div>
 
@@ -1235,6 +1263,24 @@
       <div class="civ-legend-item"><span class="civ-legend-dot civ-legend-figure"></span>人物</div>
     </div>
     <div class="civ-immersive-hint" id="civ-immersive-hint">沉浸模式 · 按 H 键退回界面</div>
+
+    <!-- Cinema 影院巡游浮窗 -->
+    <div class="civ-cinema-banner" id="civ-cinema-banner">
+      <div class="civ-cinema-step" id="civ-cinema-step">CINEMA · 1 / 14</div>
+      <div class="civ-cinema-title" id="civ-cinema-title">文明记忆 · 起航</div>
+      <div class="civ-cinema-narration" id="civ-cinema-narration">六片影响力星系即将一一展开，我们将在每片记忆里停留片刻。</div>
+      <div class="civ-cinema-progress"><span></span></div>
+    </div>
+
+    <!-- Hover 姓名标签 -->
+    <div class="civ-hover-label" id="civ-hover-label"></div>
+
+    <!-- 画质切换 -->
+    <div class="civ-quality-toggle" id="civ-quality-toggle">
+      <span style="color:rgba(255,255,255,0.45);">画质</span>
+      <span class="civ-q-btn active" data-q="high" onclick="setCivQuality('high')">高</span>
+      <span class="civ-q-btn" data-q="low" onclick="setCivQuality('low')">低</span>
+    </div>
     <!-- 文明记忆引导（首次进入时显示，参考 shiyun Onboarding） -->
     <div class="civ-onb" id="civ-onb" style="display:none">
       <div class="civ-onb-card">
@@ -5868,6 +5914,7 @@ function initCivilizationView() {
   resizeCivCanvas();
   civCamera.reset(0, 0);
   if(!civGL) initCivThreeScene(); else resizeCivThree();
+  autoDetectCivQuality();
   initCivilizationStarfield();
   initCivilizationSystem();
   renderCivilizationToolbar();
@@ -5970,6 +6017,7 @@ function initCivilizationStarfield() {
     return p;
   }
   function makeStar(layer, count, sizeRange, alphaRange, speedScale, distFn) {
+    count = Math.max(1, Math.floor(count * civStarMult()));
     return Array.from({ length: count }, () => {
       const p = sample(distFn);
       return {
@@ -6960,6 +7008,7 @@ function renderCivilizationToolbar() {
 }
 
 function setCivDimFilter(id) {
+  interruptCivCinema();
   civilizationActiveDim = (civilizationActiveDim === id) ? null : id;
   renderCivilizationToolbar(); updateCivilizationStats();
   if(civilizationActiveDim) {
@@ -6973,6 +7022,7 @@ function setCivDimFilter(id) {
 }
 
 function setCivEraFilter(id) {
+  interruptCivCinema();
   civilizationActiveEra = (civilizationActiveEra === id) ? null : id;
   renderCivilizationToolbar(); updateCivilizationStats();
   if(civilizationActiveEra) {
@@ -6988,6 +7038,145 @@ function setCivEraFilter(id) {
 function onCivSearch(value) {
   civilizationSearch = (value || '').trim();
   updateCivilizationStats();
+}
+
+// ==================== Cinema 影院巡游（借鉴 shiyun Cinema.tsx）====================
+let civCinemaActive = false;
+let civCinemaTimer = null;
+let civCinemaIndex = 0;
+let civCinemaPlaylist = [];
+
+const CINEMA_DIM_NARRATION = {
+  society:'被千万人念起，是被记得的根本姿态。',
+  innovation:'每一束创造之光，都是文明往前推的一寸。',
+  peace:'让世界更柔软的人，他们的星永远偏蓝。',
+  humanity:'对人本身的关怀，是最深的影响力。',
+  education:'教过的人会再去教别人，星火由此延绵。',
+  change:'在时代转弯处替众人推了一把，那束光就刻进了壳层。'
+};
+const CINEMA_ERA_NARRATION = {
+  modern:'当代是这片记忆里最近的一层壳，名字仍带着余温。',
+  industrial:'蒸汽与齿轮把世界重新拼装，光从此普及。',
+  renaissance:'人重新成为衡量万物的尺度。',
+  silkroad:'商旅、僧人、译者把不同壳层之间的虚空走成了路。',
+  ancient_china:'诗、礼、书、史 —— 一片厚重而柔软的星海。',
+  ancient_greece:'第一次有人系统地问"为什么"。',
+  ancient_egypt:'当时人们就已经在思考死亡之后该如何被记得。'
+};
+
+function buildCivCinemaPlaylist() {
+  const list = [];
+  list.push({ kind:'overview', step:'起航', title:'文明记忆 · 起航',
+    narration:'六片影响力星系即将一一展开，七个时代壳层将依次发亮。在每片记忆里我们停留片刻。',
+    cx:0, cy:0, scale:1, dur:4800 });
+  civilizationDimNodes.forEach((d, i) => {
+    list.push({
+      kind:'dim',
+      step:`影响力 ${i+1} / ${civilizationDimNodes.length}`,
+      title:`${d.name} · 影响力星系`,
+      narration:(d.desc || '') + '。' + (CINEMA_DIM_NARRATION[d.id] || '这是被铭记的方向之一。'),
+      cx:d.x, cy:d.y, scale:1.55, dur:5400
+    });
+  });
+  civilizationEraNodes.forEach((e, i) => {
+    list.push({
+      kind:'era',
+      step:`时代 ${i+1} / ${civilizationEraNodes.length}`,
+      title:`${e.name} · ${e.period||''}`.trim(),
+      narration:(e.summary || '') + (CINEMA_ERA_NARRATION[e.id] ? ' ' + CINEMA_ERA_NARRATION[e.id] : ''),
+      cx:e.x, cy:e.y, scale:1.7, dur:5400
+    });
+  });
+  list.push({ kind:'overview', step:'谢幕', title:'记忆从不止息',
+    narration:'你看到的，是一段可以被传承的星海。这片彼岸，由所有被记得的人组成。',
+    cx:0, cy:0, scale:0.92, dur:5200 });
+  return list;
+}
+
+function toggleCivCinema() {
+  if(civCinemaActive) stopCivCinema(); else startCivCinema();
+}
+function startCivCinema() {
+  if(currentView !== 'civilization') return;
+  if(!civilizationDimNodes || civilizationDimNodes.length === 0) return;
+  civCinemaActive = true;
+  civCinemaPlaylist = buildCivCinemaPlaylist();
+  civCinemaIndex = 0;
+  const btn = document.getElementById('civ-cinema-btn');
+  if(btn) { btn.classList.add('active'); btn.textContent = '■ 停止'; }
+  playCivCinemaStation();
+}
+function playCivCinemaStation() {
+  if(!civCinemaActive) return;
+  if(civCinemaIndex >= civCinemaPlaylist.length) { stopCivCinema(); return; }
+  const s = civCinemaPlaylist[civCinemaIndex];
+  civCamera.targetX = window.innerWidth/2 - s.cx*s.scale;
+  civCamera.targetY = window.innerHeight/2 - s.cy*s.scale;
+  civCamera.targetScale = s.scale;
+  const banner = document.getElementById('civ-cinema-banner');
+  if(banner) {
+    document.getElementById('civ-cinema-step').textContent = `CINEMA · ${s.step}`;
+    document.getElementById('civ-cinema-title').textContent = s.title;
+    document.getElementById('civ-cinema-narration').textContent = s.narration;
+    banner.style.setProperty('--civ-cin-dur', s.dur+'ms');
+    banner.classList.remove('show');
+    void banner.offsetWidth; // 重置进度条动画
+    banner.classList.add('show');
+  }
+  civCinemaTimer = setTimeout(() => { civCinemaIndex++; playCivCinemaStation(); }, s.dur);
+}
+function stopCivCinema() {
+  civCinemaActive = false;
+  if(civCinemaTimer) { clearTimeout(civCinemaTimer); civCinemaTimer = null; }
+  const btn = document.getElementById('civ-cinema-btn');
+  if(btn) { btn.classList.remove('active'); btn.textContent = '▶ 巡游'; }
+  const banner = document.getElementById('civ-cinema-banner');
+  if(banner) banner.classList.remove('show');
+}
+function interruptCivCinema() { if(civCinemaActive) stopCivCinema(); }
+
+// ==================== Hover Label（借鉴 shiyun PoemHoverLabel.tsx）====================
+let civHoverLabelEl = null;
+function showCivHoverLabel(figure, sx, sy) {
+  if(!civHoverLabelEl) civHoverLabelEl = document.getElementById('civ-hover-label');
+  if(!civHoverLabelEl) return;
+  civHoverLabelEl.innerHTML = `${figure.avatar||''} ${figure.name}<span class="civ-hover-label-sub">${figure.year||''}</span>`;
+  civHoverLabelEl.style.left = sx + 'px';
+  civHoverLabelEl.style.top = sy + 'px';
+  civHoverLabelEl.classList.add('show');
+}
+function hideCivHoverLabel() {
+  if(!civHoverLabelEl) civHoverLabelEl = document.getElementById('civ-hover-label');
+  if(civHoverLabelEl) civHoverLabelEl.classList.remove('show');
+}
+
+// ==================== 画质切换（借鉴 shiyun detectQuality.ts + HUD.tsx）====================
+let civQuality = 'high'; // 'high' | 'low'
+function civStarMult() { return civQuality === 'low' ? 0.5 : 1.0; }
+function setCivQuality(q) {
+  if(q !== 'high' && q !== 'low') return;
+  if(q === civQuality) return;
+  civQuality = q;
+  document.querySelectorAll('.civ-quality-toggle .civ-q-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.q === q);
+  });
+  // 重新生成星海以应用新的粒子密度
+  if(civCanvas && currentView === 'civilization') initCivilizationStarfield();
+}
+// 自动检测：低端设备（窄屏 / DPR 低 / hardwareConcurrency 少）默认低画质
+function autoDetectCivQuality() {
+  try {
+    const w = window.innerWidth || 1280;
+    const cores = navigator.hardwareConcurrency || 4;
+    const dpr = window.devicePixelRatio || 1;
+    if(w < 720 || cores <= 2 || dpr < 1) {
+      civQuality = 'low';
+      const high = document.querySelector('.civ-quality-toggle .civ-q-btn[data-q="high"]');
+      const low  = document.querySelector('.civ-quality-toggle .civ-q-btn[data-q="low"]');
+      if(high) high.classList.remove('active');
+      if(low)  low.classList.add('active');
+    }
+  } catch(_) {}
 }
 
 function resetCivilizationView() {
@@ -7103,21 +7292,25 @@ function handleCivilizationMouseMove(pos, sx, sy) {
     if(f.eraRef) civilizationFocusedEra = f.eraRef.id; else civilizationFocusedEra = 'null';
     civCanvas.style.cursor = 'pointer';
     showTooltip(`${f.avatar} ${f.name}`, `${f.year}<br>影响力：${f.parentRef?f.parentRef.name:''}${f.eraRef?` · ${f.eraRef.name}`:''}<br>点击展开人物记忆`);
+    if(typeof sx === 'number' && typeof sy === 'number') showCivHoverLabel(f, sx, sy);
   } else if(d) {
     d.hover = true;
     civilizationFocusedDim = d.id;
     civCanvas.style.cursor = 'pointer';
     const count = civilizationFigureNodes.filter(x => x.dim === d.id).length;
     showTooltip(`${d.name} · 影响力星系`, `${d.desc}<br>挂载 ${count} 颗人物星`);
+    hideCivHoverLabel();
   } else if(e) {
     e.hover = true;
     civilizationFocusedEra = e.id;
     civCanvas.style.cursor = 'pointer';
     const count = civilizationFigureNodes.filter(x => x.era === e.id).length;
     showTooltip(`${e.name} · 历史时代`, `${e.period}<br>${e.summary}<br>记忆中保留 ${count} 位被命名的人。`);
+    hideCivHoverLabel();
   } else {
     civCanvas.style.cursor = 'crosshair'; // 暗示"在虚空中点一下，听一段记忆低语"
     hideTooltip();
+    hideCivHoverLabel();
   }
 }
 
@@ -7170,6 +7363,7 @@ if(civCanvas) {
   });
   civCanvas.addEventListener('mousedown', e => {
     if(currentView !== 'civilization') return;
+    interruptCivCinema();
     civCamera.startPan(e.clientX, e.clientY);
   });
   window.addEventListener('mousemove', e => {
@@ -7187,6 +7381,7 @@ if(civCanvas) {
   civCanvas.addEventListener('wheel', e => {
     if(currentView !== 'civilization') return;
     e.preventDefault();
+    interruptCivCinema();
     civCamera.zoomAt(e.clientX, e.clientY, e.deltaY > 0 ? 0.92 : 1.08);
   }, { passive: false });
   civCanvas.addEventListener('click', e => {
@@ -7228,8 +7423,8 @@ function openCivilizationFigure(f) {
     <h2>${f.avatar} ${f.name}</h2>
     <div class="date">${f.year}</div>
     <div class="content" style="line-height:1.85;">
-      <div style="border-left:2px solid ${hexToRgba(dim?dim.color:'#FFB07A',0.6)}; padding:6px 14px; margin-bottom:12px; font-style:italic; color:#f0f4f8; opacity:0.92;">「${f.quote}」</div>
-      <div style="margin-bottom:14px;">${f.journey}</div>
+      <div style="border-left:2px solid ${hexToRgba(dim?dim.color:'#FFB07A',0.6)}; padding:8px 16px; margin-bottom:14px; font-family:'Noto Serif SC','Source Han Serif SC','KaiTi',STKaiti,serif; font-size:15px; letter-spacing:0.06em; color:#fff1d6; opacity:0.94;">「${f.quote}」</div>
+      <div style="margin-bottom:14px; font-family:'Noto Serif SC','Source Han Serif SC','KaiTi',STKaiti,serif; letter-spacing:0.04em; color:rgba(255,255,255,0.85);">${f.journey}</div>
       <div style="font-size:11px;color:var(--text-dim);letter-spacing:0.08em;margin-bottom:6px;">关联星系</div>
       <div class="civ-related-row">${tags}</div>
     </div>
