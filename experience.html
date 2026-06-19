@@ -486,15 +486,15 @@
     #view-civilization::before { content:""; position:absolute; inset:0; pointer-events:none; z-index:0; background:radial-gradient(ellipse at 28% 18%, rgba(45,22,72,0.32) 0%, rgba(20,8,42,0.20) 35%, rgba(2,1,12,0.10) 70%, rgba(0,0,0,0) 100%); mix-blend-mode:screen; }
     #civilization-webgl { position:absolute !important; inset:0 !important; width:100% !important; height:100% !important; z-index:1 !important; pointer-events:none; }
     #civilization-canvas { position:absolute !important; top:0; left:0; width:100% !important; height:100% !important; z-index:2 !important; cursor:grab; background:transparent; }
-    .civilization-hud { position:absolute; top:48px; left:48px; z-index:25; max-width:340px; padding:18px 22px; background:rgba(8,4,20,0.55); backdrop-filter:blur(24px); border:1px solid rgba(255,176,122,0.22); border-radius:18px; pointer-events:auto; }
-    .civilization-close { display:inline-block; margin-bottom:14px; padding:8px 16px; background:var(--glass); backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:18px; font-size:11px; letter-spacing:0.1em; color:var(--text-dim); cursor:pointer; transition:all 0.3s ease; }
+    .civilization-hud { position:absolute; top:32px; left:32px; z-index:25; max-width:218px; padding:9px 12px 8px; background:rgba(8,4,20,0.42); backdrop-filter:blur(18px); border:1px solid rgba(255,176,122,0.18); border-radius:12px; pointer-events:auto; }
+    .civilization-close { display:inline-block; margin-bottom:6px; padding:4px 10px; background:var(--glass); backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:12px; font-size:9.5px; letter-spacing:0.08em; color:var(--text-dim); cursor:pointer; transition:all 0.3s ease; }
     .civilization-close:hover { color:var(--text); border-color:rgba(255,176,122,0.35); background:var(--glass-strong); transform:translateX(-2px); }
-    .civilization-hud h2 { font-size:22px; font-weight:300; letter-spacing:0.14em; margin-bottom:4px; color:#fff; text-shadow:0 0 28px rgba(255,176,122,0.25); }
-    .civilization-hud-sub { font-size:11px; color:#FFB07A; letter-spacing:0.08em; margin-bottom:10px; opacity:0.85; }
-    .civilization-hud p { font-size:12.5px; color:var(--text-dim); line-height:1.75; margin-bottom:12px; }
-    .civilization-stats { display:flex; gap:14px; flex-wrap:wrap; }
-    .civ-stat { display:flex; flex-direction:column; gap:2px; }
-    .civ-stat-num { font-size:18px; font-weight:300; color:#fff; letter-spacing:0.04em; }
+    .civilization-hud h2 { font-size:12.5px; font-weight:300; letter-spacing:0.1em; margin-bottom:1px; color:#fff; text-shadow:0 0 18px rgba(255,176,122,0.22); }
+    .civilization-hud-sub { font-size:9px; color:#FFB07A; letter-spacing:0.05em; margin-bottom:4px; opacity:0.78; }
+    .civilization-hud p { font-size:10px; color:var(--text-dim); line-height:1.45; margin-bottom:6px; }
+    .civilization-stats { display:flex; gap:8px; flex-wrap:wrap; font-size:9.5px; }
+    .civ-stat { display:flex; flex-direction:column; gap:1px; }
+    .civ-stat-num { font-size:14px; font-weight:300; color:#fff; letter-spacing:0.04em; }
     .civ-stat-label { font-size:10px; color:var(--text-dim); letter-spacing:0.08em; }
 
     .civilization-toolbar { position:absolute; top:48px; right:48px; z-index:25; width:340px; padding:14px 18px; background:rgba(8,4,20,0.55); backdrop-filter:blur(24px); border:1px solid rgba(255,176,122,0.18); border-radius:18px; display:flex; flex-direction:column; gap:10px; }
@@ -1250,8 +1250,8 @@
     <div class="civilization-hud" id="civilization-hud">
       <div class="civilization-close" onclick="goBack()">← 返回</div>
       <h2 id="civilization-hud-title">文明记忆宇宙</h2>
-      <div class="civilization-hud-sub" id="civilization-hud-sub">Civilization Galaxy · 漫游一段被记住的人类记忆</div>
-      <p id="civilization-hud-desc">六片影响力星系穿过六段历史时代。人物只是挂在星系下的星 —— 不按财富与名气，而按影响、贡献与启发。</p>
+      <div class="civilization-hud-sub" id="civilization-hud-sub">Civilization Galaxy · 漫游记忆</div>
+      <p id="civilization-hud-desc">六影响力穿过六时代，人物即星点 —— 不按名利，按贡献与启发。</p>
       <div class="civilization-stats" id="civilization-stats"></div>
     </div>
 
@@ -5481,7 +5481,7 @@ let civilizationStarfield = [];
 let civilizationNebulae = [];
 // === 流场（Flow Field）状态：把整片星海当作一个连续流体场处理 ===
 let civilizationFlowTime = 0;
-let civilizationGalaxyRot = 0; // 银河整体缓慢旋转（每帧+=0.00045）
+let civilizationGalaxyRot = 0; // 银河整体缓慢旋转（每帧+=0.000008，约 0.025°/秒）
 let civilizationClickRipples = []; // 点击反馈涟漪：{x,y,t,life}（世界坐标）
 let civAnimToken = 0; // RAF 互斥 token：每次 init 自增，旧循环检测到 token 不匹配会自动退出
 let civilizationMouseField = { wx: 0, wy: 0, prevWx: 0, prevWy: 0, vx: 0, vy: 0, strength: 0, lastSeen: 0 };
@@ -6059,28 +6059,23 @@ function initCivilizationStarfield() {
       };
     });
   }
-  // === 五层星海，总数约 6700（远 → 近） ===
-  // Layer 0: 远方银河尘 (3000) - 极小、低 alpha、稀微闪烁
-  // Layer 1: 中层星群 (2200) - 中等亮度
-  // Layer 2: 近层亮星 (1100) - 明显发光
-  // Layer 3: 前景大星 (350) - 大且呼吸
-  // Layer 4: 焦点超亮 (60) - 视觉锚点
-  const deep = makeStar(0, 1800, [0.25, 1.0], [0.18, 0.42], 0.01, spiralPos)
-    .concat(makeStar(0, 600, [0.25, 1.0], [0.18, 0.42], 0.01, clusterPos))
-    .concat(makeStar(0, 600, [0.25, 1.0], [0.18, 0.42], 0.01, haloPos));
-  const mid = makeStar(1, 1500, [0.6, 1.8], [0.32, 0.62], 0.02, spiralPos)
-    .concat(makeStar(1, 400, [0.6, 1.8], [0.32, 0.62], 0.02, clusterPos))
-    .concat(makeStar(1, 300, [0.6, 1.8], [0.32, 0.62], 0.02, haloPos));
-  const near = makeStar(2, 700, [1.0, 2.6], [0.45, 0.78], 0.04, spiralPos)
-    .concat(makeStar(2, 250, [1.0, 2.6], [0.45, 0.78], 0.04, clusterPos))
-    .concat(makeStar(2, 150, [1.0, 2.6], [0.45, 0.78], 0.04, haloPos));
-  // Layer 3 用 depth=1.4 让视差更夸张
-  const fore = makeStar(2, 230, [1.8, 4.0], [0.62, 0.92], 0.06, spiralPos)
-    .concat(makeStar(2, 80, [1.8, 4.0], [0.62, 0.92], 0.06, clusterPos))
-    .concat(makeStar(2, 40, [1.8, 4.0], [0.62, 0.92], 0.06, haloPos));
+  // === 五层星海，总数 ~9000（远 → 近，更密更小，纯光点） ===
+  const deep = makeStar(0, 2400, [0.18, 0.7], [0.16, 0.4], 0.01, spiralPos)
+    .concat(makeStar(0, 800, [0.18, 0.7], [0.16, 0.4], 0.01, clusterPos))
+    .concat(makeStar(0, 800, [0.18, 0.7], [0.16, 0.4], 0.01, haloPos));
+  const mid = makeStar(1, 1900, [0.4, 1.2], [0.3, 0.58], 0.02, spiralPos)
+    .concat(makeStar(1, 520, [0.4, 1.2], [0.3, 0.58], 0.02, clusterPos))
+    .concat(makeStar(1, 380, [0.4, 1.2], [0.3, 0.58], 0.02, haloPos));
+  const near = makeStar(2, 880, [0.7, 1.7], [0.42, 0.74], 0.04, spiralPos)
+    .concat(makeStar(2, 320, [0.7, 1.7], [0.42, 0.74], 0.04, clusterPos))
+    .concat(makeStar(2, 180, [0.7, 1.7], [0.42, 0.74], 0.04, haloPos));
+  // Layer 3 用 depth=1.25 让视差更夸张
+  const fore = makeStar(2, 270, [1.2, 2.6], [0.6, 0.9], 0.06, spiralPos)
+    .concat(makeStar(2, 90, [1.2, 2.6], [0.6, 0.9], 0.06, clusterPos))
+    .concat(makeStar(2, 50, [1.2, 2.6], [0.6, 0.9], 0.06, haloPos));
   fore.forEach(s => { s.depth = 1.25; s.layer = 3; });
-  // Layer 4 焦点超亮
-  const anchor = makeStar(2, 60, [3.5, 6.5], [0.85, 1.0], 0.08, haloPos);
+  // Layer 4 焦点超亮（小但极亮的锚点光，不形成大气泡）
+  const anchor = makeStar(2, 70, [2.4, 4.2], [0.85, 1.0], 0.08, haloPos);
   anchor.forEach(s => { s.depth = 1.45; s.layer = 4; s.glow = true; });
   civilizationStarfield = deep.concat(mid).concat(near).concat(fore).concat(anchor);
 }
@@ -6298,7 +6293,7 @@ function drawCivilizationView() {
   }
   civCamera.update();
   civilizationFlowTime += 0.0085;       // 流场时间步进
-  civilizationGalaxyRot += 0.00004;     // 银河整体极缓自转（约 0.14°/秒，几近静止呼吸感）
+  civilizationGalaxyRot += 0.000008;    // 银河整体极缓自转（约 0.025°/秒，几乎察觉不到的呼吸感）
   updateCivilizationField();             // 流场更新粒子位置
   updateCivThreeScene();                 // Three.js GPU 星海渲染
   civCtx.setTransform(1,0,0,1,0,0);
@@ -6987,10 +6982,13 @@ function drawCivilizationStarfield() {
     const sizeFactor = 1 + Math.abs(parallax) * 0.18 * (Math.abs(tx) + Math.abs(ty));
     civCtx.fillStyle = hexToRgba(s.color, s.alpha*tw);
     civCtx.beginPath(); civCtx.arc(px, py, s.size * sizeFactor, 0, Math.PI*2); civCtx.fill();
-    // 焦点超亮星 + Layer 3 大星：加柔光晕
-    if (s.glow || s.layer === 3) {
-      civCtx.fillStyle = hexToRgba(s.color, s.alpha*tw*0.18);
-      civCtx.beginPath(); civCtx.arc(px, py, s.size * sizeFactor * 3.6, 0, Math.PI*2); civCtx.fill();
+    // 仅锚点星加极薄光晕（不形成气泡），layer3 也只加非常薄的辉光
+    if (s.glow) {
+      civCtx.fillStyle = hexToRgba(s.color, s.alpha*tw*0.14);
+      civCtx.beginPath(); civCtx.arc(px, py, s.size * sizeFactor * 2.0, 0, Math.PI*2); civCtx.fill();
+    } else if (s.layer === 3) {
+      civCtx.fillStyle = hexToRgba(s.color, s.alpha*tw*0.10);
+      civCtx.beginPath(); civCtx.arc(px, py, s.size * sizeFactor * 1.6, 0, Math.PI*2); civCtx.fill();
     }
   }
   // 虚空星座（点击空白时升起的临时连线）
@@ -8505,34 +8503,34 @@ function hexToRgba(hex,alpha){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex
 // === Civilization 节点统一视觉：Starburst 闪光亮点（取代气泡感）===
 function drawCivStarburst(ctx, x, y, size, color, alpha, rot, longRayMult) {
   if(size <= 0 || alpha <= 0) return;
-  const lm = longRayMult || 3.2;
+  const lm = longRayMult || 1.8;
   ctx.save();
-  // 极小内核光晕（仅 size*1.4 范围，不形成大气泡）
-  const g = ctx.createRadialGradient(x, y, 0, x, y, size*1.5);
+  // 紧凑内核光晕（不形成大气泡）
+  const g = ctx.createRadialGradient(x, y, 0, x, y, size*1.1);
   g.addColorStop(0, hexToRgba(color, Math.min(1, alpha*1.05)));
-  g.addColorStop(0.55, hexToRgba(color, alpha*0.4));
+  g.addColorStop(0.55, hexToRgba(color, alpha*0.35));
   g.addColorStop(1, hexToRgba(color, 0));
   ctx.fillStyle = g;
-  ctx.beginPath(); ctx.arc(x, y, size*1.5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y, size*1.1, 0, Math.PI*2); ctx.fill();
   // 中心高亮实心
   ctx.fillStyle = `rgba(255,253,242,${Math.min(1, alpha*1.1)})`;
-  ctx.beginPath(); ctx.arc(x, y, Math.max(0.6, size*0.7), 0, Math.PI*2); ctx.fill();
-  // 十字光闪（diffraction spikes）
+  ctx.beginPath(); ctx.arc(x, y, Math.max(0.5, size*0.55), 0, Math.PI*2); ctx.fill();
+  // 十字光闪（紧凑）
   ctx.translate(x, y);
   if(rot) ctx.rotate(rot);
   ctx.lineCap = 'round';
-  // 长水平/垂直
-  ctx.strokeStyle = hexToRgba(color, alpha*0.85);
-  ctx.lineWidth = Math.max(0.5, size*0.18);
+  // 主水平/垂直
+  ctx.strokeStyle = hexToRgba(color, alpha*0.7);
+  ctx.lineWidth = Math.max(0.4, size*0.14);
   ctx.beginPath();
   ctx.moveTo(-size*lm, 0); ctx.lineTo(size*lm, 0);
   ctx.moveTo(0, -size*lm); ctx.lineTo(0, size*lm);
   ctx.stroke();
-  // 短斜十字 ✕
-  ctx.strokeStyle = hexToRgba(color, alpha*0.45);
-  ctx.lineWidth = Math.max(0.4, size*0.13);
+  // 极短斜十字
+  ctx.strokeStyle = hexToRgba(color, alpha*0.32);
+  ctx.lineWidth = Math.max(0.3, size*0.1);
   ctx.beginPath();
-  const r2 = size*lm*0.45;
+  const r2 = size*lm*0.35;
   ctx.moveTo(-r2, -r2); ctx.lineTo(r2, r2);
   ctx.moveTo(-r2, r2);  ctx.lineTo(r2, -r2);
   ctx.stroke();
