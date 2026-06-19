@@ -5016,7 +5016,327 @@ const civilizationFigures = [
     related:['教育推动者','社会贡献','人文精神'] },
   { name:'季羡林',    dim:'education', era:null,         year:'1911 — 2009',  avatar:'🪷', quote:'人间自有真情在。',
     journey:'十年留德归国，用一辈子点亮东方学，把学问做成温和的人格。',
-    related:['教育推动者','留学生','人文精神'] }
+    related:['教育推动者','留学生','人文精神'] },
+
+  // ============ 第二批扩充 · 古代中国族群（思想家 / 工程 / 文学 / 改革） ============
+  { name:'墨子',     dim:'peace',     era:'ancient-cn', year:'BCE 470 — 391', avatar:'⚖️', quote:'兼爱非攻。',
+    journey:'木匠出身的哲学家，用机关与逻辑对抗战争，是中国最早的工程伦理学派。',
+    related:['古代中国','和平推动者','创新推动','墨家'] },
+  { name:'庄子',     dim:'humanity',  era:'ancient-cn', year:'BCE 369 — 286', avatar:'🦋', quote:'吾生也有涯，而知也无涯。',
+    journey:'濮水钓鱼不愿做相，把逍遥写成中国心灵的另一条出路。',
+    related:['古代中国','人文精神','哲学家','道家'] },
+  { name:'孟子',     dim:'education', era:'ancient-cn', year:'BCE 372 — 289', avatar:'🌿', quote:'民为贵，社稷次之，君为轻。',
+    journey:'继孔子之后的儒家二圣，把性善论与民本写进士大夫的脊梁。',
+    related:['古代中国','教育推动者','儒家','孔子'] },
+  { name:'韩非',     dim:'era',       era:'ancient-cn', year:'BCE 280 — 233', avatar:'⚔️', quote:'法不阿贵，绳不挠曲。',
+    journey:'法家集大成者，奠定了后两千年中央集权的制度蓝图。',
+    related:['古代中国','时代改变','法家','哲学家'] },
+  { name:'王羲之',   dim:'humanity',  era:'ancient-cn', year:'303 — 361',     avatar:'🖌️', quote:'仰观宇宙之大，俯察品类之盛。',
+    journey:'兰亭一聚写下《兰亭序》，让汉字第一次有了"飘若浮云"的体态。',
+    related:['古代中国','艺术家','人文精神','书法'] },
+  { name:'吴道子',   dim:'humanity',  era:'ancient-cn', year:'680 — 759',     avatar:'🐉', quote:'画圣笔下，吴带当风。',
+    journey:'盛唐画圣，让壁画的衣纹真的会随风飘动。',
+    related:['古代中国','艺术家','人文精神'] },
+  { name:'苏轼',     dim:'humanity',  era:'ancient-cn', year:'1037 — 1101',   avatar:'🍵', quote:'一蓑烟雨任平生。',
+    journey:'词、文、画、政、食皆通的人间通才，把贬谪写成不灭的潇洒。',
+    related:['古代中国','人文精神','艺术家','作家'] },
+  { name:'李清照',   dim:'humanity',  era:'ancient-cn', year:'1084 — 1155',   avatar:'🌸', quote:'寻寻觅觅，冷冷清清，凄凄惨惨戚戚。',
+    journey:'南宋第一女词人，把家国之痛与爱情之思写成最纤细的金石声。',
+    related:['古代中国','人文精神','女性科学家','作家'] },
+  { name:'范仲淹',   dim:'social',    era:'ancient-cn', year:'989 — 1052',    avatar:'🏯', quote:'先天下之忧而忧，后天下之乐而乐。',
+    journey:'庆历新政的发起人，把士大夫的"以天下为己任"刻成政治准则。',
+    related:['古代中国','社会贡献','改革者','教育推动者'] },
+  { name:'王安石',   dim:'era',       era:'ancient-cn', year:'1021 — 1086',   avatar:'📜', quote:'天变不足畏，祖宗不足法。',
+    journey:'北宋熙宁变法的总设计师，用财政与教育两条腿撼动整个帝国。',
+    related:['古代中国','时代改变','改革者'] },
+  { name:'朱熹',     dim:'education', era:'ancient-cn', year:'1130 — 1200',   avatar:'📚', quote:'问渠那得清如许，为有源头活水来。',
+    journey:'南宋理学集大成者，重订四书让其成为后六百年中国的精神课本。',
+    related:['古代中国','教育推动者','哲学家','儒家'] },
+  { name:'王阳明',   dim:'education', era:'ancient-cn', year:'1472 — 1529',   avatar:'⛰️', quote:'知行合一，事上磨练。',
+    journey:'龙场悟道，提出心即理，知行合一影响东亚至今。',
+    related:['古代中国','教育推动者','哲学家','儒家'] },
+  { name:'徐霞客',   dim:'innovation',era:'ancient-cn', year:'1587 — 1641',   avatar:'🥾', quote:'达人所之未达，探人所之未知。',
+    journey:'三十年走遍十六省，把山河第一次系统地写进《徐霞客游记》。',
+    related:['古代中国','创新推动','留学生','探险家'] },
+  { name:'李时珍',   dim:'innovation',era:'ancient-cn', year:'1518 — 1593',   avatar:'🌾', quote:'医者，意也。',
+    journey:'三十年走访山林，写成 1892 种药材的《本草纲目》。',
+    related:['古代中国','创新推动','科学家'] },
+  { name:'郦道元',   dim:'innovation',era:'ancient-cn', year:'470 — 527',     avatar:'🌊', quote:'水所以利万物。',
+    journey:'《水经注》记载 1252 条河流，让中国地理学第一次有了系统骨架。',
+    related:['古代中国','创新推动','科学家'] },
+  { name:'沈括',     dim:'innovation',era:'ancient-cn', year:'1031 — 1095',   avatar:'🧭', quote:'格物致知。',
+    journey:'《梦溪笔谈》记录磁针、活字、潮汐，是中国百科全书式的早期科学文本。',
+    related:['古代中国','创新推动','科学家'] },
+  { name:'孙武',     dim:'peace',     era:'ancient-cn', year:'BCE 545 — 470', avatar:'⚔️', quote:'不战而屈人之兵，善之善者也。',
+    journey:'《孙子兵法》把战争写成最不愿动手的智慧。',
+    related:['古代中国','和平推动者','兵家'] },
+  { name:'班昭',     dim:'humanity',  era:'ancient-cn', year:'45 — 117',      avatar:'📕', quote:'女子之德，在乎四行。',
+    journey:'续兄班固之业写《汉书》，是中国第一位有姓名的女史学家。',
+    related:['古代中国','人文精神','女性科学家','教育推动者'] },
+  { name:'蔡文姬',   dim:'humanity',  era:'ancient-cn', year:'177 — ?',       avatar:'🪕', quote:'胡笳一会兮琴一拍，心愤怨兮无人知。',
+    journey:'流落匈奴十二年，《胡笳十八拍》是民族伤痕里最高的诗意。',
+    related:['古代中国','人文精神','女性科学家','作家'] },
+
+  // ============ 古希腊扩充（数学 / 戏剧 / 医学 / 政治） ============
+  { name:'毕达哥拉斯', dim:'innovation', era:'ancient-gr', year:'BCE 570 — 495', avatar:'🔢', quote:'万物皆数。',
+    journey:'毕氏定理 + 整数比例美学，把数学和宇宙的诗意第一次绑在一起。',
+    related:['古希腊','创新推动','科学家','教育推动者'] },
+  { name:'欧几里得', dim:'innovation', era:'ancient-gr', year:'BCE 325 — 265', avatar:'📐', quote:'几何无王者之路。',
+    journey:'《几何原本》十三卷，用公理推演贯穿西方数学两千年。',
+    related:['古希腊','创新推动','科学家','教育推动者'] },
+  { name:'希波克拉底', dim:'social',  era:'ancient-gr', year:'BCE 460 — 370', avatar:'⚕️', quote:'首先，不要伤害。',
+    journey:'西方医学之父，留下医生的职业伦理誓词，至今仍在被宣读。',
+    related:['古希腊','社会贡献','科学家'] },
+  { name:'索福克勒斯', dim:'humanity',era:'ancient-gr', year:'BCE 497 — 406', avatar:'🎭', quote:'人是万物中最神奇的事物。',
+    journey:'《俄狄浦斯王》《安提戈涅》——用悲剧把命运与抉择写到最深处。',
+    related:['古希腊','人文精神','作家'] },
+  { name:'萨福',     dim:'humanity',  era:'ancient-gr', year:'BCE 630 — 570', avatar:'🌹', quote:'有人说大地上最美的事物是骑兵，是步兵，是舰队；我说，是你所爱。',
+    journey:'莱斯博斯岛上的女诗人，把抒情诗和女性视角第一次写进西方文学。',
+    related:['古希腊','人文精神','女性科学家','作家'] },
+  { name:'伯里克利', dim:'era',       era:'ancient-gr', year:'BCE 495 — 429', avatar:'🏛️', quote:'我们的政体之所以叫民主，因为权力在多数人手中。',
+    journey:'雅典黄金时代的政治家，让民主与艺术同时达到第一个巅峰。',
+    related:['古希腊','时代改变','和平推动者'] },
+  { name:'第欧根尼', dim:'humanity',  era:'ancient-gr', year:'BCE 412 — 323', avatar:'🪣', quote:'请别挡住我的阳光。',
+    journey:'住在木桶里嘲笑亚历山大大帝，把哲学过成了行为艺术。',
+    related:['古希腊','人文精神','哲学家'] },
+
+  // ============ 古埃及扩充 ============
+  { name:'哈特谢普苏特', dim:'era', era:'ancient-eg', year:'BCE 1507 — 1458', avatar:'🦅', quote:'我做的是阿蒙嘱托我做的。',
+    journey:'埃及历史上最有作为的女法老，把国家从军国主义带回贸易与建筑。',
+    related:['古埃及','时代改变','女性科学家','和平推动者'] },
+  { name:'拉美西斯二世', dim:'era', era:'ancient-eg', year:'BCE 1303 — 1213', avatar:'🛕', quote:'让我的名字与太阳同在。',
+    journey:'在位 66 年的伟大法老，留下阿布辛贝神庙与最早的国际和约。',
+    related:['古埃及','时代改变','和平推动者'] },
+  { name:'图特摩斯三世', dim:'era', era:'ancient-eg', year:'BCE 1481 — 1425', avatar:'🪖', quote:'我使埃及边境延伸至最远之地。',
+    journey:'埃及的"拿破仑"，又愿意把战俘送回家乡，是早期东西方协议的开拓者。',
+    related:['古埃及','时代改变'] },
+  { name:'罗塞塔石匠', dim:'innovation',era:'ancient-eg', year:'BCE 196',     avatar:'🪨', quote:'同一份诏书，三种文字。',
+    journey:'无名工匠在玄武岩上刻下三语对照，让两千年后人类破解了象形文字。',
+    related:['古埃及','创新推动','匠人'] },
+
+  // ============ 丝绸之路扩充 ============
+  { name:'张骞',     dim:'era',       era:'silk-road',  year:'BCE 164 — 114', avatar:'🐎', quote:'凿空西域。',
+    journey:'两次出使西域共十三年，把汉朝的目光第一次伸向中亚。',
+    related:['丝绸之路','时代改变','留学生','探险家'] },
+  { name:'班超',     dim:'peace',     era:'silk-road',  year:'32 — 102',      avatar:'🏹', quote:'不入虎穴，焉得虎子。',
+    journey:'三十六骑定西域三十一年，让丝绸之路从断到通再到稳。',
+    related:['丝绸之路','和平推动者','张骞'] },
+  { name:'法显',     dim:'education', era:'silk-road',  year:'337 — 422',     avatar:'🪷', quote:'求法不惜身。',
+    journey:'六十二岁西行求法十四年，把南亚带回的佛典刻进汉文化的骨头。',
+    related:['丝绸之路','教育推动者','留学生','玄奘'] },
+  { name:'阿维森纳', dim:'innovation',era:'silk-road',  year:'980 — 1037',    avatar:'⚕️', quote:'医学既是艺术也是科学。',
+    journey:'波斯医学集大成者，《医典》在欧洲做了五百年的标准教材。',
+    related:['丝绸之路','创新推动','科学家'] },
+  { name:'拉施德丁', dim:'humanity',  era:'silk-road',  year:'1247 — 1318',   avatar:'📜', quote:'写下众人的历史，就是写下众人的尊严。',
+    journey:'伊尔汗国宰相，用波斯文写出第一部"世界史"，连接东亚与地中海。',
+    related:['丝绸之路','人文精神','作家'] },
+  { name:'郑玄',     dim:'education', era:'silk-road',  year:'127 — 200',     avatar:'📖', quote:'立人之道，仁义而已。',
+    journey:'东汉古文经学集大成者，注遍五经，连接齐鲁与西域学风。',
+    related:['丝绸之路','教育推动者','儒家'] },
+
+  // ============ 文艺复兴扩充 ============
+  { name:'拉斐尔',   dim:'humanity',  era:'renaissance', year:'1483 — 1520',  avatar:'👼', quote:'美是真的光辉。',
+    journey:'圣母与雅典学院的画师，把和谐与温柔写成文艺复兴的另一面。',
+    related:['文艺复兴','艺术家','人文精神','达·芬奇'] },
+  { name:'波提切利', dim:'humanity',  era:'renaissance', year:'1445 — 1510',  avatar:'🐚', quote:'美的诞生不需要解释。',
+    journey:'《维纳斯的诞生》——把异教神话重新画进基督教世界的天空。',
+    related:['文艺复兴','艺术家','人文精神'] },
+  { name:'马基雅维利', dim:'era',     era:'renaissance', year:'1469 — 1527',  avatar:'📜', quote:'宁可被人怕，胜过被人爱。',
+    journey:'《君主论》把政治从道德剥离出来，开启现代政治学。',
+    related:['文艺复兴','时代改变','哲学家'] },
+  { name:'蒙田',     dim:'humanity',  era:'renaissance', year:'1533 — 1592',  avatar:'🍷', quote:'我知道什么呢？',
+    journey:'独自塔楼里写下《随笔集》，开创了"我是谁"这一现代写作主题。',
+    related:['文艺复兴','人文精神','作家'] },
+  { name:'开普勒',   dim:'innovation',era:'renaissance', year:'1571 — 1630',  avatar:'🪐', quote:'轨道不是圆，是椭圆。',
+    journey:'用三大定律给行星运动写下数学骨架，铺好了牛顿到来的桥。',
+    related:['文艺复兴','创新推动','科学家','哥白尼'] },
+  { name:'笛卡尔',   dim:'education', era:'renaissance', year:'1596 — 1650',  avatar:'🧠', quote:'我思故我在。',
+    journey:'用方法论与坐标系把哲学和数学一起带进现代。',
+    related:['文艺复兴','教育推动者','哲学家','创新推动'] },
+  { name:'维萨里',   dim:'innovation',era:'renaissance', year:'1514 — 1564',  avatar:'🦴', quote:'看清身体，就是看清自己。',
+    journey:'《人体的构造》第一次让欧洲解剖学摆脱了一千年的盖伦权威。',
+    related:['文艺复兴','创新推动','科学家'] },
+  { name:'圣女贞德', dim:'peace',     era:'renaissance', year:'1412 — 1431',  avatar:'⚔️', quote:'我从不害怕，神与我同在。',
+    journey:'十七岁少女带兵解救奥尔良，用纯粹与勇敢撑起一段民族记忆。',
+    related:['文艺复兴','和平推动者','女性科学家'] },
+
+  // ============ 工业革命扩充 ============
+  { name:'牛顿',     dim:'innovation',era:'industry',    year:'1643 — 1727',  avatar:'🍎', quote:'如果说我看得更远，那是因为站在巨人的肩膀上。',
+    journey:'三大定律 + 万有引力 + 微积分，把宇宙整理成可被预测的钟表。',
+    related:['工业革命','创新推动','科学家','开普勒'] },
+  { name:'拉瓦锡',   dim:'innovation',era:'industry',    year:'1743 — 1794',  avatar:'⚗️', quote:'物质既不会创造也不会消失。',
+    journey:'近代化学之父，确立质量守恒，把炼金术彻底转成科学。',
+    related:['工业革命','创新推动','科学家'] },
+  { name:'法拉第',   dim:'innovation',era:'industry',    year:'1791 — 1867',  avatar:'🧲', quote:'没什么比好奇心更值得追随。',
+    journey:'电磁感应的发现者，让电力从实验室走进千家万户。',
+    related:['工业革命','创新推动','科学家'] },
+  { name:'麦克斯韦', dim:'innovation',era:'industry',    year:'1831 — 1879',  avatar:'📡', quote:'让我们用方程谈论光。',
+    journey:'四个方程统一电磁学，预言无线电波，是现代物理学的桥梁。',
+    related:['工业革命','创新推动','科学家'] },
+  { name:'巴贝奇',   dim:'innovation',era:'industry',    year:'1791 — 1871',  avatar:'⚙️', quote:'机器应当能思考。',
+    journey:'分析机的设想者，被称为"计算机之父"，比真正的电脑早一百年。',
+    related:['工业革命','创新推动','创业者','图灵'] },
+  { name:'阿达·洛芙莱斯', dim:'innovation',era:'industry', year:'1815 — 1852', avatar:'💻', quote:'机器能写出诗，只要我们告诉它怎么写。',
+    journey:'第一段计算机程序的作者，是计算机历史上最早的女性程序员。',
+    related:['工业革命','创新推动','女性科学家','巴贝奇'] },
+  { name:'诺贝尔',   dim:'social',    era:'industry',    year:'1833 — 1896',  avatar:'🧨', quote:'希望我的奖能让世界向善。',
+    journey:'发明炸药致富，又用全部财产成立诺贝尔奖，把工业的力量转向人类。',
+    related:['工业革命','社会贡献','创新推动','创业者'] },
+  { name:'西门子',   dim:'innovation',era:'industry',    year:'1816 — 1892',  avatar:'⚡', quote:'电是工业的血液。',
+    journey:'发明发电机，创立西门子公司，是德国工业崛起的奠基人。',
+    related:['工业革命','创新推动','创业者'] },
+  { name:'卡内基',   dim:'social',    era:'industry',    year:'1835 — 1919',  avatar:'📚', quote:'富人有义务成为穷人的受托人。',
+    journey:'钢铁大王晚年捐建 2509 座公共图书馆，把私人财富还给社会教育。',
+    related:['工业革命','社会贡献','创业者','教育推动者'] },
+  { name:'狄更斯',   dim:'humanity',  era:'industry',    year:'1812 — 1870',  avatar:'🪔', quote:'这是最好的时代，也是最坏的时代。',
+    journey:'用小说揭开维多利亚时代的童工与贫民窟，让文学成为社会的良心。',
+    related:['工业革命','人文精神','作家','社会贡献'] },
+  { name:'雨果',     dim:'humanity',  era:'industry',    year:'1802 — 1885',  avatar:'🕯️', quote:'未来有几个名字：弱者称之为不可能，勇者称之为机遇。',
+    journey:'《悲惨世界》《巴黎圣母院》——把法国的良心写成全人类的良心。',
+    related:['工业革命','人文精神','作家','社会贡献'] },
+  { name:'马克思',   dim:'era',       era:'industry',    year:'1818 — 1883',  avatar:'📕', quote:'哲学家们只是用不同方式解释世界，问题在于改变它。',
+    journey:'用《资本论》给工业革命写下另一种镜像，深刻改变 20 世纪历史。',
+    related:['工业革命','时代改变','哲学家'] },
+  { name:'门捷列夫', dim:'innovation',era:'industry',    year:'1834 — 1907',  avatar:'🧪', quote:'科学在等待秩序。',
+    journey:'梦中排出元素周期表，让化学变得可以被预测。',
+    related:['工业革命','创新推动','科学家'] },
+  { name:'巴斯德',   dim:'social',    era:'industry',    year:'1822 — 1895',  avatar:'🦠', quote:'机会偏爱有准备的头脑。',
+    journey:'微生物理论 + 巴氏消毒 + 狂犬疫苗，让现代医学第一次摸到看不见的敌人。',
+    related:['工业革命','社会贡献','科学家'] },
+  { name:'弗洛伊德', dim:'humanity',  era:'industry',    year:'1856 — 1939',  avatar:'🛋️', quote:'梦是通往无意识的捷径。',
+    journey:'精神分析的开创者，把人心第一次被当作可以被研究的领域。',
+    related:['工业革命','人文精神','科学家'] },
+  { name:'孟德尔',   dim:'innovation',era:'industry',    year:'1822 — 1884',  avatar:'🌱', quote:'豌豆教我读懂生命。',
+    journey:'修道院里的豌豆实验，奠定了遗传学的基本定律。',
+    related:['工业革命','创新推动','科学家'] },
+
+  // ============ 当代扩充 · 影响力链路 ============
+  { name:'罗莎·帕克斯', dim:'peace', era:null,         year:'1913 — 2005',  avatar:'🚌', quote:'唯一让我筋疲力尽的，是屈服。',
+    journey:'蒙哥马利公交车上一次"不让座"，点燃了美国民权运动的整段历史。',
+    related:['和平推动者','社会贡献','金恩博士'] },
+  { name:'尤努斯',     dim:'social',  era:null,         year:'1940 —',       avatar:'💰', quote:'贫穷不是穷人的错。',
+    journey:'孟加拉乡村银行的创始人，用 27 美元起家把"穷人也能借钱"做成全球运动。',
+    related:['社会贡献','创业者','和平推动者'] },
+  { name:'冯·诺依曼', dim:'innovation',era:null,        year:'1903 — 1957',  avatar:'🧠', quote:'年轻人，在数学里你不理解事物，你只是习惯它们。',
+    journey:'计算机体系结构、博弈论、量子力学——20 世纪最锋利的数学头脑之一。',
+    related:['创新推动','科学家','图灵','留学生'] },
+  { name:'香农',       dim:'innovation',era:null,        year:'1916 — 2001',  avatar:'📡', quote:'信息可以被度量。',
+    journey:'信息论之父，用 0 和 1 给整个数字时代写下出生证。',
+    related:['创新推动','科学家','教育推动者'] },
+  { name:'丹尼斯·里奇', dim:'innovation',era:null,       year:'1941 — 2011',  avatar:'⌨️', quote:'C 让计算机会说话。',
+    journey:'C 语言 + Unix 的共同作者，让软件第一次成为可移植的工艺品。',
+    related:['创新推动','科学家'] },
+  { name:'伯纳斯-李', dim:'era',     era:null,         year:'1955 —',       avatar:'🌐', quote:'这是给所有人的。',
+    journey:'万维网的发明者，把互联网开源给全世界，改变所有人的生活。',
+    related:['时代改变','创新推动','科学家','留学生'] },
+  { name:'Linus Torvalds', dim:'innovation', era:null,  year:'1969 —',       avatar:'🐧', quote:'仁慈的独裁者也是独裁者。',
+    journey:'Linux 内核 + Git，用开源精神撑起当代云计算与协作的地基。',
+    related:['创新推动','创业者','留学生'] },
+  { name:'图灵奖·辛顿', dim:'innovation', era:null,     year:'1947 —',       avatar:'🧬', quote:'反向传播让网络有了记忆。',
+    journey:'深度学习的教父，把神经网络从冷宫拉回研究主流。',
+    related:['创新推动','科学家','教育推动者','留学生'] },
+  { name:'图灵奖·杨立昆', dim:'innovation', era:null,   year:'1960 —',       avatar:'🧠', quote:'卷积让机器看见图像。',
+    journey:'CNN 的奠基人，让计算机视觉从理想变成可用工具。',
+    related:['创新推动','科学家','留学生'] },
+  { name:'图灵奖·本吉奥', dim:'innovation', era:null,   year:'1964 —',       avatar:'📊', quote:'让数据自己讲故事。',
+    journey:'蒙特利尔学派的领头人，让循环网络与表征学习走入工业现实。',
+    related:['创新推动','科学家','教育推动者'] },
+  { name:'拉里·佩奇', dim:'innovation',era:null,        year:'1973 —',       avatar:'🔍', quote:'不要满足于增量改进。',
+    journey:'与谢尔盖共创 Google，让"组织全世界的信息"成为日常。',
+    related:['创新推动','创业者'] },
+  { name:'马斯克',     dim:'era',    era:null,          year:'1971 —',       avatar:'🚀', quote:'与其讨论未来，不如制造未来。',
+    journey:'电动车、可回收火箭、脑机接口——把科幻一项项落地的偏执狂。',
+    related:['时代改变','创业者','创新推动','留学生'] },
+  { name:'任正非',     dim:'era',    era:null,          year:'1944 —',       avatar:'🏔️', quote:'板凳要坐十年冷。',
+    journey:'从 21500 元起家，用三十年把华为做成全球科技对手。',
+    related:['时代改变','创业者','创新推动'] },
+  { name:'张一鸣',     dim:'innovation',era:null,       year:'1983 —',       avatar:'📱', quote:'延迟满足感。',
+    journey:'用算法重新定义信息分发，把字节跳动做成连接十亿人的工具。',
+    related:['创新推动','创业者'] },
+  { name:'科比',       dim:'humanity',era:null,         year:'1978 — 2020',  avatar:'🏀', quote:'你见过凌晨四点的洛杉矶吗？',
+    journey:'用一辈子的曼巴精神告诉世界，热爱可以有多极致。',
+    related:['人文精神','留学生'] },
+  { name:'斯皮尔伯格', dim:'humanity',era:null,         year:'1946 —',       avatar:'🎬', quote:'每一个孩子心里都住着一个外星人。',
+    journey:'用电影把童心、二战记忆、恐龙与外星人讲给全世界听。',
+    related:['人文精神','艺术家','创业者'] },
+  { name:'宫崎骏',     dim:'humanity',era:null,         year:'1941 —',       avatar:'🌬️', quote:'生命是闪烁的。',
+    journey:'吉卜力的灵魂，把森林、风与孩子画进全球观众的童年。',
+    related:['人文精神','艺术家'] },
+  { name:'坂本龙一',   dim:'humanity',era:null,         year:'1952 — 2023',  avatar:'🎹', quote:'声音和音乐之间的距离很短。',
+    journey:'东方电子乐与电影配乐的开拓者，让日常的呼吸都能成为音乐。',
+    related:['人文精神','艺术家','留学生'] },
+  { name:'草间弥生',   dim:'humanity',era:null,         year:'1929 —',       avatar:'🔴', quote:'圆点是从无限中诞生的。',
+    journey:'用波点和镜屋把幻觉转换成可被分享的当代艺术。',
+    related:['人文精神','艺术家','女性科学家'] },
+  { name:'安迪·沃霍尔', dim:'humanity', era:null,       year:'1928 — 1987',  avatar:'🥫', quote:'每个人都会成名 15 分钟。',
+    journey:'波普艺术之父，把消费主义本身变成一面镜子。',
+    related:['人文精神','艺术家'] },
+  { name:'Zaha Hadid', dim:'humanity',era:null,         year:'1950 — 2016',  avatar:'🏛️', quote:'没有曲线就没有未来。',
+    journey:'第一位获得普利兹克奖的女性建筑师，让曲线成为城市的语言。',
+    related:['人文精神','艺术家','女性科学家','留学生'] },
+  { name:'安·法兰克', dim:'peace',    era:null,         year:'1929 — 1945',  avatar:'📔', quote:'尽管一切，我仍相信人是善良的。',
+    journey:'阿姆斯特丹密室里的女孩用一本日记让世界听见战争中的孩子。',
+    related:['和平推动者','人文精神','女性科学家','作家'] },
+  { name:'米歇尔·奥巴马', dim:'social',era:null,        year:'1964 —',       avatar:'🌷', quote:'当他们走低，我们走高。',
+    journey:'用《Becoming》和女童教育倡议，把第一夫人的位置变成另一种麦克风。',
+    related:['社会贡献','教育推动者','女性科学家'] },
+  { name:'Greta Thunberg', dim:'social',era:null,       year:'2003 —',       avatar:'🌱', quote:'How dare you?',
+    journey:'15 岁开始周五罢课，把"气候焦虑"写成全球青年的政治议程。',
+    related:['社会贡献','和平推动者','女性科学家'] },
+  { name:'袁老与同行者', dim:'social', era:null,        year:'当代',          avatar:'🌾', quote:'让世界吃饱饭，比什么都重要。',
+    journey:'国际水稻所、CIMMYT 与一群无名农学家，让饥饿持续退却。',
+    related:['社会贡献','农学家','屠呦呦'] },
+  { name:'无国界医生', dim:'peace',  era:null,          year:'1971 —',       avatar:'⛑️', quote:'哪里有人受苦，我们就去哪里。',
+    journey:'1999 年诺贝尔和平奖，把战乱与瘟疫地区的医疗送到地图最远的角落。',
+    related:['和平推动者','社会贡献','人道主义者'] },
+  { name:'红十字志愿者', dim:'peace', era:null,         year:'1863 —',       avatar:'➕', quote:'人道、公正、中立、独立。',
+    journey:'从索尔费里诺战场起家，160 年来让"人道"在战争中也站得住。',
+    related:['和平推动者','社会贡献','人道主义者'] },
+  { name:'Wikipedia 志愿者', dim:'education', era:null, year:'2001 —',       avatar:'📖', quote:'人人皆可编辑。',
+    journey:'三十多种语言、数百万词条，是人类协作书写的最大共同记忆。',
+    related:['教育推动者','社会贡献','匠人'] },
+  { name:'TED 演讲者', dim:'education',era:null,        year:'1984 —',       avatar:'🎙️', quote:'值得传播的想法。',
+    journey:'让科学家、艺术家、活动家与普通人共享同一束聚光灯。',
+    related:['教育推动者','社会贡献'] },
+  { name:'敦煌守护者', dim:'humanity',era:'silk-road', year:'1944 —',       avatar:'🪔', quote:'敦煌不仅属于中国，敦煌属于世界。',
+    journey:'常书鸿、樊锦诗等几代人，用一辈子守住莫高窟的颜色与梦。',
+    related:['丝绸之路','人文精神','社会贡献','艺术家'] },
+  { name:'Maker 工坊',  dim:'innovation', era:null,    year:'2005 —',       avatar:'🛠️', quote:'手作即未来。',
+    journey:'全球 maker space 与开源硬件运动，让每个人都能拥有一台数控车床。',
+    related:['创新推动','创业者','匠人'] },
+  { name:'女童教育倡议者', dim:'education', era:null,   year:'当代',         avatar:'👧', quote:'读书的女孩长大后，会让村子变了样。',
+    journey:'从 Malala Fund 到 Camfed，让数百万女孩第一次走进教室。',
+    related:['教育推动者','社会贡献','马拉拉','女性科学家'] },
+  { name:'退伍军人作家', dim:'humanity', era:null,       year:'当代',         avatar:'🎖️', quote:'我们活下来了，所以我们必须写下来。',
+    journey:'蒂姆·奥布莱恩、卡尔·马兰特斯等老兵作家，用文字让战争的余温被看见。',
+    related:['人文精神','作家','和平推动者'] },
+  { name:'抗疫一线',   dim:'social',  era:null,         year:'2020 —',       avatar:'😷', quote:'我们守的不只是病房。',
+    journey:'武汉、米兰、纽约、孟买……三年间无数医务人员在生死之间撑住人间。',
+    related:['社会贡献','和平推动者','人道主义者'] },
+  { name:'纽约消防员', dim:'social',  era:null,         year:'2001',          avatar:'🪖', quote:'向上走的人，不一定都能下来。',
+    journey:'911 当天 343 名消防员牺牲，让"日常英雄"四个字有了名字。',
+    related:['社会贡献','和平推动者'] },
+  { name:'切·格瓦拉', dim:'era',     era:null,         year:'1928 — 1967',  avatar:'⭐', quote:'让我们做不可能的事。',
+    journey:'从医学院走向丛林，是 20 世纪最复杂也最被误读的革命者之一。',
+    related:['时代改变','和平推动者','留学生'] },
+  { name:'居里·约里奥', dim:'innovation',era:null,      year:'1900 — 1958',  avatar:'⚛️', quote:'科学应当为和平服务。',
+    journey:'居里夫人的女儿，与丈夫共获诺奖，并坚决反对核武滥用。',
+    related:['创新推动','科学家','和平推动者','女性科学家'] },
+  { name:'陈寅恪',   dim:'education', era:null,         year:'1890 — 1969',  avatar:'📖', quote:'独立之精神，自由之思想。',
+    journey:'被誉为"教授中的教授"，把中国近代史学带向世界水准。',
+    related:['教育推动者','人文精神','留学生'] },
+  { name:'梁思成林徽因', dim:'humanity', era:null,      year:'1901 — 1972',  avatar:'🏯', quote:'拆掉一座旧城，比烧掉一部古书还可惜。',
+    journey:'两人合力建立中国营造学社，把中国古建第一次写进系统学科。',
+    related:['人文精神','艺术家','教育推动者','留学生'] },
+  { name:'吴孟超',   dim:'social',    era:null,         year:'1922 — 2021',  avatar:'🩺', quote:'一辈子做好一件事。',
+    journey:'中国肝胆外科之父，96 岁仍然站在手术台前。',
+    related:['社会贡献','科学家','教育推动者'] },
+  { name:'敦煌·樊锦诗', dim:'social',  era:null,        year:'1938 —',       avatar:'🪷', quote:'我把全部留给敦煌。',
+    journey:'56 年扎根莫高窟，把数字化敦煌做成丝绸之路的当代版本。',
+    related:['社会贡献','人文精神','女性科学家','敦煌守护者'] },
+  { name:'江梦南',   dim:'humanity',  era:null,         year:'1992 —',       avatar:'🦻', quote:'听不见，也要把世界听清楚。',
+    journey:'失聪女孩一路读到清华博士，让"无声"成为另一种倾听的方式。',
+    related:['人文精神','教育推动者','女性科学家'] }
 ];
 
 // 「记忆低语」池：随机从虚空里召唤的匿名声音，模仿诗云"在虚空中点击 unrank 出一首诗"。
@@ -5148,8 +5468,8 @@ function initCivThreeScene() {
     void main(){
       vColor = color;
       vec3 pos = position;
-      // 让背景星也能动 — depth 下限抬到 0.45
-      float depth = clamp((1100.0 + pos.z) / 1800.0, 0.45, 1.2);
+      // 让背景星也能动 — depth 下限抬到 0.75（让远层星点也保留 75% 亮度）
+      float depth = clamp((1100.0 + pos.z) / 1800.0, 0.75, 1.25);
       // ===== 海浪 1: 全场低频长波（不依赖 depth 也能看到）=====
       pos.x += sin(uTime * 0.55 + pos.y * 0.0042) * 42.0;
       pos.y += cos(uTime * 0.48 + pos.x * 0.0038) * 36.0;
@@ -5191,8 +5511,13 @@ function initCivThreeScene() {
     void main(){
       float d = length(gl_PointCoord - 0.5);
       if(d > 0.5) discard;
-      float a = smoothstep(0.5, 0.05, d) * vAlpha;
-      gl_FragColor = vec4(vColor, a);
+      // 双层径向：核心硬亮 + 外圈柔和光晕（bloom），整体加强让星点在深空底色上明显
+      float core = smoothstep(0.5, 0.0, d);
+      float halo = smoothstep(0.5, 0.18, d);
+      float a = (halo * 0.55 + core * 1.05) * vAlpha;
+      // 颜色在核心更白更亮 → 外圈保留原色
+      vec3 col = mix(vColor, vec3(1.0), core * 0.65);
+      gl_FragColor = vec4(col, clamp(a, 0.0, 1.0));
     }
   `;
   const starMat = new THREE.ShaderMaterial({
@@ -5260,6 +5585,33 @@ function initCivThreeScene() {
   scatterGeo.setAttribute('aSize',    new THREE.BufferAttribute(scatterSz, 1));
   const scatterPts = new THREE.Points(scatterGeo, starMat); // 共享 starMat → 自动获得鼠标涡流 + curl flow
   scene.add(scatterPts);
+  // ---- Layer 2.6: 超亮锚点星（Anchor Stars）—— 4000 颗大光点，撑起整片视觉密度 ----
+  const anchorCount = 4000;
+  const anchorPos = new Float32Array(anchorCount * 3);
+  const anchorCol = new Float32Array(anchorCount * 3);
+  const anchorSz  = new Float32Array(anchorCount);
+  const anchorRangeX = window.innerWidth * 1.7;
+  const anchorRangeY = window.innerHeight * 1.7;
+  for(let i = 0; i < anchorCount; i++){
+    const i3 = i * 3;
+    anchorPos[i3]     = (Math.random() - 0.5) * anchorRangeX;
+    anchorPos[i3 + 1] = (Math.random() - 0.5) * anchorRangeY;
+    anchorPos[i3 + 2] = 100 + Math.random() * 200; // 靠近相机：z=100~300
+    const c = spiralPalette[Math.floor(Math.random() * spiralPalette.length)];
+    // 锚点星近全亮：1.0~1.4
+    const bright = 1.0 + Math.random() * 0.4;
+    anchorCol[i3]     = Math.min(1, c[0] * bright);
+    anchorCol[i3 + 1] = Math.min(1, c[1] * bright);
+    anchorCol[i3 + 2] = Math.min(1, c[2] * bright);
+    // 大尺寸：分两档——70% 中亮（4-7）+ 30% 大亮（7-12）
+    anchorSz[i] = Math.random() < 0.7 ? (4.0 + Math.random() * 3.0) : (7.0 + Math.random() * 5.0);
+  }
+  const anchorGeo = new THREE.BufferGeometry();
+  anchorGeo.setAttribute('position', new THREE.BufferAttribute(anchorPos, 3));
+  anchorGeo.setAttribute('color',    new THREE.BufferAttribute(anchorCol, 3));
+  anchorGeo.setAttribute('aSize',    new THREE.BufferAttribute(anchorSz, 1));
+  const anchorPts = new THREE.Points(anchorGeo, starMat);
+  scene.add(anchorPts);
   // ---- Layer 3: Nebula clouds (8 large semi-transparent planes) ----
   const nebColors = [0x2a1254, 0x0c2a4a, 0x1a0a3a, 0x0a2240, 0x3a1060, 0x082848, 0x260e4e, 0x0e2e52];
   const nebMeshes = [];
