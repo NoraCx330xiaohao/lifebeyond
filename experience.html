@@ -486,15 +486,15 @@
     #view-civilization::before { content:""; position:absolute; inset:0; pointer-events:none; z-index:0; background:radial-gradient(ellipse at 28% 18%, rgba(45,22,72,0.32) 0%, rgba(20,8,42,0.20) 35%, rgba(2,1,12,0.10) 70%, rgba(0,0,0,0) 100%); mix-blend-mode:screen; }
     #civilization-webgl { position:absolute !important; inset:0 !important; width:100% !important; height:100% !important; z-index:1 !important; pointer-events:none; }
     #civilization-canvas { position:absolute !important; top:0; left:0; width:100% !important; height:100% !important; z-index:2 !important; cursor:grab; background:transparent; }
-    .civilization-hud { position:absolute; top:32px; left:32px; z-index:25; max-width:218px; padding:9px 12px 8px; background:rgba(8,4,20,0.42); backdrop-filter:blur(18px); border:1px solid rgba(255,176,122,0.18); border-radius:12px; pointer-events:auto; }
-    .civilization-close { display:inline-block; margin-bottom:6px; padding:4px 10px; background:var(--glass); backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:12px; font-size:9.5px; letter-spacing:0.08em; color:var(--text-dim); cursor:pointer; transition:all 0.3s ease; }
+    .civilization-hud { position:absolute; top:96px; left:36px; z-index:25; max-width:248px; padding:12px 14px 10px; background:rgba(8,4,20,0.5); backdrop-filter:blur(20px); border:1px solid rgba(255,176,122,0.2); border-radius:14px; pointer-events:auto; }
+    .civilization-close { display:inline-block; margin-bottom:8px; padding:5px 11px; background:var(--glass); backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:14px; font-size:10px; letter-spacing:0.08em; color:var(--text-dim); cursor:pointer; transition:all 0.3s ease; }
     .civilization-close:hover { color:var(--text); border-color:rgba(255,176,122,0.35); background:var(--glass-strong); transform:translateX(-2px); }
-    .civilization-hud h2 { font-size:12.5px; font-weight:300; letter-spacing:0.1em; margin-bottom:1px; color:#fff; text-shadow:0 0 18px rgba(255,176,122,0.22); }
-    .civilization-hud-sub { font-size:9px; color:#FFB07A; letter-spacing:0.05em; margin-bottom:4px; opacity:0.78; }
-    .civilization-hud p { font-size:10px; color:var(--text-dim); line-height:1.45; margin-bottom:6px; }
-    .civilization-stats { display:flex; gap:8px; flex-wrap:wrap; font-size:9.5px; }
-    .civ-stat { display:flex; flex-direction:column; gap:1px; }
-    .civ-stat-num { font-size:14px; font-weight:300; color:#fff; letter-spacing:0.04em; }
+    .civilization-hud h2 { font-size:14px; font-weight:300; letter-spacing:0.12em; margin-bottom:2px; color:#fff; text-shadow:0 0 22px rgba(255,176,122,0.25); }
+    .civilization-hud-sub { font-size:10px; color:#FFB07A; letter-spacing:0.06em; margin-bottom:6px; opacity:0.82; }
+    .civilization-hud p { font-size:11px; color:var(--text-dim); line-height:1.55; margin-bottom:8px; }
+    .civilization-stats { display:flex; gap:10px; flex-wrap:wrap; font-size:10.5px; }
+    .civ-stat { display:flex; flex-direction:column; gap:2px; }
+    .civ-stat-num { font-size:18px; font-weight:300; color:#fff; letter-spacing:0.04em; }
     .civ-stat-label { font-size:10px; color:var(--text-dim); letter-spacing:0.08em; }
 
     .civilization-toolbar { position:absolute; top:48px; right:48px; z-index:25; width:340px; padding:14px 18px; background:rgba(8,4,20,0.55); backdrop-filter:blur(24px); border:1px solid rgba(255,176,122,0.18); border-radius:18px; display:flex; flex-direction:column; gap:10px; }
@@ -578,7 +578,7 @@
     @media (max-width:900px) { .civ-quality-toggle { left:24px; bottom:80px; } }
 
     @media (max-width:900px) {
-      .civilization-hud { top:24px; left:24px; max-width:240px; padding:14px 16px; }
+      .civilization-hud { top:84px; left:24px; max-width:240px; padding:14px 16px; }
       .civilization-toolbar { top:24px; right:24px; width:260px; }
       .civilization-legend { right:24px; bottom:140px; }
     .civ-onb { position:fixed; left:50%; top:50%; transform:translate(-50%, -50%); z-index:999; background:transparent; pointer-events:none; }
@@ -1250,8 +1250,8 @@
     <div class="civilization-hud" id="civilization-hud">
       <div class="civilization-close" onclick="goBack()">← 返回</div>
       <h2 id="civilization-hud-title">文明记忆宇宙</h2>
-      <div class="civilization-hud-sub" id="civilization-hud-sub">Civilization Galaxy · 漫游记忆</div>
-      <p id="civilization-hud-desc">六影响力穿过六时代，人物即星点 —— 不按名利，按贡献与启发。</p>
+      <div class="civilization-hud-sub" id="civilization-hud-sub">Civilization Galaxy · 漫游一段被记住的人类记忆</div>
+      <p id="civilization-hud-desc">六片影响力星系穿过六段历史时代。人物只是挂在星系下的星 —— 不按财富与名气，而按影响、贡献与启发。</p>
       <div class="civilization-stats" id="civilization-stats"></div>
     </div>
 
