@@ -480,6 +480,49 @@
     .civ-figure-avatar { width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; font-size:14px; flex-shrink:0; }
     .civ-figure-name { flex:1; font-size:13px; color:var(--text); }
     .civ-figure-year { font-size:10.5px; color:var(--text-dim); letter-spacing:0.05em; }
+
+    /* 文明记忆宇宙 · 顶层视图 */
+    #view-civilization { background:radial-gradient(ellipse at 30% 20%, rgba(35,18,52,0.85) 0%, rgba(12,6,28,0.92) 45%, rgba(3,2,10,0.98) 100%); }
+    #civilization-canvas { position:absolute; top:0; left:0; width:100%; height:100%; cursor:grab; }
+    .civilization-hud { position:absolute; top:48px; left:48px; z-index:25; max-width:340px; padding:18px 22px; background:rgba(8,4,20,0.55); backdrop-filter:blur(24px); border:1px solid rgba(255,176,122,0.22); border-radius:18px; pointer-events:auto; }
+    .civilization-close { display:inline-block; margin-bottom:14px; padding:8px 16px; background:var(--glass); backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:18px; font-size:11px; letter-spacing:0.1em; color:var(--text-dim); cursor:pointer; transition:all 0.3s ease; }
+    .civilization-close:hover { color:var(--text); border-color:rgba(255,176,122,0.35); background:var(--glass-strong); transform:translateX(-2px); }
+    .civilization-hud h2 { font-size:22px; font-weight:300; letter-spacing:0.14em; margin-bottom:4px; color:#fff; text-shadow:0 0 28px rgba(255,176,122,0.25); }
+    .civilization-hud-sub { font-size:11px; color:#FFB07A; letter-spacing:0.08em; margin-bottom:10px; opacity:0.85; }
+    .civilization-hud p { font-size:12.5px; color:var(--text-dim); line-height:1.75; margin-bottom:12px; }
+    .civilization-stats { display:flex; gap:14px; flex-wrap:wrap; }
+    .civ-stat { display:flex; flex-direction:column; gap:2px; }
+    .civ-stat-num { font-size:18px; font-weight:300; color:#fff; letter-spacing:0.04em; }
+    .civ-stat-label { font-size:10px; color:var(--text-dim); letter-spacing:0.08em; }
+
+    .civilization-toolbar { position:absolute; top:48px; right:48px; z-index:25; width:340px; padding:14px 18px; background:rgba(8,4,20,0.55); backdrop-filter:blur(24px); border:1px solid rgba(255,176,122,0.18); border-radius:18px; display:flex; flex-direction:column; gap:10px; }
+    .civ-toolbar-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .civ-toolbar-label { font-size:10.5px; color:var(--text-dim); letter-spacing:0.12em; min-width:38px; }
+    .civ-chip-group { display:flex; flex-wrap:wrap; gap:5px; flex:1; }
+    .civ-chip { padding:3px 9px; font-size:10.5px; letter-spacing:0.05em; color:var(--text-dim); background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; cursor:pointer; transition:all 0.25s ease; }
+    .civ-chip:hover { color:#fff; border-color:rgba(255,176,122,0.4); background:rgba(255,176,122,0.10); }
+    .civ-chip.active { color:#fff; background:rgba(255,176,122,0.20); border-color:rgba(255,176,122,0.6); box-shadow:0 0 14px rgba(255,176,122,0.25); }
+    .civ-chip.civ-chip-era.active { background:rgba(99,230,255,0.18); border-color:rgba(99,230,255,0.55); box-shadow:0 0 14px rgba(99,230,255,0.22); }
+    .civ-search-row input { flex:1; padding:7px 12px; font-size:12px; color:#fff; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.10); border-radius:14px; outline:none; transition:all 0.25s ease; }
+    .civ-search-row input:focus { border-color:rgba(255,176,122,0.45); background:rgba(255,176,122,0.06); }
+    .civ-search-row input::placeholder { color:rgba(240,244,248,0.32); }
+    .civ-search-hint { font-size:10px; color:var(--text-dim); letter-spacing:0.05em; }
+    .civ-reset { background:rgba(255,176,122,0.12); color:#FFB07A; border:1px solid rgba(255,176,122,0.35); border-radius:14px; padding:5px 12px; font-size:11px; cursor:pointer; letter-spacing:0.05em; transition:all 0.2s; }
+    .civ-reset:hover { background:rgba(255,176,122,0.22); border-color:rgba(255,176,122,0.55); }
+
+    .civilization-hint { position:absolute; bottom:160px; left:50%; transform:translateX(-50%); z-index:24; font-size:10px; letter-spacing:0.1em; color:var(--text-dim); pointer-events:none; opacity:0.7; padding:6px 14px; background:var(--glass); backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:16px; }
+
+    .civilization-legend { position:absolute; right:48px; bottom:160px; z-index:24; display:flex; flex-direction:column; gap:6px; padding:10px 14px; background:rgba(8,4,20,0.55); backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:14px; }
+    .civ-legend-item { display:flex; align-items:center; gap:8px; font-size:11px; color:var(--text-dim); letter-spacing:0.05em; }
+    .civ-legend-dot { width:10px; height:10px; border-radius:50%; box-shadow:0 0 10px currentColor; }
+    .civ-legend-dot.civ-legend-era { background:#63E6FF; box-shadow:0 0 10px rgba(99,230,255,0.6); }
+    .civ-legend-dot.civ-legend-figure { background:#FFFFFF; box-shadow:0 0 8px rgba(255,255,255,0.7); width:6px; height:6px; }
+
+    @media (max-width:900px) {
+      .civilization-hud { top:24px; left:24px; max-width:240px; padding:14px 16px; }
+      .civilization-toolbar { top:24px; right:24px; width:260px; }
+      .civilization-legend { right:24px; bottom:140px; }
+    }
     .community-feed-wrapper { position:absolute; top:0; left:0; right:0; bottom:0; z-index:25; display:none; padding-top:120px; background:radial-gradient(ellipse at 20% 10%, rgba(12,31,58,0.65) 0%, rgba(7,20,38,0.75) 40%, rgba(3,8,15,0.85) 100%); }
     .view-community-has-feed .community-feed-wrapper { left:auto; width:360px; right:0; background:rgba(3,8,15,0.48); backdrop-filter:blur(32px); border-left:1px solid rgba(255,255,255,0.08); padding-top:110px; }
     .view-community-has-feed .community-feed { padding:16px 22px 80px; }
@@ -988,6 +1031,10 @@
       <div class="dock-orb">🪐</div>
       <div class="dock-label">彼岸足迹</div>
     </div>
+    <div class="dock-node" data-view="civilization">
+      <div class="dock-orb">⌬</div>
+      <div class="dock-label">文明记忆</div>
+    </div>
     <div class="dock-node" data-view="community">
       <div class="dock-orb">◈</div>
       <div class="dock-label">社区</div>
@@ -1088,10 +1135,6 @@
         <div class="planet-core"></div>
         <span class="planet-label">附近</span>
       </div>
-      <div class="community-nav-planet" data-tab="civilization" style="color:#FFB07A" onclick="switchCommunityTab('civilization')">
-        <div class="planet-core"></div>
-        <span class="planet-label">文明记忆</span>
-      </div>
     </div>
 
     <div class="community-feed-wrapper" id="community-feed-wrapper">
@@ -1102,7 +1145,6 @@
           <div class="community-tab" data-tab="following" onclick="switchCommunityTab('following', this)">关注</div>
           <div class="community-tab" data-tab="trending" onclick="switchCommunityTab('trending', this)">热门</div>
           <div class="community-tab" data-tab="nearby" onclick="switchCommunityTab('nearby', this)">附近</div>
-          <div class="community-tab" data-tab="civilization" onclick="switchCommunityTab('civilization', this)">文明记忆</div>
         </div>
         <div class="community-feed-header" id="community-feed-header" style="display:none;">
           <h2>社区光点</h2>
@@ -1125,6 +1167,43 @@
         </div>
         <div class="community-feed" id="community-feed"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- ========== CIVILIZATION GALAXY VIEW ========== -->
+  <div class="view" id="view-civilization">
+    <canvas id="civilization-canvas"></canvas>
+
+    <div class="civilization-hud" id="civilization-hud">
+      <div class="civilization-close" onclick="goBack()">← 返回</div>
+      <h2 id="civilization-hud-title">文明记忆宇宙</h2>
+      <div class="civilization-hud-sub" id="civilization-hud-sub">Civilization Galaxy · 漫游一段被记住的人类记忆</div>
+      <p id="civilization-hud-desc">六片影响力星系穿过六段历史时代。人物只是挂在星系下的星 —— 不按财富与名气，而按影响、贡献与启发。</p>
+      <div class="civilization-stats" id="civilization-stats"></div>
+    </div>
+
+    <div class="civilization-toolbar" id="civilization-toolbar">
+      <div class="civ-toolbar-row">
+        <span class="civ-toolbar-label">影响力</span>
+        <div class="civ-chip-group" id="civ-chip-dim"></div>
+      </div>
+      <div class="civ-toolbar-row">
+        <span class="civ-toolbar-label">时代</span>
+        <div class="civ-chip-group" id="civ-chip-era"></div>
+      </div>
+      <div class="civ-toolbar-row civ-search-row">
+        <input id="civ-search" type="text" placeholder="搜索人物 · 关键词 · 时代..." oninput="onCivSearch(this.value)">
+        <span class="civ-search-hint" id="civ-search-hint"></span>
+        <button class="civ-reset" onclick="resetCivilizationView()" title="清空筛选并归位">重置</button>
+      </div>
+    </div>
+
+    <div class="civilization-hint" id="civilization-hint">滚轮缩放 · 拖拽漫游 · 点击星点</div>
+
+    <div class="civilization-legend" id="civilization-legend">
+      <div class="civ-legend-item"><span class="civ-legend-dot" style="background:#FFB07A"></span>影响力星系</div>
+      <div class="civ-legend-item"><span class="civ-legend-dot civ-legend-era"></span>历史时代</div>
+      <div class="civ-legend-item"><span class="civ-legend-dot civ-legend-figure"></span>人物</div>
     </div>
   </div>
 
@@ -2097,10 +2176,11 @@ function showView(viewName, persona = null, skipHistory = false) {
   const weatherWidget = document.getElementById('weather-widget');
   if (weatherWidget) weatherWidget.style.display = viewName === 'chat' ? 'none' : '';
 
-  if (viewName === 'galaxy') { if (persona) selectedPersona = persona; initGalaxy(); }
+  else if (viewName === 'galaxy') { if (persona) selectedPersona = persona; initGalaxy(); }
   else if (viewName === 'community') initCommunity();
   else if (viewName === 'beyond') initBeyondView();
   else if (viewName === 'footprint') initFootprintView();
+  else if (viewName === 'civilization') initCivilizationView();
   else if (viewName === 'universe') initUniverse();
   else if (viewName === 'chat') initChatView();
 }
@@ -3997,8 +4077,7 @@ const communityModuleInfo = {
   discover: { title: '发现星系', desc: '探索未知的故事与社区。每一次移动都可能遇见新的光。', color: '#63E6FF' },
   following: { title: '关注轨道', desc: '你关注的灵魂围绕你的星系运行，留下光的涟漪。', color: '#5A4BFF' },
   trending: { title: '热门超新星', desc: '此刻最亮的话题与讨论，像超新星一样照亮社区。', color: '#FF6B9D' },
-  nearby: { title: '附近星图', desc: '同一座城市、同一片天空下，附近的记忆以星座相连。', color: '#6fb3b6' },
-  civilization: { title: '文明记忆宇宙', desc: '六片影响力星系穿过六段历史时代，人物只是挂在星系下的星。漫游一段被记住的人类记忆。', color: '#FFB07A' }
+  nearby: { title: '附近星图', desc: '同一座城市、同一片天空下，附近的记忆以星座相连。', color: '#6fb3b6' }
 };
 
 function getCommunitySector(tab) { return communitySectors[tab] || { x: 0, y: 0 }; }
@@ -4012,7 +4091,7 @@ function initCommunity() {
   initCommunityStarfield();
   initCommunityWaveParticles();
 
-  const sectors = ['resonance','discover','following','trending','nearby','civilization'];
+  const sectors = ['resonance','discover','following','trending','nearby'];
   communitySectors = {};
   sectors.forEach((s,i) => {
     const angle = (i/sectors.length)*Math.PI*2 - Math.PI/2;
@@ -4050,7 +4129,6 @@ function initCommunity() {
   initFollowingSystem();
   initTrendingSystem();
   initNearbySystem();
-  initCivilizationSystem();
   communityModulesReady = true;
 
   animateCommunity();
@@ -4169,7 +4247,6 @@ function drawCommunity() {
   drawFollowingSector(cx, cy, minDim);
   drawTrendingSector(cx, cy, minDim);
   drawNearbySector(cx, cy, minDim);
-  drawCivilizationSector(cx, cy, minDim);
 
   drawCommunitySectorConnections(cx, cy);
 
@@ -4186,7 +4263,7 @@ function drawCommunityUniverseBackground(cx, cy, minDim) {
 }
 
 function drawCommunitySectorConnections(cx, cy) {
-  const tabs = ['resonance','discover','following','trending','nearby','civilization'];
+  const tabs = ['resonance','discover','following','trending','nearby'];
   cCtx.strokeStyle = 'rgba(99,230,255,0.04)';
   cCtx.lineWidth = 1;
   for(let i=0;i<tabs.length;i++) {
@@ -4282,7 +4359,6 @@ window.addEventListener('mousemove', e => {
     else if(currentCommunityTab === 'following') handleFollowingMouseMove(pos);
     else if(currentCommunityTab === 'trending') handleTrendingMouseMove(pos);
     else if(currentCommunityTab === 'nearby') handleNearbyMouseMove(pos);
-    else if(currentCommunityTab === 'civilization') handleCivilizationMouseMove(pos);
     return;
   }
   cCamera.panTo(e.clientX, e.clientY);
@@ -4304,8 +4380,6 @@ cCanvas.addEventListener('click', e => {
     handleTrendingClick(pos);
   } else if(currentCommunityTab === 'nearby') {
     handleNearbyClick(pos);
-  } else if(currentCommunityTab === 'civilization') {
-    handleCivilizationClick(pos);
   }
 });
 cCanvas.addEventListener('dblclick', e => {
@@ -4793,11 +4867,57 @@ let civilizationFigureNodes = [];// 人物星点
 let civilizationOrbitTime = 0;
 let civilizationFocusedDim = null; // hover/聚焦的影响力星系
 
+// 顶层视图：独立画布 + 独立相机 + 独立动画循环
+const civCanvas = document.getElementById('civilization-canvas');
+const civCtx = civCanvas ? civCanvas.getContext('2d') : null;
+const civCamera = makeCamera();
+let civilizationStarfield = [];
+let civilizationActiveDim = null;
+let civilizationActiveEra = null;
+let civilizationSearch = '';
+let civilizationAnimating = false;
+let civilizationInited = false;
+
+function initCivilizationView() {
+  if(!civCanvas) return;
+  resizeCivCanvas();
+  civCamera.reset(0, 0);
+  initCivilizationStarfield();
+  initCivilizationSystem();
+  renderCivilizationToolbar();
+  updateCivilizationStats();
+  civilizationInited = true;
+  if(!civilizationAnimating) {
+    civilizationAnimating = true;
+    animateCivilizationView();
+  }
+}
+
+function resizeCivCanvas() {
+  if(!civCanvas) return;
+  civCanvas.width = window.innerWidth;
+  civCanvas.height = window.innerHeight;
+}
+
+function initCivilizationStarfield() {
+  const w = civCanvas.width, h = civCanvas.height;
+  const palette = ['#FFB07A','#A285FF','#63E6FF','#FF8FB3','#FFD37A','#f0f4f8'];
+  civilizationStarfield = Array.from({length: 240}, () => ({
+    x: Math.random()*w, y: Math.random()*h,
+    size: Math.random()*1.4 + 0.3,
+    alpha: Math.random()*0.5 + 0.15,
+    twinkle: Math.random()*Math.PI*2,
+    speed: Math.random()*0.02 + 0.005,
+    color: palette[Math.floor(Math.random()*palette.length)]
+  }));
+}
+
 function initCivilizationSystem() {
-  const s = getCommunitySector('civilization');
-  const cx = cCanvas.width/2 + s.x, cy = cCanvas.height/2 + s.y;
-  const outerR = 360;
-  const innerR = 170;
+  const cx = civCanvas.width/2;
+  const cy = civCanvas.height/2;
+  const minDim = Math.min(civCanvas.width, civCanvas.height);
+  const outerR = minDim*0.32;
+  const innerR = minDim*0.16;
 
   // 影响力星系：六边形外环
   civilizationDimNodes = civilizationDimensions.map((d, i) => {
@@ -4850,65 +4970,78 @@ function initCivilizationSystem() {
   });
 }
 
-function drawCivilizationSector(cx, cy, minDim) {
-  const s = getCommunitySector('civilization');
-  const sx = cx + s.x, sy = cy + s.y;
+function drawCivilizationView() {
+  if(currentView !== 'civilization' || !civCtx) return;
+  civCamera.update();
+  civCtx.setTransform(1,0,0,1,0,0);
+  civCtx.fillStyle = '#020a17';
+  civCtx.fillRect(0, 0, civCanvas.width, civCanvas.height);
+  // 屏幕空间星空（不参与缩放）
+  drawCivilizationStarfield();
+  // 世界空间内容
+  civCtx.save();
+  civCtx.setTransform(civCamera.scale, 0, 0, civCamera.scale, civCamera.x, civCamera.y);
+
+  const cx = civCanvas.width/2;
+  const cy = civCanvas.height/2;
+  const minDim = Math.min(civCanvas.width, civCanvas.height);
+  const sx = cx, sy = cy;
   civilizationOrbitTime += 0.0035;
 
-  // 大背景星云 —— 一片混合色彩的"文明深空"
-  drawNebulaCloud2(cCtx, sx, sy, minDim*1.05, '#FFB07A', 0.038);
-  drawNebulaCloud2(cCtx, sx-220, sy+80, minDim*0.6, '#A285FF', 0.028);
-  drawNebulaCloud2(cCtx, sx+260, sy-60, minDim*0.55, '#63E6FF', 0.024);
-  drawNebulaCloud2(cCtx, sx, sy+200, minDim*0.5, '#FF8FB3', 0.02);
+  // 文明深空——混合色彩星云
+  drawNebulaCloud2(civCtx, sx, sy, minDim*1.05, '#FFB07A', 0.04);
+  drawNebulaCloud2(civCtx, sx-220, sy+80, minDim*0.6, '#A285FF', 0.03);
+  drawNebulaCloud2(civCtx, sx+260, sy-60, minDim*0.55, '#63E6FF', 0.025);
+  drawNebulaCloud2(civCtx, sx, sy+200, minDim*0.5, '#FF8FB3', 0.022);
 
-  // 中心同心环 —— 时代轨道的回声
-  cCtx.strokeStyle = 'rgba(255,176,122,0.12)'; cCtx.lineWidth = 1;
-  [110, 175, 245, 360].forEach(r => {
-    cCtx.beginPath(); cCtx.ellipse(sx, sy, r, r*0.78, 0, 0, Math.PI*2); cCtx.stroke();
+  // 中心同心环——时代轨道的回声
+  civCtx.strokeStyle = 'rgba(255,176,122,0.12)'; civCtx.lineWidth = 1;
+  [110, 175, 245, minDim*0.32].forEach(r => {
+    civCtx.beginPath(); civCtx.ellipse(sx, sy, r, r*0.78, 0, 0, Math.PI*2); civCtx.stroke();
   });
 
   // 中心核 —— 文明心跳
   const corePulse = 0.6 + 0.2*Math.sin(civilizationOrbitTime*8);
-  const coreGrad = cCtx.createRadialGradient(sx, sy, 0, sx, sy, 90);
+  const coreGrad = civCtx.createRadialGradient(sx, sy, 0, sx, sy, 90);
   coreGrad.addColorStop(0, hexToRgba('#FFFFFF', 0.65*corePulse));
   coreGrad.addColorStop(0.4, hexToRgba('#FFB07A', 0.35*corePulse));
   coreGrad.addColorStop(1, 'transparent');
-  cCtx.fillStyle = coreGrad; cCtx.beginPath(); cCtx.arc(sx, sy, 90, 0, Math.PI*2); cCtx.fill();
-  cCtx.fillStyle = 'rgba(240,244,248,0.78)';
-  cCtx.font = '11px sans-serif'; cCtx.textAlign='center';
-  cCtx.fillText('文明记忆 · 心跳', sx, sy+4);
-  cCtx.fillStyle = 'rgba(240,244,248,0.45)';
-  cCtx.font = '9px sans-serif';
-  cCtx.fillText('Civilization Galaxy', sx, sy+18);
+  civCtx.fillStyle = coreGrad; civCtx.beginPath(); civCtx.arc(sx, sy, 90, 0, Math.PI*2); civCtx.fill();
+  civCtx.fillStyle = 'rgba(240,244,248,0.78)';
+  civCtx.font = '11px sans-serif'; civCtx.textAlign='center';
+  civCtx.fillText('文明记忆 · 心跳', sx, sy+4);
+  civCtx.fillStyle = 'rgba(240,244,248,0.45)';
+  civCtx.font = '9px sans-serif';
+  civCtx.fillText('Civilization Galaxy', sx, sy+18);
 
   // 历史时代星系（内环）
   civilizationEraNodes.forEach(era => {
     const ang = era.baseAngle + civilizationOrbitTime*0.18;
     era.x = sx + Math.cos(ang)*era.orbitR;
     era.y = sy + Math.sin(ang)*era.orbitR*0.78;
-    drawNebulaCloud2(cCtx, era.x, era.y, 80, era.color, 0.06);
+    drawNebulaCloud2(civCtx, era.x, era.y, 80, era.color, 0.06);
     era.ringStars.forEach(rs => {
       rs.a += rs.sp;
       const rx = era.x + Math.cos(rs.a)*rs.r;
       const ry = era.y + Math.sin(rs.a)*rs.r*0.65;
-      cCtx.fillStyle = `rgba(255,255,255,${0.3 + Math.random()*0.25})`;
-      cCtx.beginPath(); cCtx.arc(rx, ry, rs.sz, 0, Math.PI*2); cCtx.fill();
+      civCtx.fillStyle = `rgba(255,255,255,${0.3 + Math.random()*0.25})`;
+      civCtx.beginPath(); civCtx.arc(rx, ry, rs.sz, 0, Math.PI*2); civCtx.fill();
     });
-    const grad = cCtx.createRadialGradient(era.x-3, era.y-3, 0, era.x, era.y, era.radius);
+    const grad = civCtx.createRadialGradient(era.x-3, era.y-3, 0, era.x, era.y, era.radius);
     grad.addColorStop(0, 'rgba(255,255,255,0.95)');
     grad.addColorStop(0.5, hexToRgba(era.color, 0.85));
     grad.addColorStop(1, hexToRgba(era.color, 0.25));
-    cCtx.fillStyle = grad;
-    cCtx.beginPath(); cCtx.arc(era.x, era.y, era.radius, 0, Math.PI*2); cCtx.fill();
+    civCtx.fillStyle = grad;
+    civCtx.beginPath(); civCtx.arc(era.x, era.y, era.radius, 0, Math.PI*2); civCtx.fill();
     if(era.hover) {
-      cCtx.strokeStyle = 'rgba(255,255,255,0.55)'; cCtx.lineWidth=1.4;
-      cCtx.beginPath(); cCtx.arc(era.x, era.y, era.radius+10, 0, Math.PI*2); cCtx.stroke();
+      civCtx.strokeStyle = 'rgba(255,255,255,0.55)'; civCtx.lineWidth=1.4;
+      civCtx.beginPath(); civCtx.arc(era.x, era.y, era.radius+10, 0, Math.PI*2); civCtx.stroke();
     }
-    cCtx.fillStyle = `rgba(240,244,248,${0.72 + (era.hover?0.25:0)})`;
-    cCtx.font = '10.5px sans-serif'; cCtx.textAlign='center';
-    cCtx.shadowColor = era.color; cCtx.shadowBlur = 10;
-    cCtx.fillText(era.name, era.x, era.y+era.radius+14);
-    cCtx.shadowBlur = 0;
+    civCtx.fillStyle = `rgba(240,244,248,${0.72 + (era.hover?0.25:0)})`;
+    civCtx.font = '10.5px sans-serif'; civCtx.textAlign='center';
+    civCtx.shadowColor = era.color; civCtx.shadowBlur = 10;
+    civCtx.fillText(era.name, era.x, era.y+era.radius+14);
+    civCtx.shadowBlur = 0;
   });
 
   // 影响力星系（外环）
@@ -4924,77 +5057,176 @@ function drawCivilizationSector(cx, cy, minDim) {
     });
 
     // 大星云
-    drawNebulaCloud2(cCtx, dim.x, dim.y, 180, dim.color, 0.07 + (dim.hover?0.04:0));
+    drawNebulaCloud2(civCtx, dim.x, dim.y, 180, dim.color, 0.07 + (dim.hover?0.04:0));
     // 卫星粉尘
     dim.satellites.forEach(st => {
       st.a += st.sp;
       const px = dim.x + Math.cos(st.a)*st.r;
       const py = dim.y + Math.sin(st.a)*st.r*0.7;
-      cCtx.fillStyle = `rgba(255,255,255,${0.18 + Math.random()*0.2})`;
-      cCtx.beginPath(); cCtx.arc(px, py, st.sz, 0, Math.PI*2); cCtx.fill();
+      civCtx.fillStyle = `rgba(255,255,255,${0.18 + Math.random()*0.2})`;
+      civCtx.beginPath(); civCtx.arc(px, py, st.sz, 0, Math.PI*2); civCtx.fill();
     });
 
     // 与中心心跳的能量光带（聚焦时高亮）
     const hot = (civilizationFocusedDim === dim.id) || dim.hover;
-    cCtx.beginPath(); cCtx.moveTo(sx, sy);
+    civCtx.beginPath(); civCtx.moveTo(sx, sy);
     const midX = (sx+dim.x)/2, midY = (sy+dim.y)/2 - 30;
-    cCtx.quadraticCurveTo(midX, midY, dim.x, dim.y);
-    const lineGrad = cCtx.createLinearGradient(sx, sy, dim.x, dim.y);
+    civCtx.quadraticCurveTo(midX, midY, dim.x, dim.y);
+    const lineGrad = civCtx.createLinearGradient(sx, sy, dim.x, dim.y);
     lineGrad.addColorStop(0, hexToRgba('#FFB07A', hot?0.35:0.12));
     lineGrad.addColorStop(1, hexToRgba(dim.color, hot?0.55:0.22));
-    cCtx.strokeStyle = lineGrad; cCtx.lineWidth = hot?1.6:1.0; cCtx.stroke();
+    civCtx.strokeStyle = lineGrad; civCtx.lineWidth = hot?1.6:1.0; civCtx.stroke();
 
     // 核心球
-    const coreG = cCtx.createRadialGradient(dim.x-6, dim.y-6, 0, dim.x, dim.y, dim.radius);
+    const coreG = civCtx.createRadialGradient(dim.x-6, dim.y-6, 0, dim.x, dim.y, dim.radius);
     coreG.addColorStop(0, 'rgba(255,255,255,0.95)');
     coreG.addColorStop(0.5, hexToRgba(dim.color, 0.95));
     coreG.addColorStop(1, hexToRgba(dim.color, 0.3));
-    cCtx.fillStyle = coreG;
-    cCtx.beginPath(); cCtx.arc(dim.x, dim.y, dim.radius*(dim.hover?1.08:1), 0, Math.PI*2); cCtx.fill();
+    civCtx.fillStyle = coreG;
+    civCtx.beginPath(); civCtx.arc(dim.x, dim.y, dim.radius*(dim.hover?1.08:1), 0, Math.PI*2); civCtx.fill();
 
     if(dim.hover || civilizationFocusedDim === dim.id) {
-      cCtx.strokeStyle = 'rgba(255,255,255,0.5)'; cCtx.lineWidth = 1.5;
-      cCtx.beginPath(); cCtx.arc(dim.x, dim.y, dim.radius+14, 0, Math.PI*2); cCtx.stroke();
+      civCtx.strokeStyle = 'rgba(255,255,255,0.5)'; civCtx.lineWidth = 1.5;
+      civCtx.beginPath(); civCtx.arc(dim.x, dim.y, dim.radius+14, 0, Math.PI*2); civCtx.stroke();
     }
 
-    cCtx.fillStyle = `rgba(255,255,255,${0.85})`;
-    cCtx.font = '13px sans-serif'; cCtx.textAlign = 'center';
-    cCtx.shadowColor = dim.color; cCtx.shadowBlur = 14;
-    cCtx.fillText(dim.name, dim.x, dim.y + dim.radius + 22);
-    cCtx.shadowBlur = 0;
+    civCtx.fillStyle = `rgba(255,255,255,${0.85})`;
+    civCtx.font = '13px sans-serif'; civCtx.textAlign = 'center';
+    civCtx.shadowColor = dim.color; civCtx.shadowBlur = 14;
+    civCtx.fillText(dim.name, dim.x, dim.y + dim.radius + 22);
+    civCtx.shadowBlur = 0;
   });
 
   // 人物 → 时代 的细光线（如果有 era 关联）
   civilizationFigureNodes.forEach(f => {
     if(!f.eraRef) return;
     const e = f.eraRef;
-    cCtx.beginPath();
-    cCtx.moveTo(f.x, f.y);
-    cCtx.lineTo(e.x, e.y);
-    cCtx.strokeStyle = hexToRgba(e.color, f.hover?0.4:0.1);
-    cCtx.lineWidth = f.hover?1:0.6;
-    cCtx.stroke();
+    civCtx.beginPath();
+    civCtx.moveTo(f.x, f.y);
+    civCtx.lineTo(e.x, e.y);
+    civCtx.strokeStyle = hexToRgba(e.color, f.hover?0.4:0.1);
+    civCtx.lineWidth = f.hover?1:0.6;
+    civCtx.stroke();
   });
 
   // 人物星点
   civilizationFigureNodes.forEach(f => {
     const tw = 0.7 + 0.3*Math.sin(civilizationOrbitTime*15 + f.twinkle);
     const r = f.radius * (f.hover?1.8:1) * tw;
-    const glow = cCtx.createRadialGradient(f.x, f.y, 0, f.x, f.y, r*4);
+    const glow = civCtx.createRadialGradient(f.x, f.y, 0, f.x, f.y, r*4);
     glow.addColorStop(0, hexToRgba(f.parentRef?f.parentRef.color:'#FFD37A', f.hover?0.55:0.28));
     glow.addColorStop(1, 'transparent');
-    cCtx.fillStyle = glow;
-    cCtx.beginPath(); cCtx.arc(f.x, f.y, r*4, 0, Math.PI*2); cCtx.fill();
-    cCtx.fillStyle = `rgba(255,255,255,${f.hover?1:0.92})`;
-    cCtx.beginPath(); cCtx.arc(f.x, f.y, r, 0, Math.PI*2); cCtx.fill();
+    civCtx.fillStyle = glow;
+    civCtx.beginPath(); civCtx.arc(f.x, f.y, r*4, 0, Math.PI*2); civCtx.fill();
+    civCtx.fillStyle = `rgba(255,255,255,${f.hover?1:0.92})`;
+    civCtx.beginPath(); civCtx.arc(f.x, f.y, r, 0, Math.PI*2); civCtx.fill();
     if(f.hover) {
-      cCtx.fillStyle = 'rgba(255,255,255,0.95)';
-      cCtx.font = '11px sans-serif'; cCtx.textAlign='center';
-      cCtx.shadowColor = f.parentRef?f.parentRef.color:'#FFD37A'; cCtx.shadowBlur = 12;
-      cCtx.fillText(`${f.avatar} ${f.name}`, f.x, f.y - 14);
-      cCtx.shadowBlur = 0;
+      civCtx.fillStyle = 'rgba(255,255,255,0.95)';
+      civCtx.font = '11px sans-serif'; civCtx.textAlign='center';
+      civCtx.shadowColor = f.parentRef?f.parentRef.color:'#FFD37A'; civCtx.shadowBlur = 12;
+      civCtx.fillText(`${f.avatar} ${f.name}`, f.x, f.y - 14);
+      civCtx.shadowBlur = 0;
+    }
+    // 在筛选/搜索状态下，被命中的人物补一行小字（无论是否 hover）
+    if(!isFigureFiltered(f) && (civilizationSearch || civilizationActiveDim || civilizationActiveEra) && !f.hover) {
+      civCtx.fillStyle = 'rgba(255,255,255,0.62)';
+      civCtx.font = '10px sans-serif'; civCtx.textAlign='center';
+      civCtx.fillText(f.name, f.x, f.y + 12);
     }
   });
+
+  civCtx.restore();
+}
+
+function drawCivilizationStarfield() {
+  if(!civCtx) return;
+  civilizationStarfield.forEach(s => {
+    const tw = 0.7 + 0.3*Math.sin(civilizationOrbitTime*30*s.speed + s.twinkle);
+    civCtx.fillStyle = hexToRgba(s.color, s.alpha*tw);
+    civCtx.beginPath(); civCtx.arc(s.x, s.y, s.size, 0, Math.PI*2); civCtx.fill();
+  });
+}
+
+function isFigureFiltered(f) {
+  if(civilizationActiveDim && f.dim !== civilizationActiveDim) return true;
+  if(civilizationActiveEra && f.era !== civilizationActiveEra) return true;
+  if(civilizationSearch) {
+    const q = civilizationSearch.toLowerCase();
+    const hay = `${f.name} ${f.quote||''} ${f.journey||''} ${(f.related||[]).join(' ')} ${f.eraRef?f.eraRef.name:''} ${f.parentRef?f.parentRef.name:''}`.toLowerCase();
+    if(!hay.includes(q)) return true;
+  }
+  return false;
+}
+
+function animateCivilizationView() {
+  if(currentView !== 'civilization') { civilizationAnimating = false; return; }
+  drawCivilizationView();
+  requestAnimationFrame(animateCivilizationView);
+}
+
+// 顶部探索梧（标签筛选 + 搜索）
+function renderCivilizationToolbar() {
+  const dimEl = document.getElementById('civ-chip-dim');
+  const eraEl = document.getElementById('civ-chip-era');
+  if(dimEl) {
+    dimEl.innerHTML = `<span class="civ-chip ${!civilizationActiveDim?'active':''}" onclick="setCivDimFilter(null)">全部</span>` +
+      civilizationDimensions.map(d => `<span class="civ-chip ${civilizationActiveDim===d.id?'active':''}" style="${civilizationActiveDim===d.id?`color:${d.color};border-color:${d.color}aa;`:''}" onclick="setCivDimFilter('${d.id}')">${d.name}</span>`).join('');
+  }
+  if(eraEl) {
+    eraEl.innerHTML = `<span class="civ-chip civ-chip-era ${!civilizationActiveEra?'active':''}" onclick="setCivEraFilter(null)">全部</span>` +
+      civilizationEras.map(e => `<span class="civ-chip civ-chip-era ${civilizationActiveEra===e.id?'active':''}" onclick="setCivEraFilter('${e.id}')">${e.name}</span>`).join('');
+  }
+}
+
+function setCivDimFilter(id) {
+  civilizationActiveDim = (civilizationActiveDim === id) ? null : id;
+  renderCivilizationToolbar(); updateCivilizationStats();
+  if(civilizationActiveDim) {
+    const d = civilizationDimNodes.find(x => x.id === civilizationActiveDim);
+    if(d) {
+      civCamera.targetX = window.innerWidth/2 - d.x*1.5;
+      civCamera.targetY = window.innerHeight/2 - d.y*1.5;
+      civCamera.targetScale = 1.5;
+    }
+  } else { civCamera.targetX = 0; civCamera.targetY = 0; civCamera.targetScale = 1; }
+}
+
+function setCivEraFilter(id) {
+  civilizationActiveEra = (civilizationActiveEra === id) ? null : id;
+  renderCivilizationToolbar(); updateCivilizationStats();
+  if(civilizationActiveEra) {
+    const e = civilizationEraNodes.find(x => x.id === civilizationActiveEra);
+    if(e) {
+      civCamera.targetX = window.innerWidth/2 - e.x*1.6;
+      civCamera.targetY = window.innerHeight/2 - e.y*1.6;
+      civCamera.targetScale = 1.6;
+    }
+  } else { civCamera.targetX = 0; civCamera.targetY = 0; civCamera.targetScale = 1; }
+}
+
+function onCivSearch(value) {
+  civilizationSearch = (value || '').trim();
+  updateCivilizationStats();
+}
+
+function resetCivilizationView() {
+  civilizationActiveDim = null; civilizationActiveEra = null; civilizationSearch = '';
+  const input = document.getElementById('civ-search'); if(input) input.value = '';
+  renderCivilizationToolbar(); updateCivilizationStats();
+  civCamera.targetX = 0; civCamera.targetY = 0; civCamera.targetScale = 1;
+}
+
+function updateCivilizationStats() {
+  const stats = document.getElementById('civilization-stats');
+  if(!stats) return;
+  const totalFigs = civilizationFigures.length;
+  const visibleFigs = (civilizationFigureNodes.length ? civilizationFigureNodes : civilizationFigures.map(f=>({...f,parentRef:null,eraRef:null}))).filter(f => !isFigureFiltered(f)).length;
+  stats.innerHTML = `
+    <div class="civ-stat"><span class="civ-stat-num">6</span><span class="civ-stat-label">影响力星系</span></div>
+    <div class="civ-stat"><span class="civ-stat-num">6</span><span class="civ-stat-label">历史时代</span></div>
+    <div class="civ-stat"><span class="civ-stat-num">${visibleFigs}/${totalFigs}</span><span class="civ-stat-label">人物星点</span></div>`;
+  const hint = document.getElementById('civ-search-hint');
+  if(hint) hint.textContent = civilizationSearch ? `命中 ${visibleFigs} 个` : '';
 }
 
 function civDimAt(pos) {
@@ -5031,20 +5263,20 @@ function handleCivilizationMouseMove(pos) {
   if(f) {
     f.hover = true;
     if(f.parentRef) civilizationFocusedDim = f.parentRef.id;
-    cCanvas.style.cursor = 'pointer';
+    civCanvas.style.cursor = 'pointer';
     showTooltip(`${f.avatar} ${f.name}`, `${f.year}<br>影响力：${f.parentRef?f.parentRef.name:''}${f.eraRef?` · ${f.eraRef.name}`:''}<br>点击展开人物记忆`);
   } else if(d) {
     d.hover = true;
     civilizationFocusedDim = d.id;
-    cCanvas.style.cursor = 'pointer';
+    civCanvas.style.cursor = 'pointer';
     const count = civilizationFigureNodes.filter(x => x.dim === d.id).length;
     showTooltip(`${d.name} · 影响力星系`, `${d.desc}<br>挂载 ${count} 颗人物星`);
   } else if(e) {
     e.hover = true;
-    cCanvas.style.cursor = 'pointer';
+    civCanvas.style.cursor = 'pointer';
     showTooltip(`${e.name} · 历史时代`, `${e.period}<br>${e.summary}`);
   } else {
-    cCanvas.style.cursor = 'grab';
+    civCanvas.style.cursor = 'grab';
     hideTooltip();
   }
 }
@@ -5056,6 +5288,41 @@ function handleCivilizationClick(pos) {
   if(d) { openCivilizationDimension(d); return; }
   const e = civEraAt(pos);
   if(e) { openCivilizationEra(e); return; }
+}
+
+// ----- 事件绑定（仅当处于 civilization 视图时生效）-----
+if(civCanvas) {
+  civCanvas.addEventListener('mousedown', e => {
+    if(currentView !== 'civilization') return;
+    civCamera.startPan(e.clientX, e.clientY);
+  });
+  window.addEventListener('mousemove', e => {
+    if(currentView !== 'civilization') return;
+    if(civCamera.dragging) { civCamera.panTo(e.clientX, e.clientY); return; }
+    const rect = civCanvas.getBoundingClientRect();
+    const pos = civCamera.screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
+    handleCivilizationMouseMove(pos);
+  });
+  window.addEventListener('mouseup', () => {
+    if(currentView !== 'civilization') return;
+    civCamera.endPan();
+  });
+  civCanvas.addEventListener('wheel', e => {
+    if(currentView !== 'civilization') return;
+    e.preventDefault();
+    civCamera.zoomAt(e.clientX, e.clientY, e.deltaY > 0 ? 0.92 : 1.08);
+  }, { passive: false });
+  civCanvas.addEventListener('click', e => {
+    if(currentView !== 'civilization') return;
+    if(civCamera.dragged) return;
+    const rect = civCanvas.getBoundingClientRect();
+    const pos = civCamera.screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
+    handleCivilizationClick(pos);
+  });
+  window.addEventListener('resize', () => {
+    if(currentView !== 'civilization') return;
+    resizeCivCanvas(); initCivilizationStarfield(); initCivilizationSystem();
+  });
 }
 
 function openCivilizationFigure(f) {
@@ -5130,32 +5397,34 @@ function openCivilizationEra(e) {
 }
 
 function navigateCivilizationTag(tag) {
-  // 跨星系联动：人文/教育/和平/创新/留学生/创业者 等关键词跳到「发现星系」（保留原社区功能）；
-  // 时代关键词则跳到对应时代星系。
+  // 跨星系联动：时代关键词在文明视图内聚焦该时代；社群关键词跳到社区「发现」星系。
   closeOverlay();
   const eraMap = {'古代中国':'ancient-cn','古希腊':'ancient-gr','古埃及':'ancient-eg','丝绸之路':'silk-road','文艺复兴':'renaissance','工业革命':'industry'};
   if(eraMap[tag]) {
+    setCivEraFilter(eraMap[tag]);
     const e = civilizationEraNodes.find(x => x.id === eraMap[tag]);
-    if(e) {
-      cCamera.targetX = window.innerWidth/2 - e.x * 1.6;
-      cCamera.targetY = window.innerHeight/2 - e.y * 1.6;
-      cCamera.targetScale = 1.6;
-      setTimeout(() => openCivilizationEra(e), 450);
-    }
+    if(e) setTimeout(() => openCivilizationEra(e), 450);
     return;
   }
-  // 留学生 / 创业者 / 教育推动者 / 和平推动者 / 艺术家 / 哲学家 / 人道主义者 / 创新推动 等 → 跳「发现星系」
+  // 留学生 / 创业者 / 教育推动者 / 和平推动者 / 艺术家 / 哲学家 / 人道主义者 等 → 切到「社区 → 发现」
   const discoverTags = ['留学生','创业者','教育推动者','和平推动者','艺术家','哲学家','人道主义者','作家','女性科学家','科学家','发明家','农学家','创新推动','社会贡献','人文精神','时代改变'];
   if(discoverTags.includes(tag)) {
-    switchCommunityTab('discover');
+    showView('community');
     setTimeout(() => {
-      const card = document.getElementById('memory-card');
-      card.innerHTML = `<span class="tag">跨星系联动</span><h2>「${tag}」回声</h2><div class="date">从「文明记忆宇宙」跳跃而来</div><div class="content">这里是发现星系，「${tag}」的能量在不同的星云里都有回响。继续在这片星云里漫游，会遇见更多与之相似的灵魂与社区。</div><div class="actions"><button class="primary" onclick="closeOverlay()">继续探索</button></div>`;
-      document.getElementById('memory-overlay').classList.add('active');
-    }, 550);
+      switchCommunityTab('discover');
+      setTimeout(() => {
+        const card = document.getElementById('memory-card');
+        if(!card) return;
+        card.innerHTML = `<span class="tag">跨星系联动</span><h2>「${tag}」回声</h2><div class="date">从「文明记忆宇宙」跳跃而来</div><div class="content">这里是发现星系，「${tag}」的能量在不同的星云里都有回响。继续在这片星云里漫游，会遇见更多与之相似的灵魂与社区。</div><div class="actions"><button class="primary" onclick="closeOverlay()">继续探索</button></div>`;
+        document.getElementById('memory-overlay').classList.add('active');
+      }, 350);
+    }, 200);
     return;
   }
-  switchCommunityTab('civilization');
+  // 兜底：作为搜索词在文明视图里筛选
+  const input = document.getElementById('civ-search');
+  if(input) input.value = tag;
+  onCivSearch(tag);
 }
 
 function addCivilizationMemory(name) {
@@ -5172,13 +5441,18 @@ function addCivilizationMemory(name) {
 }
 
 function openCivilizationCommunity(name) {
-  // 联动社区：从「文明记忆」跳到普通社区帖子流，并以人物名搜索/筛选（保留原帖列表）
-  switchCommunityTab('discover');
+  // 联动社区：从「文明记忆」跳到社区「发现」星系
+  closeOverlay();
+  showView('community');
   setTimeout(() => {
-    const card = document.getElementById('memory-card');
-    card.innerHTML = `<span class="tag">社区讨论</span><h2>关于 ${name} 的星海讨论</h2><div class="date">来自共鸣 / 发现 / 关注 / 热门 / 附近 的回声</div><div class="content">用户们在不同的星云里都在谈论 ta —— 留下感想，提一个问题，或者只是默默旁观。这片讨论会把分散在社区的回声汇集到一起。<br><br>（讨论数据为占位，后续可从社区帖子中按人物标签自动聚合。）</div><div class="actions"><button class="primary" onclick="closeOverlay()">回到社区</button></div>`;
-    document.getElementById('memory-overlay').classList.add('active');
-  }, 500);
+    switchCommunityTab('discover');
+    setTimeout(() => {
+      const card = document.getElementById('memory-card');
+      if(!card) return;
+      card.innerHTML = `<span class="tag">社区讨论</span><h2>关于 ${name} 的星海讨论</h2><div class="date">来自共鸣 / 发现 / 关注 / 热门 / 附近 的回声</div><div class="content">用户们在不同的星云里都在谈论 ta —— 留下感想，提一个问题，或者只是默默旁观。这片讨论会把分散在社区的回声汇集到一起。<br><br>（讨论数据为占位，后续可从社区帖子中按人物标签自动聚合。）</div><div class="actions"><button class="primary" onclick="closeOverlay()">回到社区</button></div>`;
+      document.getElementById('memory-overlay').classList.add('active');
+    }, 350);
+  }, 200);
 }
 
 // ==================== COMMUNITY FEED ====================
@@ -5199,10 +5473,9 @@ function switchCommunityTab(tab) {
   cCamera.targetX = window.innerWidth/2 - (cCanvas.width/2 + sector.x) * cCamera.targetScale;
   cCamera.targetY = window.innerHeight/2 - (cCanvas.height/2 + sector.y) * cCamera.targetScale;
 
-  const galaxyOnlyTab = (tab === 'resonance' || tab === 'civilization');
-  if(viewCommunity) viewCommunity.classList.toggle('view-community-has-feed', !galaxyOnlyTab);
+  if(viewCommunity) viewCommunity.classList.toggle('view-community-has-feed', tab !== 'resonance');
 
-  if (galaxyOnlyTab) {
+  if (tab === 'resonance') {
     if(galaxyOnly) { galaxyOnly.style.visibility = 'visible'; galaxyOnly.style.pointerEvents = ''; }
     if(galaxyHint) galaxyHint.style.display = '';
     if(feedWrapper) feedWrapper.style.display = 'none';

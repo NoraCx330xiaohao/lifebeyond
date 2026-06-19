@@ -17,11 +17,16 @@
   - 数据：`communityPosts`（含 `image` 字段为 Unsplash 缩略图）。
   - 渲染：`renderCommunityPosts(posts)` 输出 `.post-card`，`.post-card-img` 内组合 `<img class="pc-thumb">` + `<span class="pc-emoji">`。
   - 帖子提示：`.community-hint`（位于 `bottom:160px`，避开底部菜单）。
-  - 共有 6 个标签页：`resonance / discover / following / trending / nearby / civilization`。前 5 个为原社区模块，**禁止删改**；第 6 个为「文明记忆宇宙」。
-  - 标签切换通过 `switchCommunityTab(tab)`，galaxy-only 标签（`resonance` 与 `civilization`）会隐藏帖子流；其余标签在右侧 360px 抽屉里渲染 `.community-feed`。
-- **文明记忆宇宙（civilization）**：
-  - 数据：`civilizationDimensions`（6 影响力星系：社会贡献 / 创新推动 / 和平行动 / 人文精神 / 教育影响 / 时代改变）+ `civilizationEras`（6 历史时代：古代中国 / 古希腊 / 古埃及 / 丝绸之路 / 文艺复兴 / 工业革命）+ `civilizationFigures`（人物只是挂载在影响力星系下的星，可关联时代；按"影响 / 贡献 / 启发"组织，**不按财富与名气排序**）。
-  - 渲染：`initCivilizationSystem()` → `drawCivilizationSector()` 在自己的 sector（位于六边形布局的第 6 个位置）绘制：中心心跳 → 时代内环 → 影响力外环 → 人物星点 → 人物到时代的细光线。
+  - 共有 5 个标签页：`resonance / discover / following / trending / nearby`，**严禁**删改这 5 个原社区模块。
+  - 标签切换通过 `switchCommunityTab(tab)`，galaxy-only 标签（仅 `resonance`）会隐藏帖子流；其余标签在右侧 360px 抽屉里渲染 `.community-feed`。
+- **文明记忆宇宙（顶层视图 view-civilization，与彼岸足迹同级）**：
+  - 触发：dock 第 4 个节点 `data-view="civilization"` → `showView('civilization')` → `initCivilizationView()`。**不在社区子模块里**，是独立顶层视图，仿照 shiyun（诗云）形态做"自由漫游的星海"。
+  - 容器：`#view-civilization`（独立 canvas `#civilization-canvas`、HUD `#civilization-hud`、工具栏 `#civilization-toolbar`、图例 `#civilization-legend`）。
+  - 渲染管线：独立 `civCanvas / civCtx / civCamera`（来自 `makeCamera()`）+ 独立 `animateCivilizationView()` 循环。屏幕空间星空 + 世界空间内容（应用 `civCamera.scale/x/y` 变换）。事件监听器在 `currentView !== 'civilization'` 时全部短路返回。
+  - 数据：`civilizationDimensions`（6 影响力星系：社会贡献 / 创新推动 / 和平行动 / 人文精神 / 教育影响 / 时代改变）+ `civilizationEras`（6 历史时代：古代中国 / 古希腊 / 古埃及 / 丝绸之路 / 文艺复兴 / 工业革命）+ `civilizationFigures`（人物只挂载在影响力星系下，可关联时代；按"影响 / 贡献 / 启发"组织，**不按财富与名气排序**）。
+  - 渲染：`initCivilizationSystem()` 基于 `civCanvas` 中心点布局（影响力外环 / 时代内环 / 人物挂载） → `drawCivilizationView()` 每帧绘制：背景星空 → 多色文明深空星云 → 同心环 → 中心文明心跳 → 时代内环（带卫星粉尘） → 影响力外环（带能量光带 + 卫星簇） → 人物到时代的细光线 → 人物星点（带 twinkle）。
+  - 工具栏 `#civilization-toolbar`：影响力 chip + 时代 chip + 搜索框 + 重置按钮。`setCivDimFilter(id)` / `setCivEraFilter(id)` 会让 civCamera 飞到对应星系并放大；`onCivSearch(q)` / `isFigureFiltered(f)` 控制人物 dim/亮显。
+  - 漫游：滚轮缩放 / 拖拽平移 / 点击星点（事件统一通过 `if (currentView !== 'civilization') return;` 短路保护，不与社区/足迹相互干扰）。
   - 交互：`handleCivilizationMouseMove / handleCivilizationClick`，hover 显示 tooltip，点击星点 / 影响力星系 / 时代分别打开 `openCivilizationFigure / openCivilizationDimension / openCivilizationEra`。
   - 跨星系联动：人物详情卡的 `related` 标签由 `navigateCivilizationTag(tag)` 处理；时代关键词跳到对应时代星系，"留学生 / 创业者 / 教育推动者"等跳到「发现星系」。
   - 收藏入口：`addCivilizationMemory(name)` 写入 `localStorage['lifebeyond_civ_memories']`，与「彼岸足迹 → 阅读笔记」共享记忆体系。
