@@ -2176,7 +2176,7 @@ function showView(viewName, persona = null, skipHistory = false) {
   const weatherWidget = document.getElementById('weather-widget');
   if (weatherWidget) weatherWidget.style.display = viewName === 'chat' ? 'none' : '';
 
-  else if (viewName === 'galaxy') { if (persona) selectedPersona = persona; initGalaxy(); }
+  if (viewName === 'galaxy') { if (persona) selectedPersona = persona; initGalaxy(); }
   else if (viewName === 'community') initCommunity();
   else if (viewName === 'beyond') initBeyondView();
   else if (viewName === 'footprint') initFootprintView();
@@ -5627,6 +5627,7 @@ function resizeCanvases() {
   if(currentView==='universe') initUniverse();
   if(currentView==='galaxy') initGalaxy();
   if(currentView==='community') initCommunity();
+  if(currentView==='civilization') { resizeCivCanvas(); initCivilizationStarfield(); initCivilizationSystem(); }
 }
 window.addEventListener('resize', resizeCanvases);
 
