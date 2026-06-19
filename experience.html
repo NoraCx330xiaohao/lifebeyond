@@ -5127,7 +5127,7 @@ function initCivThreeScene() {
     const c = spiralPalette[Math.floor(Math.random() * spiralPalette.length)];
     const bright = 0.3 + Math.random() * 0.7;
     deepCol[i3] = c[0]*bright; deepCol[i3+1] = c[1]*bright; deepCol[i3+2] = c[2]*bright;
-    deepSz[i] = 0.5 + Math.random() * 2.8;
+    deepSz[i] = 0.9 + Math.random() * 3.2;
   }
   const deepGeo = new THREE.BufferGeometry();
   deepGeo.setAttribute('position', new THREE.BufferAttribute(deepPos, 3));
@@ -5179,8 +5179,9 @@ function initCivThreeScene() {
       }
       vec4 mv = modelViewMatrix * vec4(pos, 1.0);
       float twinkle = 0.55 + 0.45 * sin(uTime * 1.8 + pos.x * 0.08 + pos.y * 0.06);
-      vAlpha = twinkle * min(depth, 1.0);
-      gl_PointSize = max(aSize * twinkle * min(depth, 1.0) * (380.0 / max(-mv.z, 1.0)), 0.6);
+      vAlpha = (0.78 + 0.22 * twinkle) * min(depth, 1.0);
+      // 增大 PointSize 基系数：380 → 780，让背景星点在 ~620 距离相机时仍清晰可见
+      gl_PointSize = max(aSize * (0.85 + 0.15 * twinkle) * min(depth, 1.0) * (780.0 / max(-mv.z, 1.0)), 1.4);
       gl_Position = projectionMatrix * mv;
     }
   `;
@@ -5238,19 +5239,19 @@ function initCivThreeScene() {
     scatterPos[i3 + 1] = (Math.random() - 0.5) * scatterRangeY;
     scatterPos[i3 + 2] = (Math.random() - 0.5) * 700 - 50; // 跨越前后景，让鼠标推开效果更立体
     const c = spiralPalette[Math.floor(Math.random() * spiralPalette.length)];
-    // 整体加亮：0.45~1.0（从原 0.25~0.80）
-    const bright = 0.45 + Math.random() * 0.55;
+    // 整体加亮：0.65~1.25（从原 0.45~1.0），背景星点更明显
+    const bright = 0.65 + Math.random() * 0.6;
     scatterCol[i3]     = c[0] * bright;
     scatterCol[i3 + 1] = c[1] * bright;
     scatterCol[i3 + 2] = c[2] * bright;
-    // 大小分三档：60% 小尘埃 + 30% 中星 + 10% 亮星，整体放大
+    // 大小分三档（整体×1.6）：60% 中尘埃 + 30% 中星 + 10% 亮星
     const sizeRand = Math.random();
     if(sizeRand < 0.6){
-      scatterSz[i] = 0.8 + Math.random() * 1.4;        // 小尘埃 0.8-2.2
+      scatterSz[i] = 1.4 + Math.random() * 1.8;        // 1.4-3.2
     } else if(sizeRand < 0.9){
-      scatterSz[i] = 2.0 + Math.random() * 2.0;        // 中星 2.0-4.0
+      scatterSz[i] = 3.2 + Math.random() * 2.6;        // 3.2-5.8
     } else {
-      scatterSz[i] = 3.5 + Math.random() * 2.8;        // 亮星 3.5-6.3
+      scatterSz[i] = 5.5 + Math.random() * 3.6;        // 5.5-9.1（大亮星）
     }
   }
   const scatterGeo = new THREE.BufferGeometry();
