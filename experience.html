@@ -1172,7 +1172,8 @@
 
   <!-- ========== CIVILIZATION GALAXY VIEW ========== -->
   <div class="view" id="view-civilization">
-    <canvas id="civilization-canvas"></canvas>
+    <canvas id="civilization-webgl" style="position:absolute;inset:0;z-index:0;pointer-events:none;"></canvas>
+    <canvas id="civilization-canvas" style="position:relative;z-index:1;"></canvas>
 
     <div class="civilization-hud" id="civilization-hud">
       <div class="civilization-close" onclick="goBack()">← 返回</div>
@@ -5063,6 +5064,199 @@ const civilizationKeyState = { up: false, down: false, left: false, right: false
 // 虚空星座（点击空白时升起的临时连线）
 const civilizationConstellations = [];
 let civilizationNodeMotes = [];
+// === Three.js GPU 星海层 ===
+let civGL = null;       // { scene, camera, renderer, points, nebulae, uniforms }
+function initCivThreeScene() {
+  const cvs = document.getElementById('civilization-webgl');
+  if(!cvs) return;
+  const scene = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 12000);
+  cam.position.set(0, 0, 900);
+  cam.lookAt(0, 0, 0);
+  const renderer = new THREE.WebGLRenderer({ canvas: cvs, alpha: true, antialias: true, powerPreference: 'high-performance' });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+  // ---- Uniforms (shared by all particle layers) ----
+  const uniforms = {
+    uTime:      { value: 0 },
+    uMouse:     { value: new THREE.Vector2(0.5, 0.5) },
+    uMouseVel:  { value: new THREE.Vector2(0, 0) },
+    uResolution:{ value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+  };
+  // ---- Layer 1: Deep background particles (12000 points, tiny) ----
+  const deepCount = 12000;
+  const deepPos = new Float32Array(deepCount * 3);
+  const deepCol = new Float32Array(deepCount * 3);
+  const deepSz  = new Float32Array(deepCount);
+  const spiralPalette = [
+    [1.0,0.69,0.48],[0.64,0.52,1.0],[0.39,0.90,1.0],[1.0,0.56,0.70],
+    [1.0,0.83,0.48],[0.85,0.92,1.0],[0.62,0.84,1.0],[1.0,0.80,0.64]
+  ];
+  for(let i = 0; i < deepCount; i++) {
+    const i3 = i * 3;
+    let x, y, z;
+    if(Math.random() < 0.55) {
+      // 螺旋臂
+      const arm = Math.floor(Math.random() * 4);
+      const armOff = (arm / 4) * Math.PI * 2;
+      const t = Math.random();
+      const r = 40 + t * 850;
+      const angle = armOff + t * 4.2 + (Math.random() - 0.5) * 0.7;
+      x = Math.cos(angle) * r + (Math.random() - 0.5) * 60;
+      y = Math.sin(angle) * r + (Math.random() - 0.5) * 60;
+      z = (Math.random() - 0.5) * 200;
+    } else if(Math.random() < 0.3) {
+      // 密集团
+      const cx2 = (Math.random() - 0.5) * 800;
+      const cy2 = (Math.random() - 0.5) * 800;
+      const gr = 25 + Math.random() * 70;
+      x = cx2 + (Math.random() - 0.5) * gr;
+      y = cy2 + (Math.random() - 0.5) * gr;
+      z = (Math.random() - 0.5) * 80;
+    } else {
+      // 银晕
+      const ang = Math.random() * Math.PI * 2;
+      const dist = 50 + Math.random() * 900;
+      x = Math.cos(ang) * dist;
+      y = Math.sin(ang) * dist;
+      z = (Math.random() - 0.5) * 400;
+    }
+    deepPos[i3] = x; deepPos[i3+1] = y; deepPos[i3+2] = z;
+    const c = spiralPalette[Math.floor(Math.random() * spiralPalette.length)];
+    const bright = 0.3 + Math.random() * 0.7;
+    deepCol[i3] = c[0]*bright; deepCol[i3+1] = c[1]*bright; deepCol[i3+2] = c[2]*bright;
+    deepSz[i] = 0.5 + Math.random() * 2.8;
+  }
+  const deepGeo = new THREE.BufferGeometry();
+  deepGeo.setAttribute('position', new THREE.BufferAttribute(deepPos, 3));
+  deepGeo.setAttribute('color', new THREE.BufferAttribute(deepCol, 3));
+  deepGeo.setAttribute('aSize', new THREE.BufferAttribute(deepSz, 1));
+  const starVert = `
+    attribute float aSize;
+    varying vec3 vColor;
+    varying float vAlpha;
+    uniform float uTime;
+    uniform vec2 uMouse;
+    uniform vec2 uMouseVel;
+    uniform vec2 uResolution;
+    float hash21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+    float noise2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);
+      return mix(mix(hash21(i),hash21(i+vec2(1,0)),f.x),mix(hash21(i+vec2(0,1)),hash21(i+vec2(1,1)),f.x),f.y);}
+    void main(){
+      vColor = color;
+      vec3 pos = position;
+      float depth = clamp((900.0 + pos.z) / 1800.0, 0.15, 1.0);
+      // curl noise flow — slow organic drift
+      float n1 = noise2(pos.xy * 0.0018 + uTime * 0.028);
+      float n2 = noise2(pos.xy * 0.0018 + uTime * 0.028 + vec2(5.2, 1.3));
+      pos.x += (n1 - 0.5) * 38.0 * depth;
+      pos.y += (n2 - 0.5) * 38.0 * depth;
+      pos.z += sin(uTime * 0.18 + pos.x * 0.005) * 8.0 * depth;
+      // mouse gravity field — orbital bend
+      vec2 screen = (pos.xy / uResolution) * 2.0 + 0.5;
+      vec2 toMouse = uMouse - screen;
+      float mDist = length(toMouse) * length(uResolution);
+      if(mDist > 1.0 && mDist < 320.0){
+        float force = (1.0 - mDist / 320.0) * 18.0 * depth;
+        vec2 tangent = normalize(vec2(-toMouse.y, toMouse.x));
+        vec2 drag = uMouseVel * (1.0 - mDist / 320.0) * 0.6 * depth;
+        pos.xy += tangent * force + drag;
+      }
+      vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+      float twinkle = 0.65 + 0.35 * sin(uTime * 1.8 + pos.x * 0.08 + pos.y * 0.06);
+      vAlpha = twinkle * depth;
+      gl_PointSize = max(aSize * twinkle * depth * (350.0 / max(-mv.z, 1.0)), 0.5);
+      gl_Position = projectionMatrix * mv;
+    }
+  `;
+  const starFrag = `
+    varying vec3 vColor;
+    varying float vAlpha;
+    void main(){
+      float d = length(gl_PointCoord - 0.5);
+      if(d > 0.5) discard;
+      float a = smoothstep(0.5, 0.05, d) * vAlpha;
+      gl_FragColor = vec4(vColor, a);
+    }
+  `;
+  const starMat = new THREE.ShaderMaterial({
+    uniforms, vertexShader: starVert, fragmentShader: starFrag,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true
+  });
+  const deepPts = new THREE.Points(deepGeo, starMat);
+  scene.add(deepPts);
+  // ---- Layer 2: Foreground bright stars (600 points) ----
+  const nearCount = 600;
+  const nearPos = new Float32Array(nearCount * 3);
+  const nearCol = new Float32Array(nearCount * 3);
+  const nearSz  = new Float32Array(nearCount);
+  for(let i = 0; i < nearCount; i++){
+    const i3 = i * 3;
+    const ang = Math.random() * Math.PI * 2;
+    const dist = 80 + Math.random() * 700;
+    nearPos[i3] = Math.cos(ang) * dist;
+    nearPos[i3+1] = Math.sin(ang) * dist;
+    nearPos[i3+2] = (Math.random() - 0.5) * 120;
+    const c = spiralPalette[Math.floor(Math.random() * spiralPalette.length)];
+    nearCol[i3] = c[0]; nearCol[i3+1] = c[1]; nearCol[i3+2] = c[2];
+    nearSz[i] = 2.5 + Math.random() * 5.0;
+  }
+  const nearGeo = new THREE.BufferGeometry();
+  nearGeo.setAttribute('position', new THREE.BufferAttribute(nearPos, 3));
+  nearGeo.setAttribute('color', new THREE.BufferAttribute(nearCol, 3));
+  nearGeo.setAttribute('aSize', new THREE.BufferAttribute(nearSz, 1));
+  const nearPts = new THREE.Points(nearGeo, starMat);
+  nearPts.position.z = 80; // closer to camera
+  scene.add(nearPts);
+  // ---- Layer 3: Nebula clouds (8 large semi-transparent planes) ----
+  const nebColors = [0x2a1254, 0x0c2a4a, 0x1a0a3a, 0x0a2240, 0x3a1060, 0x082848, 0x260e4e, 0x0e2e52];
+  const nebMeshes = [];
+  for(let i = 0; i < 8; i++){
+    const size = 400 + Math.random() * 600;
+    const geo = new THREE.PlaneGeometry(size, size);
+    const mat = new THREE.MeshBasicMaterial({
+      color: nebColors[i], transparent: true, opacity: 0.12 + Math.random() * 0.1,
+      blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set((Math.random()-0.5)*1200, (Math.random()-0.5)*1200, -300 - Math.random()*400);
+    mesh.rotation.z = Math.random() * Math.PI;
+    scene.add(mesh);
+    nebMeshes.push(mesh);
+  }
+  // ---- Store refs ----
+  civGL = { scene, camera: cam, renderer, points: deepPts, nearPts, nebulae: nebMeshes, uniforms };
+}
+function resizeCivThree() {
+  if(!civGL) return;
+  civGL.camera.aspect = window.innerWidth / window.innerHeight;
+  civGL.camera.updateProjectionMatrix();
+  civGL.renderer.setSize(window.innerWidth, window.innerHeight);
+  civGL.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+}
+function updateCivThreeScene() {
+  if(!civGL) return;
+  const gl = civGL;
+  gl.uniforms.uTime.value = civilizationFlowTime;
+  gl.uniforms.uMouse.value.set(
+    civilizationMouseField.wx / window.innerWidth,
+    1.0 - civilizationMouseField.wy / window.innerHeight
+  );
+  gl.uniforms.uMouseVel.value.set(civilizationMouseField.vx * 0.003, -civilizationMouseField.vy * 0.003);
+  // camera drift — slow breathing orbit
+  const t = civilizationFlowTime;
+  gl.camera.position.x = Math.sin(t * 0.09) * 30 + civilizationViewTilt.x * 55;
+  gl.camera.position.y = Math.cos(t * 0.07) * 20 + civilizationViewTilt.y * 40;
+  gl.camera.position.z = 900 + Math.sin(t * 0.05) * 18;
+  gl.camera.lookAt(civilizationViewTilt.x * 25, civilizationViewTilt.y * 18, 0);
+  // nebula slow rotation
+  for(let i = 0; i < gl.nebulae.length; i++){
+    gl.nebulae[i].rotation.z += 0.00025 * (i % 2 === 0 ? 1 : -1);
+    gl.nebulae[i].material.opacity = 0.1 + 0.04 * Math.sin(t * 0.3 + i);
+  }
+  gl.renderer.render(gl.scene, gl.camera);
+}
 // === Wave packets: 鼠标运动 → 波 → 在场内自传播 ===
 const civilizationWavesActive = []; // {x, y, t, lifespan, amp, speed}
 let civilizationLastEmitSx = null, civilizationLastEmitSy = null, civilizationLastEmitT = 0;
@@ -5149,6 +5343,7 @@ function initCivilizationView() {
   if(!civCanvas) return;
   resizeCivCanvas();
   civCamera.reset(0, 0);
+  if(!civGL) initCivThreeScene(); else resizeCivThree();
   initCivilizationStarfield();
   initCivilizationSystem();
   renderCivilizationToolbar();
@@ -5164,6 +5359,7 @@ function resizeCivCanvas() {
   if(!civCanvas) return;
   civCanvas.width = window.innerWidth;
   civCanvas.height = window.innerHeight;
+  if(civGL) resizeCivThree();
 }
 
 function initCivilizationStarfield() {
@@ -5383,11 +5579,9 @@ function drawCivilizationView() {
   civCamera.update();
   civilizationFlowTime += 0.0085;       // 流场时间步进
   updateCivilizationField();             // 流场更新粒子位置
+  updateCivThreeScene();                 // Three.js GPU 星海渲染
   civCtx.setTransform(1,0,0,1,0,0);
-  civCtx.fillStyle = '#020a17';
-  civCtx.fillRect(0, 0, civCanvas.width, civCanvas.height);
-  // 屏幕空间星空（不参与缩放，给画面"深空"的稳定背景）
-  drawCivilizationStarfield();
+  civCtx.clearRect(0, 0, civCanvas.width, civCanvas.height);
   // 屏幕空间记忆低语
   drawCivilizationWhispers();
   // 世界空间内容（叠加相机微漂 + 视角倾斜偏移 + 方向键平移作为活体感）
