@@ -5464,6 +5464,8 @@ let civilizationStarfield = [];
 let civilizationNebulae = [];
 // === 流场（Flow Field）状态：把整片星海当作一个连续流体场处理 ===
 let civilizationFlowTime = 0;
+let civilizationGalaxyRot = 0; // 银河整体缓慢旋转（每帧+=0.00045）
+let civAnimToken = 0; // RAF 互斥 token：每次 init 自增，旧循环检测到 token 不匹配会自动退出
 let civilizationMouseField = { wx: 0, wy: 0, prevWx: 0, prevWy: 0, vx: 0, vy: 0, strength: 0, lastSeen: 0 };
 let civilizationCameraDrift = { x: 0, y: 0 };
 // 视角倾斜（鼠标位置驱动）+ 多层视差状态
@@ -5919,10 +5921,16 @@ function initCivilizationView() {
   renderCivilizationToolbar();
   updateCivilizationStats();
   civilizationInited = true;
-  if(!civilizationAnimating) {
-    civilizationAnimating = true;
-    animateCivilizationView();
-  }
+  // 强制重启 RAF：每次进入文明记忆都确保动画循环在跑
+  // 用 token 互斥，旧循环若因快速切换还在跑，会自动退出，避免并行 RAF
+  const myToken = ++civAnimToken;
+  civilizationAnimating = true;
+  (function tokenLoop() {
+    if (myToken !== civAnimToken) return; // 被新 init 顶掉，旧循环退出
+    if (currentView !== 'civilization') { civilizationAnimating = false; return; }
+    try { drawCivilizationView(); } catch(e) { /* 单帧失败不让 RAF 死掉 */ }
+    requestAnimationFrame(tokenLoop);
+  })();
   // 首次进入引导（参考 shiyun Onboarding — localStorage 控制，只显示一次）
   showCivOnboarding();
   tryRestoreCivilizationFromHash();
@@ -6272,10 +6280,13 @@ function drawCivilizationView() {
   }
   civCamera.update();
   civilizationFlowTime += 0.0085;       // 流场时间步进
+  civilizationGalaxyRot += 0.00038;     // 银河整体缓慢自转（约 0.022°/帧 ≈ 1.3°/秒）
   updateCivilizationField();             // 流场更新粒子位置
   updateCivThreeScene();                 // Three.js GPU 星海渲染
   civCtx.setTransform(1,0,0,1,0,0);
   civCtx.clearRect(0, 0, civCanvas.width, civCanvas.height);
+  // === 屏幕空间星海（银河 / nebula / 波包 / 鼠标重力光晕）—— 整体缓慢旋转 ===
+  drawCivilizationStarfield();
   // 屏幕空间记忆低语
   drawCivilizationWhispers();
   // 世界空间内容（叠加相机微漂 + 视角倾斜偏移 + 方向键平移作为活体感）
@@ -6904,8 +6915,15 @@ function drawCivilizationStarfield() {
   for (let i = 0; i < civilizationNebulae.length; i++) {
     const n = civilizationNebulae[i];
     n.rot += n.drift;
-    const px = n.x + civilizationCameraDrift.x * 0.35 + tx * 18;
-    const py = n.y + civilizationCameraDrift.y * 0.35 + ty * 12;
+    // 整体旋转：nebula 也随银河一起转，让"整片星海在转"的感觉成立
+    const nebRotAng = civilizationGalaxyRot * 0.55;
+    const nCos = Math.cos(nebRotAng), nSin = Math.sin(nebRotAng);
+    const ndx = n.x - civCanvas.width/2;
+    const ndy = (n.y - civCanvas.height/2) * 0.9;
+    const nRx = ndx * nCos - ndy * nSin;
+    const nRy = ndx * nSin + ndy * nCos;
+    const px = civCanvas.width/2 + nRx + civilizationCameraDrift.x * 0.35 + tx * 18;
+    const py = civCanvas.height/2 + nRy / 0.9 + civilizationCameraDrift.y * 0.35 + ty * 12;
     const grad = civCtx.createRadialGradient(px, py, 0, px, py, Math.max(n.rx, n.ry));
     const c = hexToRgba(n.color, n.alpha);
     grad.addColorStop(0, c);
@@ -6919,13 +6937,22 @@ function drawCivilizationStarfield() {
     civCtx.restore();
   }
   // 多层视差：depth 小（远处）整体偏移量小，depth 大（近处）跟着相机漂得多 + 鼠标视角倾斜（复用顶部 tx/ty）
+  // 银河整体旋转：不同 depth 旋转速度不同造成视差旋转感（远星转得慢，近星转得快）
+  const cwHalf = civCanvas.width / 2;
+  const chHalf = civCanvas.height / 2;
   for (let i = 0, len = civilizationStarfield.length; i < len; i++) {
     const s = civilizationStarfield[i];
     const tw = 0.7 + 0.3*Math.sin(civilizationFlowTime*30*s.speed + s.twinkle);
+    // 整体旋转：每颗星绕画布中心旋转（depth 越大转得越明显）
+    const rotAng = civilizationGalaxyRot * (0.35 + s.depth * 0.65);
+    const cosR = Math.cos(rotAng), sinR = Math.sin(rotAng);
+    const dxR = s.x - cwHalf, dyR = (s.y - chHalf) * 0.92; // y 略压扁，模拟星盘倾斜
+    const rotX = dxR * cosR - dyR * sinR;
+    const rotY = dxR * sinR + dyR * cosR;
     // 远景（depth ≈ 0.2）几乎不动；近景（depth ≈ 1）随视角大幅平移 → 立体视差
     const parallax = (s.depth - 0.4) * 1.4; // -0.28 → +0.84 范围
-    const px = s.x + civilizationCameraDrift.x * s.depth + tx * 42 * parallax;
-    const py = s.y + civilizationCameraDrift.y * s.depth + ty * 28 * parallax;
+    const px = cwHalf + rotX + civilizationCameraDrift.x * s.depth + tx * 42 * parallax;
+    const py = chHalf + rotY / 0.92 + civilizationCameraDrift.y * s.depth + ty * 28 * parallax;
     // depth 越靠前，被视角拉近时尺寸略放大（z-axis 错觉）
     const sizeFactor = 1 + Math.abs(parallax) * 0.18 * (Math.abs(tx) + Math.abs(ty));
     civCtx.fillStyle = hexToRgba(s.color, s.alpha*tw);
