@@ -6260,8 +6260,63 @@ function drawCivilizationView() {
   civCtx.font = '9px sans-serif';
   civCtx.fillText('Civilization Memory Universe', sx, sy+18);
 
-  // ====== Layer 4.5：骨架（6 维主轴 + 7 时代同心环），让网络结构一眼可见 ======
+  // ====== Layer 4.3：螺旋星河（2 条对数螺旋臂，3000 颗粒子）======
   const cx = civCanvas.width/2, cy = civCanvas.height/2;
+  const spiralArms = 2;
+  const spiralPerArm = 1500;
+  const spiralBaseR = 55;
+  const spiralGrowth = 0.38;
+  const spiralTurns = 1.1;
+  const spiralRot = civilizationOrbitTime * 0.03; // 极慢旋转
+  for (let arm = 0; arm < spiralArms; arm++) {
+    const armOff = arm * Math.PI;
+    for (let i = 0; i < spiralPerArm; i++) {
+      const t = i / spiralPerArm;
+      const angle = armOff + spiralRot + t * spiralTurns * Math.PI * 2;
+      const r = spiralBaseR + t * Math.min(cx, cy) * spiralGrowth;
+      const spread = (8 + t * 35) * (Math.random() - 0.5) * 2;
+      const px = cx + Math.cos(angle) * r + spread * Math.cos(angle + Math.PI/2);
+      const py = cy + Math.sin(angle) * r * 0.82 + spread * Math.sin(angle + Math.PI/2) * 0.82;
+      const sz = 0.25 + Math.random() * 1.6 * (1 - t*0.5);
+      const al = (0.12 + Math.random() * 0.38) * (1 - t*0.35);
+      const hue = arm === 0 ? (210 + Math.random()*40) : (280 + Math.random()*50);
+      civCtx.fillStyle = `hsla(${hue},55%,72%,${al})`;
+      civCtx.beginPath(); civCtx.arc(px, py, sz, 0, Math.PI*2); civCtx.fill();
+    }
+  }
+  // ====== Layer 4.4：星河流（3 条弯曲的密集星河带）======
+  const riverCount = 3;
+  for (let ri = 0; ri < riverCount; ri++) {
+    const seed = ri * 2.7;
+    const pts = 400;
+    for (let j = 0; j < pts; j++) {
+      const t = j / pts;
+      const rx = cx * 0.25 + t * cx * 1.5 + Math.sin(t*4 + seed)*90 + Math.cos(t*2.5 + seed*0.7)*50;
+      const ry = cy * 0.3 + t * cy * 1.4 + Math.cos(t*3 + seed*1.3)*70 + Math.sin(t*1.8 + seed)*40;
+      const spread = (3 + Math.random()*12) * (Math.random()-0.5)*2;
+      const px = rx + spread;
+      const py = ry + spread * 0.6;
+      const sz = 0.2 + Math.random() * 1.1;
+      const al = 0.08 + Math.random() * 0.28;
+      civCtx.fillStyle = `rgba(180,200,255,${al})`;
+      civCtx.beginPath(); civCtx.arc(px, py, sz, 0, Math.PI*2); civCtx.fill();
+    }
+  }
+  // ====== Layer 4.45：漂浮宇宙尘埃（600 颗半透明大颗粒）======
+  const dustCount = 600;
+  for (let di = 0; di < dustCount; di++) {
+    const seed = di * 7.31;
+    const baseX = (Math.sin(seed)*0.5+0.5) * civCanvas.width;
+    const baseY = (Math.cos(seed*1.3)*0.5+0.5) * civCanvas.height;
+    const dx2 = baseX + Math.sin(civilizationOrbitTime*0.15 + seed)*8;
+    const dy2 = baseY + Math.cos(civilizationOrbitTime*0.12 + seed*1.1)*6;
+    const sz = 1.2 + Math.random() * 3.5;
+    const al = 0.02 + Math.random() * 0.06;
+    civCtx.fillStyle = `rgba(160,180,220,${al})`;
+    civCtx.beginPath(); civCtx.arc(dx2, dy2, sz, 0, Math.PI*2); civCtx.fill();
+  }
+
+  // ====== Layer 4.5：骨架（6 维主轴 + 7 时代同心环），让网络结构一眼可见 ======
   // —— 6 维主轴（从中心放射 60° 间隔）——
   if (Array.isArray(civilizationDimensionNodes) && civilizationDimensionNodes.length) {
     civilizationDimensionNodes.forEach(d => {
@@ -6372,7 +6427,20 @@ function drawCivilizationView() {
     const dimByFilter = civilizationActiveDim && civilizationActiveDim !== dim.id;
     const a = dimByFilter ? 0.25 : 1;
 
-    drawNebulaCloud2(civCtx, dim.x, dim.y, 130, dim.color, (0.06 + (dim.hover?0.04:0)) * a);
+    // 外层星云光晕
+    drawNebulaCloud2(civCtx, dim.x, dim.y, 130, dim.color, (0.08 + (dim.hover?0.06:0)) * a);
+    // 旋转光环（每帧转 ~0.3°）
+    civCtx.save();
+    civCtx.translate(dim.x, dim.y);
+    civCtx.rotate(civilizationOrbitTime * 0.18 + dim.id.charCodeAt(0)*0.5);
+    civCtx.strokeStyle = hexToRgba(dim.color, 0.12 * a);
+    civCtx.lineWidth = 0.8;
+    civCtx.beginPath(); civCtx.ellipse(0, 0, dim.radius*1.8, dim.radius*1.3, 0, 0, Math.PI*2); civCtx.stroke();
+    civCtx.strokeStyle = hexToRgba(dim.color, 0.07 * a);
+    civCtx.lineWidth = 0.5;
+    civCtx.beginPath(); civCtx.ellipse(0, 0, dim.radius*2.5, dim.radius*1.8, 0.3, 0, Math.PI*2); civCtx.stroke();
+    civCtx.restore();
+    // 卫星粉尘
     dim.satellites.forEach(st => {
       st.a += st.sp;
       const px = dim.x + Math.cos(st.a)*st.r;
@@ -6672,21 +6740,44 @@ function drawCivilizationStarfield() {
   }
   // 虚空星座（点击空白时升起的临时连线）
   drawCivilizationConstellations();
-  // 绘制活动波包：极淡极小的扩散涟漪，让"波在传播"可见但绝不喧宾夺主
+  // 绘制活动波包：扩散涟漪，让"波在传播"清晰可见
   for (let i = 0; i < civilizationWavesActive.length; i++) {
     const w = civilizationWavesActive[i];
     const lifeRatio = w.t / w.lifespan;
     if (lifeRatio >= 1) continue;
     const ringR = Math.min(w.t * w.speed, w.maxR || 130);
-    const a = (1 - lifeRatio) * (1 - lifeRatio) * w.amp * 0.10; // 0.18 → 0.10
-    const inner = Math.max(0, ringR - 6);
-    const outer = ringR + 6;
+    const fade = (1 - lifeRatio) * (1 - lifeRatio);
+    const a = fade * w.amp * 0.35; // 明显增强
+    const inner = Math.max(0, ringR - 10);
+    const outer = ringR + 10;
     const grad = civCtx.createRadialGradient(w.x, w.y, inner, w.x, w.y, outer);
     grad.addColorStop(0, 'rgba(255,255,255,0)');
-    grad.addColorStop(0.5, `rgba(255,228,193,${a})`);
+    grad.addColorStop(0.4, `rgba(255,228,193,${a * 0.6})`);
+    grad.addColorStop(0.6, `rgba(255,228,193,${a})`);
     grad.addColorStop(1, 'rgba(255,255,255,0)');
     civCtx.fillStyle = grad;
     civCtx.beginPath(); civCtx.arc(w.x, w.y, outer, 0, Math.PI*2); civCtx.fill();
+    // 内环二次波纹
+    if (ringR > 20) {
+      const innerR2 = Math.max(0, ringR * 0.55 - 5);
+      const outerR2 = ringR * 0.55 + 5;
+      const a2 = fade * w.amp * 0.12;
+      const grad2 = civCtx.createRadialGradient(w.x, w.y, innerR2, w.x, w.y, outerR2);
+      grad2.addColorStop(0, 'rgba(255,255,255,0)');
+      grad2.addColorStop(0.5, `rgba(180,210,255,${a2})`);
+      grad2.addColorStop(1, 'rgba(255,255,255,0)');
+      civCtx.fillStyle = grad2;
+      civCtx.beginPath(); civCtx.arc(w.x, w.y, outerR2, 0, Math.PI*2); civCtx.fill();
+    }
+  }
+  // 鼠标重力场光晕
+  if (civilizationMouseField.strength > 0.05) {
+    const mg = civCtx.createRadialGradient(civilizationMouseField.x, civilizationMouseField.y, 0, civilizationMouseField.x, civilizationMouseField.y, 80);
+    mg.addColorStop(0, `rgba(255,228,193,${civilizationMouseField.strength * 0.08})`);
+    mg.addColorStop(0.5, `rgba(255,200,150,${civilizationMouseField.strength * 0.03})`);
+    mg.addColorStop(1, 'rgba(255,255,255,0)');
+    civCtx.fillStyle = mg;
+    civCtx.beginPath(); civCtx.arc(civilizationMouseField.x, civilizationMouseField.y, 80, 0, Math.PI*2); civCtx.fill();
   }
 }
 
