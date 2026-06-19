@@ -5465,6 +5465,7 @@ let civilizationNebulae = [];
 // === 流场（Flow Field）状态：把整片星海当作一个连续流体场处理 ===
 let civilizationFlowTime = 0;
 let civilizationGalaxyRot = 0; // 银河整体缓慢旋转（每帧+=0.00045）
+let civilizationClickRipples = []; // 点击反馈涟漪：{x,y,t,life}（世界坐标）
 let civAnimToken = 0; // RAF 互斥 token：每次 init 自增，旧循环检测到 token 不匹配会自动退出
 let civilizationMouseField = { wx: 0, wy: 0, prevWx: 0, prevWy: 0, vx: 0, vy: 0, strength: 0, lastSeen: 0 };
 let civilizationCameraDrift = { x: 0, y: 0 };
@@ -6280,7 +6281,7 @@ function drawCivilizationView() {
   }
   civCamera.update();
   civilizationFlowTime += 0.0085;       // 流场时间步进
-  civilizationGalaxyRot += 0.00038;     // 银河整体缓慢自转（约 0.022°/帧 ≈ 1.3°/秒）
+  civilizationGalaxyRot += 0.00010;     // 银河整体极缓自转（约 0.006°/帧 ≈ 0.35°/秒，仿真实星空）
   updateCivilizationField();             // 流场更新粒子位置
   updateCivThreeScene();                 // Three.js GPU 星海渲染
   civCtx.setTransform(1,0,0,1,0,0);
@@ -6601,6 +6602,8 @@ function drawCivilizationView() {
     grad.addColorStop(1, hexToRgba(era.color, 0.25 * a));
     civCtx.fillStyle = grad;
     civCtx.beginPath(); civCtx.arc(era.x, era.y, era.radius, 0, Math.PI*2); civCtx.fill();
+    // 中心 starburst 闪光
+    drawCivStarburst(civCtx, era.x, era.y, era.radius*0.5, era.color, 0.9 * a, -civilizationOrbitTime*0.4 + era.id.charCodeAt(0), 6.5);
     if(era.hover) {
       civCtx.strokeStyle = 'rgba(255,255,255,0.55)'; civCtx.lineWidth=1.4;
       civCtx.beginPath(); civCtx.arc(era.x, era.y, era.radius+10, 0, Math.PI*2); civCtx.stroke();
@@ -6646,6 +6649,9 @@ function drawCivilizationView() {
     civCtx.fillStyle = coreG;
     civCtx.beginPath(); civCtx.arc(dim.x, dim.y, dim.radius*(dim.hover?1.08:1), 0, Math.PI*2); civCtx.fill();
 
+    // 中心叠加 starburst 闪光，强化"亮点"感
+    drawCivStarburst(civCtx, dim.x, dim.y, dim.radius*0.55, dim.color, 0.95 * a, civilizationOrbitTime*0.7 + dim.id.charCodeAt(0), 7.0);
+
     if(dim.hover || civilizationFocusedDim === dim.id) {
       civCtx.strokeStyle = 'rgba(255,255,255,0.5)'; civCtx.lineWidth = 1.5;
       civCtx.beginPath(); civCtx.arc(dim.x, dim.y, dim.radius+14, 0, Math.PI*2); civCtx.stroke();
@@ -6672,16 +6678,9 @@ function drawCivilizationView() {
     const r = f.radius * (f.hover?1.8:1) * tw * drift;
     const colorRef = f.parentRef ? f.parentRef.color : '#FFD37A';
 
-    // 外晕
-    const glow = civCtx.createRadialGradient(f.x, f.y, 0, f.x, f.y, r*5);
-    glow.addColorStop(0, hexToRgba(colorRef, (f.hover?0.55:0.28) * a));
-    glow.addColorStop(1, 'transparent');
-    civCtx.fillStyle = glow;
-    civCtx.beginPath(); civCtx.arc(f.x, f.y, r*5, 0, Math.PI*2); civCtx.fill();
-
-    // 内核
-    civCtx.fillStyle = `rgba(255,255,255,${(f.hover?1:0.92) * a})`;
-    civCtx.beginPath(); civCtx.arc(f.x, f.y, r, 0, Math.PI*2); civCtx.fill();
+    // === 闪光亮点（取代原"气泡"渐变外晕）===
+    const rotF = (civilizationOrbitTime*0.6 + (f.driftSeed||0)) % (Math.PI*2);
+    drawCivStarburst(civCtx, f.x, f.y, r * (f.hover?1.25:1.0), colorRef, (f.hover?1:0.85) * a, rotF, f.hover?6.5:5.2);
 
     // hover 时的名字浮窗
     if(f.hover) {
@@ -6727,6 +6726,20 @@ function drawCivilizationWhispers() {
       civCtx.fillText('虚空坐标 · 23 位 · ' + w.code, w.x, w.y + 32);
     }
   });
+  // 点击反馈涟漪（世界空间，过滤掉过期项）
+  for(let i = civilizationClickRipples.length - 1; i >= 0; i--) {
+    const rp = civilizationClickRipples[i];
+    rp.t += 0.04;
+    if(rp.t >= 1) { civilizationClickRipples.splice(i, 1); continue; }
+    const radius = 8 + rp.t * 70;
+    const alpha = (1 - rp.t) * 0.85;
+    civCtx.strokeStyle = `rgba(255,176,122,${alpha})`;
+    civCtx.lineWidth = 1.4 + (1-rp.t)*1.6;
+    civCtx.beginPath(); civCtx.arc(rp.x, rp.y, radius, 0, Math.PI*2); civCtx.stroke();
+    civCtx.strokeStyle = `rgba(255,243,224,${alpha*0.45})`;
+    civCtx.lineWidth = 0.6;
+    civCtx.beginPath(); civCtx.arc(rp.x, rp.y, radius*0.62, 0, Math.PI*2); civCtx.stroke();
+  }
   civCtx.restore();
 }
 
@@ -7431,6 +7444,9 @@ if(civCanvas) {
     const rect = civCanvas.getBoundingClientRect();
     const sx = e.clientX - rect.left, sy = e.clientY - rect.top;
     const pos = civCamera.screenToWorld(sx, sy);
+    // 即时点击反馈：在世界空间登记一道涟漪
+    civilizationClickRipples.push({ x: pos.x, y: pos.y, t: 0, life: 0.85 });
+    if(civilizationClickRipples.length > 8) civilizationClickRipples.shift();
     handleCivilizationClick(pos, sx, sy);
   });
   // 方向键 / WASD 平移整个宇宙（仅在 civilization 视图激活时生效）
@@ -8460,6 +8476,42 @@ async function callLocalModel(messages, fallbackFn) {
 
 // ==================== UTILS ====================
 function hexToRgba(hex,alpha){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${alpha})`;}
+// === Civilization 节点统一视觉：Starburst 闪光亮点（取代气泡感）===
+function drawCivStarburst(ctx, x, y, size, color, alpha, rot, longRayMult) {
+  if(size <= 0 || alpha <= 0) return;
+  const lm = longRayMult || 5.5;
+  ctx.save();
+  // 极小内核光晕（仅 size*1.4 范围，不形成大气泡）
+  const g = ctx.createRadialGradient(x, y, 0, x, y, size*1.5);
+  g.addColorStop(0, hexToRgba(color, Math.min(1, alpha*1.05)));
+  g.addColorStop(0.55, hexToRgba(color, alpha*0.4));
+  g.addColorStop(1, hexToRgba(color, 0));
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(x, y, size*1.5, 0, Math.PI*2); ctx.fill();
+  // 中心高亮实心
+  ctx.fillStyle = `rgba(255,253,242,${Math.min(1, alpha*1.1)})`;
+  ctx.beginPath(); ctx.arc(x, y, Math.max(0.6, size*0.7), 0, Math.PI*2); ctx.fill();
+  // 十字光闪（diffraction spikes）
+  ctx.translate(x, y);
+  if(rot) ctx.rotate(rot);
+  ctx.lineCap = 'round';
+  // 长水平/垂直
+  ctx.strokeStyle = hexToRgba(color, alpha*0.85);
+  ctx.lineWidth = Math.max(0.5, size*0.18);
+  ctx.beginPath();
+  ctx.moveTo(-size*lm, 0); ctx.lineTo(size*lm, 0);
+  ctx.moveTo(0, -size*lm); ctx.lineTo(0, size*lm);
+  ctx.stroke();
+  // 短斜十字 ✕
+  ctx.strokeStyle = hexToRgba(color, alpha*0.45);
+  ctx.lineWidth = Math.max(0.4, size*0.13);
+  ctx.beginPath();
+  const r2 = size*lm*0.45;
+  ctx.moveTo(-r2, -r2); ctx.lineTo(r2, r2);
+  ctx.moveTo(-r2, r2);  ctx.lineTo(r2, -r2);
+  ctx.stroke();
+  ctx.restore();
+}
 function stateText(s){return s==='active'?'活跃':s==='normal'?'平常':'休眠中';}
 window.addEventListener('keydown',e=>{if(e.key==='Escape'){closeOverlay();closeOracleModal();}});
 
