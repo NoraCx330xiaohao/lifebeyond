@@ -555,7 +555,10 @@
     .civ-hover-label-sub { color:#FFB07A; opacity:0.78; margin-left:6px; font-size:10px; }
 
     /* HUD 画质指示 — 借鉴 shiyun HUD.tsx */
-    .civ-quality-toggle { position:absolute; left:48px; bottom:48px; z-index:25; display:flex; gap:6px; padding:6px 10px; background:rgba(8,4,20,0.55); backdrop-filter:blur(18px); border:1px solid rgba(255,176,122,0.18); border-radius:999px; font-size:10.5px; letter-spacing:0.12em; }
+    .civ-quality-toggle { position:absolute; left:48px; bottom:200px; z-index:25; display:flex; gap:6px; padding:6px 10px; background:rgba(8,4,20,0.55); backdrop-filter:blur(18px); border:1px solid rgba(255,176,122,0.18); border-radius:999px; font-size:10.5px; letter-spacing:0.12em; }
+    /* —— 文明记忆视图未激活时，强制屏蔽所有 fixed/absolute 子节点，避免遮挡其他视图与底部 dock —— */
+    #view-civilization:not(.active) { visibility:hidden !important; pointer-events:none !important; }
+    #view-civilization:not(.active) * { visibility:hidden !important; pointer-events:none !important; opacity:0 !important; }
     .civ-quality-toggle .civ-q-btn { padding:3px 10px; border-radius:999px; cursor:pointer; color:rgba(255,255,255,0.55); transition:all 200ms ease; }
     .civ-quality-toggle .civ-q-btn:hover { color:#fff; }
     .civ-quality-toggle .civ-q-btn.active { background:rgba(255,176,122,0.22); color:#FFB07A; }
