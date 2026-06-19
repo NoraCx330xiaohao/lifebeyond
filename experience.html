@@ -1198,7 +1198,7 @@
       </div>
     </div>
 
-    <div class="civilization-hint" id="civilization-hint">滚轮缩放 · 拖拽漫游 · 点击星点</div>
+    <div class="civilization-hint" id="civilization-hint">滚轮缩放 · 拖拽漫游 · 点击星点听其故事 · 空白处点击会被一段匿名记忆唤醒</div>
 
     <div class="civilization-legend" id="civilization-legend">
       <div class="civ-legend-item"><span class="civ-legend-dot" style="background:#FFB07A"></span>影响力星系</div>
@@ -4808,56 +4808,233 @@ const civilizationEras = [
   { id:'industry',    name:'工业革命',   color:'#6fb3b6', period:'CE 1760 — 1840',     summary:'蒸汽、电力与计算，把人类拽出田野，扔进现代世界。' }
 ];
 
-// 人物只是挂载 —— 隶属影响力星系，可关联历史时代。
+// 人物：每个人都被锚定到某段历史时代（era）+ 某种影响力维度（dim）。
+// 类似诗云"诗人 × 朝代 × 形式"的三元定位，让每颗星都有空间坐标。
 const civilizationFigures = [
-  { name:'特蕾莎修女', dim:'peace',     era:null,         year:'1910 — 1997', avatar:'🕊️',
-    quote:'我们都不是伟大的人，但我们可以怀着伟大的爱去做小事。',
-    journey:'在加尔各答街头照护无家者与垂死病人，把贫穷者的尊严看作神的尊严。',
-    related:['和平推动者','人道主义者','留学生'] },
-  { name:'马拉拉',     dim:'peace',     era:null,         year:'1997 —',      avatar:'📚',
-    quote:'一支笔、一本书、一个孩子、一位老师，可以改变世界。',
-    journey:'十几岁就为女童教育发声，被塔利班枪击仍未停下，最年轻诺贝尔和平奖得主。',
-    related:['教育推动者','和平推动者','留学生'] },
-  { name:'居里夫人',   dim:'innovation', era:null,        year:'1867 — 1934', avatar:'⚗️',
-    quote:'生活中没有什么可怕的事，只有需要被理解的事。',
-    journey:'两次诺贝尔奖，开创放射性研究，把科学的清贫坚持成了一种品格。',
-    related:['创新推动','女性科学家','留学生'] },
-  { name:'达·芬奇',     dim:'innovation', era:'renaissance', year:'1452 — 1519', avatar:'🎨',
-    quote:'简洁是终极的复杂。',
-    journey:'画家、解剖学家、工程师、发明家——文艺复兴最完整的人。',
-    related:['文艺复兴','艺术家','创业者'] },
-  { name:'鲁迅',        dim:'humanity',  era:'ancient-cn', year:'1881 — 1936', avatar:'🖋️',
-    quote:'横眉冷对千夫指，俯首甘为孺子牛。',
-    journey:'弃医从文，用最锋利的笔写最深的爱，是中国现代文学的开端。',
-    related:['人文精神','作家','留学生'] },
-  { name:'梵高',        dim:'humanity',  era:null,         year:'1853 — 1890', avatar:'🌻',
-    quote:'对我而言，最了不起的艺术家，就是热爱人的艺术家。',
-    journey:'生前只卖出过一幅画，把所有的孤独与温柔都涂给了麦田与星空。',
-    related:['人文精神','艺术家'] },
-  { name:'孔子',        dim:'education', era:'ancient-cn', year:'BCE 551 — 479', avatar:'📜',
-    quote:'有教无类。',
+  // 古代中国 (ancient-cn)
+  { name:'孔子',     dim:'education', era:'ancient-cn', year:'BCE 551 — 479', avatar:'📜', quote:'有教无类。',
     journey:'三千弟子，七十二贤人，第一个把教育从贵族手里普及到民间的中国人。',
     related:['教育推动者','古代中国','人文精神'] },
-  { name:'苏格拉底',    dim:'education', era:'ancient-gr', year:'BCE 470 — 399', avatar:'🏛️',
-    quote:'我唯一知道的，就是我什么都不知道。',
+  { name:'老子',     dim:'humanity',  era:'ancient-cn', year:'BCE 571 — ?',   avatar:'☯️', quote:'上善若水。',
+    journey:'骑青牛西出函谷关，留下五千言《道德经》，从此中国人有了形而上的呼吸。',
+    related:['古代中国','人文精神','哲学家'] },
+  { name:'李白',     dim:'humanity',  era:'ancient-cn', year:'701 — 762',     avatar:'🌙', quote:'举杯邀明月，对影成三人。',
+    journey:'剑客与诗人，在盛唐的醉意里把汉字写成最自由的形状。',
+    related:['古代中国','艺术家','人文精神'] },
+  { name:'杜甫',     dim:'humanity',  era:'ancient-cn', year:'712 — 770',     avatar:'🍂', quote:'安得广厦千万间，大庇天下寒士俱欢颜。',
+    journey:'一生流离，写尽乱世苦难与众生悲悯，被称为诗史。',
+    related:['古代中国','人文精神','社会贡献'] },
+  { name:'司马迁',   dim:'humanity',  era:'ancient-cn', year:'BCE 145 — 86',  avatar:'📖', quote:'人固有一死，或重于泰山，或轻于鸿毛。',
+    journey:'忍辱负重写《史记》，开创纪传体，让中国从此有了完整的自我记忆。',
+    related:['古代中国','人文精神','教育推动者'] },
+  { name:'蔡伦',     dim:'innovation',era:'ancient-cn', year:'? — 121',       avatar:'📜', quote:'纸成，天下知。',
+    journey:'改良造纸术，让知识从竹简里解放出来，奔向千家万户。',
+    related:['古代中国','创新推动','发明家'] },
+  { name:'毕昇',     dim:'innovation',era:'ancient-cn', year:'? — 1051',      avatar:'🖨️', quote:'活字成行，传世千年。',
+    journey:'发明活字印刷，比古登堡早四百年改变了知识的传播方式。',
+    related:['古代中国','创新推动','发明家'] },
+  { name:'张衡',     dim:'innovation',era:'ancient-cn', year:'78 — 139',      avatar:'🌐', quote:'地动有数，天行有常。',
+    journey:'发明地动仪与浑天仪，让东方第一次用机械触摸星空。',
+    related:['古代中国','创新推动','科学家'] },
+  { name:'郑和',     dim:'era',       era:'ancient-cn', year:'1371 — 1433',   avatar:'⛵', quote:'欲国家富强，不可置海洋于不顾。',
+    journey:'七下西洋，宝船穿越南海与印度洋，把和平贸易刻进东方的远航史。',
+    related:['古代中国','时代改变','丝绸之路'] },
+  { name:'屠呦呦',   dim:'era',       era:'ancient-cn', year:'1930 —',        avatar:'🌿', quote:'青蒿一握，水二升，绞取汁，尽服之。',
+    journey:'从古籍中找到青蒿素的灵感，挽救了全球数百万疟疾患者的生命。',
+    related:['时代改变','科学家','古代中国','留学生'] },
+  { name:'鲁迅',     dim:'humanity',  era:'ancient-cn', year:'1881 — 1936',   avatar:'🖋️', quote:'横眉冷对千夫指，俯首甘为孺子牛。',
+    journey:'弃医从文，用最锋利的笔写最深的爱，是中国现代文学的开端。',
+    related:['人文精神','作家','留学生'] },
+  { name:'袁隆平',   dim:'social',    era:'ancient-cn', year:'1930 — 2021',   avatar:'🌾', quote:'我有两个梦：禾下乘凉梦，杂交稻覆盖全球梦。',
+    journey:'把杂交水稻种到稻田、心田与全世界，让饥饿成为越来越遥远的记忆。',
+    related:['社会贡献','农学家','创新推动','古代中国'] },
+
+  // 古希腊 (ancient-gr)
+  { name:'苏格拉底', dim:'education', era:'ancient-gr', year:'BCE 470 — 399', avatar:'🏛️', quote:'我唯一知道的，就是我什么都不知道。',
     journey:'用提问法把哲学从天上拉回街头，用生命守护思想自由。',
     related:['古希腊','教育推动者','哲学家'] },
-  { name:'袁隆平',      dim:'social',    era:null,         year:'1930 — 2021', avatar:'🌾',
-    quote:'我有两个梦：禾下乘凉梦，杂交稻覆盖全球梦。',
-    journey:'把杂交水稻种到稻田、心田与全世界，让饥饿成为越来越遥远的记忆。',
-    related:['社会贡献','农学家','创新推动'] },
-  { name:'特蕾西·查普曼', dim:'social',  era:null,         year:'1964 —',      avatar:'🎸',
-    quote:'谈论一场革命，听上去像是低语。',
+  { name:'柏拉图',   dim:'education', era:'ancient-gr', year:'BCE 427 — 347', avatar:'📚', quote:'良好的开端，是成功的一半。',
+    journey:'创办雅典学院，把对话录写成哲学的教科书，影响西方两千年。',
+    related:['古希腊','教育推动者','哲学家'] },
+  { name:'亚里士多德', dim:'education', era:'ancient-gr', year:'BCE 384 — 322', avatar:'🦅', quote:'求知是人的本性。',
+    journey:'把世界分门别类，从物理到伦理，给后世留下整套思考框架。',
+    related:['古希腊','教育推动者','科学家'] },
+  { name:'阿基米德', dim:'innovation',era:'ancient-gr', year:'BCE 287 — 212', avatar:'⚙️', quote:'给我一个支点，我可以撬动地球。',
+    journey:'浮力定律、杠杆原理与攻城器械——希腊化时代最锋利的头脑。',
+    related:['古希腊','创新推动','科学家'] },
+  { name:'希帕提娅', dim:'humanity',  era:'ancient-gr', year:'350 — 415',     avatar:'🌌', quote:'保留你思考的权利，因为思考错误也好过完全不思考。',
+    journey:'亚历山大图书馆的女数学家，被宗教暴徒杀害，象征理性殒落。',
+    related:['古希腊','人文精神','女性科学家'] },
+  { name:'希罗多德', dim:'humanity',  era:'ancient-gr', year:'BCE 484 — 425', avatar:'🗺️', quote:'万物皆流。',
+    journey:'被誉为"历史之父"，第一次把人类的过去写成可以阅读的故事。',
+    related:['古希腊','人文精神','教育推动者'] },
+
+  // 古埃及 (ancient-eg)
+  { name:'印何阗',   dim:'innovation',era:'ancient-eg', year:'BCE 27th c.',   avatar:'🔺', quote:'石头能比血肉更长久。',
+    journey:'第一座阶梯金字塔的建筑师，是已知最早被记载下姓名的工程师。',
+    related:['古埃及','创新推动','建筑师'] },
+  { name:'阿肯那顿', dim:'era',       era:'ancient-eg', year:'BCE 14th c.',   avatar:'☀️', quote:'唯有阿吞，唯有光。',
+    journey:'把多神崇拜改写为太阳一神教，是人类历史上最早的宗教改革者之一。',
+    related:['古埃及','时代改变','哲学家'] },
+  { name:'娜芙蒂蒂', dim:'humanity',  era:'ancient-eg', year:'BCE 14th c.',   avatar:'👑', quote:'美也是力量。',
+    journey:'与法老共治埃及，那尊石膏胸像至今让人体会三千年前的优雅。',
+    related:['古埃及','人文精神','艺术家'] },
+  { name:'克娄巴特拉', dim:'era',     era:'ancient-eg', year:'BCE 69 — 30',   avatar:'🦂', quote:'我宁可被一条蛇咬死，也不愿做罗马的战利品。',
+    journey:'托勒密最后的女王，以智识与勇气在罗马铁蹄下守护一片文明。',
+    related:['古埃及','时代改变','和平推动者'] },
+
+  // 丝绸之路 (silk-road)
+  { name:'玄奘',     dim:'education', era:'silk-road',  year:'602 — 664',     avatar:'🐎', quote:'宁可西行而死，绝不东归而生。',
+    journey:'独行西域十七年，带回六百五十七部佛典，把中印文明缝在一起。',
+    related:['丝绸之路','教育推动者','留学生'] },
+  { name:'马可·波罗', dim:'humanity',  era:'silk-road',  year:'1254 — 1324',   avatar:'🌏', quote:'这世界比我们想象的更大。',
+    journey:'17岁出发，24年后归来，把元朝的辉煌写进让欧洲心动的游记。',
+    related:['丝绸之路','人文精神','留学生'] },
+  { name:'伊本·白图泰', dim:'humanity',era:'silk-road', year:'1304 — 1369',   avatar:'🐪', quote:'旅行让你说不出话，再让你成为讲故事的人。',
+    journey:'从摩洛哥走到中国，三十年游历12万公里，是中世纪最远的旅行家。',
+    related:['丝绸之路','人文精神','留学生'] },
+  { name:'鸠摩罗什', dim:'education', era:'silk-road',  year:'344 — 413',     avatar:'🪷', quote:'譬如莲花，不着水。',
+    journey:'被押解至长安，主译经典三百余卷，让汉语第一次完整承载佛法。',
+    related:['丝绸之路','教育推动者','留学生'] },
+  { name:'阿尔·花拉子米', dim:'innovation', era:'silk-road', year:'780 — 850', avatar:'🔢', quote:'计算让真理变得可以传递。',
+    journey:'波斯数学家，"代数"(al-jabr)以他的著作命名，把印度数字带向西方。',
+    related:['丝绸之路','创新推动','科学家'] },
+
+  // 文艺复兴 (renaissance)
+  { name:'达·芬奇', dim:'innovation',era:'renaissance', year:'1452 — 1519',   avatar:'🎨', quote:'简洁是终极的复杂。',
+    journey:'画家、解剖学家、工程师、发明家——文艺复兴最完整的人。',
+    related:['文艺复兴','艺术家','创业者'] },
+  { name:'米开朗基罗', dim:'humanity',era:'renaissance', year:'1475 — 1564',  avatar:'🗿', quote:'石头里本就有那个形象，我只是把多余的去掉。',
+    journey:'雕塑家、画家、诗人、建筑师，把上帝按人的样子重新雕刻一次。',
+    related:['文艺复兴','艺术家','人文精神'] },
+  { name:'伽利略',   dim:'innovation',era:'renaissance', year:'1564 — 1642',  avatar:'🔭', quote:'然而它仍在转动。',
+    journey:'用望远镜看见木卫，用观测把哥白尼的猜想变成不可逆转的事实。',
+    related:['文艺复兴','创新推动','科学家'] },
+  { name:'哥白尼',   dim:'era',       era:'renaissance', year:'1473 — 1543',  avatar:'🌍', quote:'我们也许移动了，但太阳没有。',
+    journey:'用日心说把人类从宇宙中心位置上请下来，从此星空换了一种读法。',
+    related:['文艺复兴','时代改变','科学家'] },
+  { name:'但丁',     dim:'humanity',  era:'renaissance', year:'1265 — 1321',  avatar:'🌹', quote:'走自己的路，让别人去说吧。',
+    journey:'用佛罗伦萨方言写《神曲》，从此意大利语有了文学的脊梁。',
+    related:['文艺复兴','人文精神','作家'] },
+  { name:'莎士比亚', dim:'humanity',  era:'renaissance', year:'1564 — 1616',  avatar:'🎭', quote:'生存还是毁灭，这是个问题。',
+    journey:'用三十七部戏剧把英语变成通向人性深处的最好通道。',
+    related:['文艺复兴','人文精神','作家'] },
+  { name:'伊丽莎白一世', dim:'era',   era:'renaissance', year:'1533 — 1603',  avatar:'👑', quote:'我虽生为女子，却有国王的心与胆。',
+    journey:'在四面强敌中守住英伦四十五年，让莎士比亚与海权同时萌芽。',
+    related:['文艺复兴','时代改变','和平推动者'] },
+
+  // 工业革命 (industry)
+  { name:'瓦特',     dim:'innovation',era:'industry',    year:'1736 — 1819',  avatar:'⚙️', quote:'蒸汽是人类的第二双脚。',
+    journey:'改良蒸汽机，把工业革命的火种第一次握在自己手里。',
+    related:['工业革命','创新推动','发明家'] },
+  { name:'达尔文',   dim:'era',       era:'industry',    year:'1809 — 1882',  avatar:'🐢', quote:'存活下来的不是最强壮的，而是最能适应变化的。',
+    journey:'乘小猎犬号环球五年，用《物种起源》改写人类对自身位置的理解。',
+    related:['工业革命','时代改变','科学家'] },
+  { name:'居里夫人', dim:'innovation',era:'industry',    year:'1867 — 1934',  avatar:'⚗️', quote:'生活中没有什么可怕的事，只有需要被理解的事。',
+    journey:'两次诺贝尔奖，开创放射性研究，把科学的清贫坚持成了一种品格。',
+    related:['工业革命','创新推动','女性科学家','留学生'] },
+  { name:'爱迪生',   dim:'innovation',era:'industry',    year:'1847 — 1931',  avatar:'💡', quote:'天才是1%的灵感加99%的汗水。',
+    journey:'1093项专利，把电灯、留声机与电影一起塞进现代日常。',
+    related:['工业革命','创新推动','创业者'] },
+  { name:'特斯拉',   dim:'innovation',era:'industry',    year:'1856 — 1943',  avatar:'⚡', quote:'未来属于那些愿意承受最孤独的人。',
+    journey:'交流电、无线电、感应电机——一个为整个20世纪供电的塞尔维亚人。',
+    related:['工业革命','创新推动','留学生'] },
+  { name:'图灵',     dim:'era',       era:'industry',    year:'1912 — 1954',  avatar:'🧮', quote:'我们能看到的只是不远处，但我们可以看到那里有许多事要做。',
+    journey:'破译 Enigma，构想现代计算机，是一个被时代亏欠的天才。',
+    related:['工业革命','时代改变','创新推动','创业者'] },
+  { name:'梵高',     dim:'humanity',  era:'industry',    year:'1853 — 1890',  avatar:'🌻', quote:'对我而言，最了不起的艺术家就是热爱人的艺术家。',
+    journey:'生前只卖出过一幅画，把所有的孤独与温柔都涂给了麦田与星空。',
+    related:['工业革命','人文精神','艺术家'] },
+  { name:'托尔斯泰', dim:'humanity',  era:'industry',    year:'1828 — 1910',  avatar:'🌳', quote:'幸福的家庭都是相似的，不幸的家庭各有各的不幸。',
+    journey:'写完《战争与和平》，又把后半生捐给了农民、土地与良心。',
+    related:['工业革命','人文精神','社会贡献'] },
+  { name:'马克·吐温', dim:'humanity', era:'industry',    year:'1835 — 1910',  avatar:'🚂', quote:'真理比小说更离奇，因为小说要讲究合理。',
+    journey:'用密西西比河的水汽与幽默，写出最早的美国良心。',
+    related:['工业革命','人文精神','作家'] },
+  { name:'林肯',     dim:'peace',     era:'industry',    year:'1809 — 1865',  avatar:'🎩', quote:'人民的、由人民的、为人民的政府将永远不会从地球上消失。',
+    journey:'在内战的硝烟里签下《解放宣言》，让"人人生而平等"不再只是宣言。',
+    related:['工业革命','和平推动者','社会贡献'] },
+  { name:'南丁格尔', dim:'social',    era:'industry',    year:'1820 — 1910',  avatar:'🕯️', quote:'希望是我们身上唯一不能被夺走的东西。',
+    journey:'克里米亚战场上的提灯女士，把护理学从慈善行为变成专业学科。',
+    related:['工业革命','社会贡献','教育推动者','女性科学家'] },
+
+  // 现代/未锚定时代 (era=null) 默认归在最内层"当代"环
+  { name:'特蕾莎修女', dim:'peace',    era:null,         year:'1910 — 1997',  avatar:'🕊️', quote:'我们都不是伟大的人，但我们可以怀着伟大的爱去做小事。',
+    journey:'在加尔各答街头照护无家者与垂死病人，把贫穷者的尊严看作神的尊严。',
+    related:['和平推动者','人道主义者','留学生'] },
+  { name:'马拉拉',     dim:'peace',    era:null,         year:'1997 —',       avatar:'📚', quote:'一支笔、一本书、一个孩子、一位老师，可以改变世界。',
+    journey:'十几岁就为女童教育发声，被塔利班枪击仍未停下，最年轻诺贝尔和平奖得主。',
+    related:['教育推动者','和平推动者','留学生'] },
+  { name:'曼德拉',     dim:'peace',    era:null,         year:'1918 — 2013',  avatar:'🌅', quote:'怨恨像饮鸩止渴，毒害的只是自己。',
+    journey:'27年牢狱后走出，引领南非以宽恕代替清算，让和平变成真正的政治选项。',
+    related:['和平推动者','社会贡献','时代改变'] },
+  { name:'达赖喇嘛',  dim:'peace',    era:null,         year:'1935 —',       avatar:'🙏', quote:'我的宗教很简单，我的宗教就是善良。',
+    journey:'流亡六十年仍坚持非暴力，把慈悲带向科学家、政治家与孩子。',
+    related:['和平推动者','人文精神','教育推动者'] },
+  { name:'金恩博士',   dim:'peace',    era:null,         year:'1929 — 1968',  avatar:'✊', quote:'我有一个梦想。',
+    journey:'用非暴力推动美国民权运动，让"梦"成为最有力量的政治词汇。',
+    related:['和平推动者','社会贡献','时代改变'] },
+  { name:'甘地',       dim:'peace',    era:null,         year:'1869 — 1948',  avatar:'🧘', quote:'欲变世界，先变自己。',
+    journey:'用赤足、纺车与绝食撼动大英帝国，把非暴力写成可以行走的哲学。',
+    related:['和平推动者','社会贡献','留学生'] },
+  { name:'爱因斯坦',  dim:'innovation',era:null,         year:'1879 — 1955',  avatar:'🌌', quote:'想象力比知识更重要。',
+    journey:'相对论改写时空，晚年又为和平与人权奔走，是科学的良心代表。',
+    related:['创新推动','时代改变','和平推动者','留学生'] },
+  { name:'霍金',       dim:'innovation',era:null,        year:'1942 — 2018',  avatar:'🌀', quote:'记得仰望星空，不要总盯着脚下。',
+    journey:'被困在轮椅里的大脑漫游黑洞与时空奇点，让科普成为流行文化。',
+    related:['创新推动','科学家','教育推动者'] },
+  { name:'乔布斯',    dim:'innovation',era:null,         year:'1955 — 2011',  avatar:'🍎', quote:'求知若饥，虚心若愚。',
+    journey:'把电脑、电话、音乐与设计折叠进口袋，让科技终于愿意被人喜欢。',
+    related:['创新推动','创业者','艺术家'] },
+  { name:'图灵奖众人',dim:'innovation',era:null,         year:'1966 —',       avatar:'🧠', quote:'我们都是站在巨人肩膀上的孩子。',
+    journey:'从香农到 Hinton，每一代图灵奖得主都让"机器能否思考"的边界往前推一寸。',
+    related:['创新推动','科学家','教育推动者'] },
+  { name:'屠呦呦同侪',dim:'social',   era:null,         year:'当代',          avatar:'🌾', quote:'被忽略的疾病也值得被治愈。',
+    journey:'WHO 与无国界医生组织里的无名英雄们，把疫苗和希望送到地图边缘。',
+    related:['社会贡献','人道主义者','和平推动者'] },
+  { name:'珍·古道尔', dim:'social',   era:null,         year:'1934 —',       avatar:'🦍', quote:'每一个个体都重要，每一个个体都有自己的角色。',
+    journey:'在贡贝森林里和黑猩猩做伙伴，用一辈子让人类重新听懂动物的语言。',
+    related:['社会贡献','人文精神','教育推动者'] },
+  { name:'特蕾西·查普曼', dim:'social', era:null,        year:'1964 —',       avatar:'🎸', quote:'谈论一场革命，听上去像是低语。',
     journey:'用民谣写社会议题，把麦克风对准被忽略的角落。',
     related:['社会贡献','艺术家'] },
-  { name:'屠呦呦',      dim:'era',       era:'ancient-cn', year:'1930 —',      avatar:'🌿',
-    quote:'青蒿一握，水二升，绞取汁，尽服之。',
-    journey:'从古籍中找到青蒿素的灵感，挽救了全球数百万疟疾患者的生命。',
-    related:['时代改变','科学家','古代中国'] },
-  { name:'图灵',        dim:'era',       era:'industry',   year:'1912 — 1954', avatar:'🧮',
-    quote:'我们能看到的只是不远处，但我们可以看到那里有许多事要做。',
-    journey:'破译 Enigma，构想现代计算机，是一个被时代亏欠的天才。',
-    related:['时代改变','创新推动','工业革命','创业者'] }
+  { name:'弗里达',    dim:'humanity',  era:null,         year:'1907 — 1954',  avatar:'🌺', quote:'我画自己，因为我最了解自己。',
+    journey:'把一生的疼痛画成不肯妥协的颜色，让女性的内心成为绘画的主题。',
+    related:['人文精神','艺术家','女性科学家'] },
+  { name:'波伏瓦',    dim:'humanity',  era:null,         year:'1908 — 1986',  avatar:'📕', quote:'女人不是天生的，而是被塑造出来的。',
+    journey:'《第二性》给女性主义打下哲学地基，从此性别不再是命运。',
+    related:['人文精神','教育推动者','作家'] },
+  { name:'马尔克斯',  dim:'humanity',  era:null,         year:'1927 — 2014',  avatar:'🦋', quote:'多年以后，他将会回想起遥远的那个下午。',
+    journey:'用魔幻现实主义把整个拉美的孤独、记忆与暴力塞进马孔多。',
+    related:['人文精神','作家','留学生'] },
+  { name:'蒙台梭利',  dim:'education', era:null,         year:'1870 — 1952',  avatar:'🧒', quote:'帮助我，让我自己来做。',
+    journey:'把幼儿教育从填鸭变成观察，让"以儿童为中心"成为全球教育的常识。',
+    related:['教育推动者','女性科学家','社会贡献'] },
+  { name:'保罗·弗莱雷', dim:'education', era:null,       year:'1921 — 1997',  avatar:'📖', quote:'教育要么把人塑造成顺从的工具，要么把人塑造成自由的灵魂。',
+    journey:'把扫盲做成解放运动，让教育在拉美底层闪出政治的光。',
+    related:['教育推动者','社会贡献','人文精神'] },
+  { name:'季羡林',    dim:'education', era:null,         year:'1911 — 2009',  avatar:'🪷', quote:'人间自有真情在。',
+    journey:'十年留德归国，用一辈子点亮东方学，把学问做成温和的人格。',
+    related:['教育推动者','留学生','人文精神'] }
+];
+
+// 「记忆低语」池：随机从虚空里召唤的匿名声音，模仿诗云"在虚空中点击 unrank 出一首诗"。
+const civilizationWhispers = [
+  '我也曾经看过这片星空，只是没人记得我的名字。',
+  '一封写给母亲的信，永远没有寄出去。',
+  '集市的灯亮到很晚，那是我第一次想做点什么。',
+  '战争结束那天，我把军靴埋在了麦田里。',
+  '她教我怎么写自己的名字，只用一个下午。',
+  '海上的风很咸，但比家乡的故事更甜。',
+  '我以为我会死在矿井里，结果活到了发明电灯。',
+  '我没读过书，但我把孩子送进了学堂。',
+  '冬天来了，我把最后一块煤分给了邻居。',
+  '我没去过远方，但我做的茶杯漂洋过海。',
+  '我修过那座桥，桥还在，我已经不在了。',
+  '我们在难民营过的那个新年，星星比平时亮。',
+  '我把信仰画在了石头上，希望有人看得懂。',
+  '我教孩子写字，他们后来都比我走得远。',
+  '我在城墙上守过夜，城墙塌了，灯还亮着。'
 ];
 
 // 渲染时态
@@ -4866,6 +5043,9 @@ let civilizationEraNodes = [];   // 6 时代星系
 let civilizationFigureNodes = [];// 人物星点
 let civilizationOrbitTime = 0;
 let civilizationFocusedDim = null; // hover/聚焦的影响力星系
+let civilizationFocusedEra = null; // hover/聚焦的时代壳层
+let civilizationConnections = []; // 记忆光线（同 related 标签）
+let civilizationShellMeta = null; // {cx, cy, eraShellRadius, dimAngle, dimRingR, ...}
 
 // 顶层视图：独立画布 + 独立相机 + 独立动画循环
 const civCanvas = document.getElementById('civilization-canvas');
@@ -4901,72 +5081,155 @@ function resizeCivCanvas() {
 
 function initCivilizationStarfield() {
   const w = civCanvas.width, h = civCanvas.height;
-  const palette = ['#FFB07A','#A285FF','#63E6FF','#FF8FB3','#FFD37A','#f0f4f8'];
-  civilizationStarfield = Array.from({length: 240}, () => ({
+  const palette = ['#FFB07A','#A285FF','#63E6FF','#FF8FB3','#FFD37A','#f0f4f8','#9DD6FF','#FFCBA4'];
+  // 三层："深空尘埃 / 中层微星 / 前景闪烁星"，模仿诗云的深度感
+  const deep = Array.from({length: 1200}, () => ({
     x: Math.random()*w, y: Math.random()*h,
-    size: Math.random()*1.4 + 0.3,
-    alpha: Math.random()*0.5 + 0.15,
+    size: Math.random()*0.8 + 0.15,
+    alpha: Math.random()*0.25 + 0.06,
     twinkle: Math.random()*Math.PI*2,
-    speed: Math.random()*0.02 + 0.005,
-    color: palette[Math.floor(Math.random()*palette.length)]
+    speed: Math.random()*0.01 + 0.002,
+    color: palette[Math.floor(Math.random()*palette.length)],
+    layer: 0
   }));
+  const mid = Array.from({length: 460}, () => ({
+    x: Math.random()*w, y: Math.random()*h,
+    size: Math.random()*1.2 + 0.4,
+    alpha: Math.random()*0.4 + 0.18,
+    twinkle: Math.random()*Math.PI*2,
+    speed: Math.random()*0.02 + 0.006,
+    color: palette[Math.floor(Math.random()*palette.length)],
+    layer: 1
+  }));
+  const near = Array.from({length: 140}, () => ({
+    x: Math.random()*w, y: Math.random()*h,
+    size: Math.random()*1.7 + 0.7,
+    alpha: Math.random()*0.55 + 0.3,
+    twinkle: Math.random()*Math.PI*2,
+    speed: Math.random()*0.04 + 0.012,
+    color: palette[Math.floor(Math.random()*palette.length)],
+    layer: 2
+  }));
+  civilizationStarfield = deep.concat(mid).concat(near);
 }
+
+// 「记忆低语」浮窗：从虚空中召唤的匿名声音
+let civilizationWhispersAlive = []; // {text, x, y, alpha, life}
 
 function initCivilizationSystem() {
   const cx = civCanvas.width/2;
   const cy = civCanvas.height/2;
   const minDim = Math.min(civCanvas.width, civCanvas.height);
-  const outerR = minDim*0.32;
-  const innerR = minDim*0.16;
 
-  // 影响力星系：六边形外环
+  // === 同心壳层布局：每个时代一层壳，半径递增（仿诗云朝代壳层）===
+  // era id → shell radius（从内到外：当代 → 古代）
+  const shellOrder = ['null', 'industry', 'renaissance', 'silk-road', 'ancient-cn', 'ancient-gr', 'ancient-eg'];
+  const shellGap = minDim * 0.075;
+  const shellBase = minDim * 0.14;
+  const eraShellRadius = {};
+  shellOrder.forEach((id, i) => { eraShellRadius[id] = shellBase + i*shellGap; });
+
+  // === 角度扇区：6 个影响力维度，每段 60°，从北方-90° 顺时针 ===
+  const dimAngle = {};
+  civilizationDimensions.forEach((d, i) => {
+    dimAngle[d.id] = (i / civilizationDimensions.length) * Math.PI*2 - Math.PI/2;
+  });
+
+  // 影响力星系：放在最外圈（最远壳之外一点点）作为"扇区灯塔"
+  const dimRingR = shellBase + (shellOrder.length-0.4)*shellGap;
   civilizationDimNodes = civilizationDimensions.map((d, i) => {
-    const angle = (i/civilizationDimensions.length)*Math.PI*2 - Math.PI/2;
+    const a = dimAngle[d.id];
     return {
-      ...d, baseAngle: angle, orbitR: outerR,
-      x: cx + Math.cos(angle)*outerR, y: cy + Math.sin(angle)*outerR*0.78,
-      radius: 32, brightness: 0.85, hover: false,
-      satellites: Array.from({length: 18}, () => ({
-        a: Math.random()*Math.PI*2, r: 50 + Math.random()*70,
-        sz: 0.6 + Math.random()*1.4, sp: (Math.random()-0.5)*0.0035
+      ...d, baseAngle: a, orbitR: dimRingR, dimId: d.id,
+      x: cx + Math.cos(a)*dimRingR,
+      y: cy + Math.sin(a)*dimRingR*0.78,
+      radius: 30, brightness: 0.85, hover: false,
+      satellites: Array.from({length: 14}, () => ({
+        a: Math.random()*Math.PI*2, r: 36 + Math.random()*48,
+        sz: 0.45 + Math.random()*1.2, sp: (Math.random()-0.5)*0.003
       }))
     };
   });
 
-  // 历史时代：六边形内环（与外环错开 30°）
+  // 历史时代：每个时代一颗"壳层标识星"，落在自己壳的西北角某处（避开扇区主轴）
   civilizationEraNodes = civilizationEras.map((e, i) => {
-    const angle = (i/civilizationEras.length)*Math.PI*2 - Math.PI/2 + Math.PI/6;
+    const shellR = eraShellRadius[e.id];
+    // 时代标识星放在该壳的特定方位，错开各扇区
+    const labelAngle = -Math.PI*0.7 + (i*0.18); // 西北方向附近
     return {
-      ...e, baseAngle: angle, orbitR: innerR,
-      x: cx + Math.cos(angle)*innerR, y: cy + Math.sin(angle)*innerR*0.78,
-      radius: 18, brightness: 0.75, hover: false,
-      ringStars: Array.from({length: 8}, (_,k) => ({
-        a: (k/8)*Math.PI*2, r: 26 + Math.random()*8,
-        sz: 0.5 + Math.random()*0.9, sp: 0.002 + Math.random()*0.002
+      ...e, baseAngle: labelAngle, shellR,
+      x: cx + Math.cos(labelAngle)*shellR,
+      y: cy + Math.sin(labelAngle)*shellR*0.78,
+      radius: 16, brightness: 0.75, hover: false,
+      ringStars: Array.from({length: 6}, (_,k) => ({
+        a: (k/6)*Math.PI*2, r: 18 + Math.random()*8,
+        sz: 0.4 + Math.random()*0.7, sp: 0.0015 + Math.random()*0.0015
       }))
     };
   });
 
-  // 人物：附着到所属影响力星系周围
-  const figureCountByDim = {};
-  civilizationFigureNodes = civilizationFigures.map((f) => {
-    figureCountByDim[f.dim] = (figureCountByDim[f.dim]||0);
-    const idx = figureCountByDim[f.dim]++;
-    return { ...f, figureIdx: idx, x:0, y:0, baseAngle:0, dist:0,
-      radius: 4.6, hover:false, brightness: 0.85, twinkle: Math.random()*Math.PI*2 };
+  // 人物：每颗星的坐标 = (era 壳半径) × (dim 扇区角度 + 同维内人物分散偏移)
+  // 这就把每个人精准地"卡"进了 时代×维度 的二维坐标。
+  const slotCount = {}; // key = `${era}|${dim}`
+  civilizationFigureNodes = civilizationFigures.map(f => {
+    const eraKey = f.era || 'null';
+    const key = eraKey + '|' + f.dim;
+    slotCount[key] = (slotCount[key]||0);
+    const slot = slotCount[key]++;
+    const shellR = eraShellRadius[eraKey];
+    const baseA = dimAngle[f.dim];
+    // 在 60° 扇区内分散，每个人物最多同维同代时错开 ±18°
+    const jitterA = ((slot % 5) - 2) * (Math.PI/30) + (Math.random()-0.5)*0.04;
+    const angle = baseA + jitterA;
+    // 在壳的内外做小幅扰动，让光点有厚度
+    const shellOffset = ((slot % 3) - 1) * 14 + (Math.random()-0.5)*8;
+    const r = shellR + shellOffset;
+    return {
+      ...f, eraKey, slot,
+      angle, r, baseR: r, baseAngle: angle,
+      x: cx + Math.cos(angle)*r,
+      y: cy + Math.sin(angle)*r*0.78,
+      radius: 4.4 + Math.random()*1.2,
+      hover:false, brightness: 0.88,
+      twinkle: Math.random()*Math.PI*2,
+      driftSeed: Math.random()*Math.PI*2
+    };
   });
-  // 计算每个人物在所属影响力星系周围的位置（小卫星簇）
+  // 关联引用
   civilizationFigureNodes.forEach(f => {
-    const parent = civilizationDimNodes.find(d => d.id === f.dim);
-    if(!parent) return;
-    const total = civilizationFigureNodes.filter(x => x.dim === f.dim).length;
-    const fa = (f.figureIdx/Math.max(total,1))*Math.PI*2 + parent.baseAngle*0.5 + Math.random()*0.4;
-    const fd = 60 + (f.figureIdx % 2)*20 + Math.random()*8;
-    f.baseAngle = fa; f.dist = fd;
-    f.x = parent.x + Math.cos(fa)*fd;
-    f.y = parent.y + Math.sin(fa)*fd*0.85;
-    f.parentRef = parent;
+    f.parentRef = civilizationDimNodes.find(d => d.id === f.dim) || null;
     f.eraRef = f.era ? civilizationEraNodes.find(e => e.id === f.era) : null;
+  });
+
+  // 缓存壳层信息，给 draw 用
+  civilizationShellMeta = { cx, cy, eraShellRadius, dimAngle, dimRingR, shellBase, shellGap, shellOrder };
+
+  // 预算"记忆光线"：把 related 标签相同的人物两两连线（取最近的几个，限总数）
+  civilizationConnections = [];
+  const tagMap = {};
+  civilizationFigureNodes.forEach(f => {
+    (f.related||[]).forEach(t => { (tagMap[t] = tagMap[t] || []).push(f); });
+  });
+  Object.values(tagMap).forEach(group => {
+    if (group.length < 2) return;
+    // 每组最多连 4 条，按距离排序选最近的
+    for (let i=0; i<group.length; i++){
+      const a = group[i];
+      const candidates = group.filter(b => b !== a)
+        .map(b => ({b, d: Math.hypot(b.x-a.x, b.y-a.y)}))
+        .sort((p,q) => p.d - q.d)
+        .slice(0, 2);
+      candidates.forEach(({b}) => {
+        if (a.name < b.name) civilizationConnections.push({a, b, alpha: 0.06 + Math.random()*0.04});
+      });
+    }
+  });
+  // 去重
+  const seen = new Set();
+  civilizationConnections = civilizationConnections.filter(c => {
+    const k = c.a.name + '|' + c.b.name;
+    if (seen.has(k)) return false;
+    seen.add(k); return true;
   });
 }
 
@@ -4976,112 +5239,131 @@ function drawCivilizationView() {
   civCtx.setTransform(1,0,0,1,0,0);
   civCtx.fillStyle = '#020a17';
   civCtx.fillRect(0, 0, civCanvas.width, civCanvas.height);
-  // 屏幕空间星空（不参与缩放）
+  // 屏幕空间星空（不参与缩放，给画面"深空"的稳定背景）
   drawCivilizationStarfield();
+  // 屏幕空间记忆低语
+  drawCivilizationWhispers();
   // 世界空间内容
   civCtx.save();
   civCtx.setTransform(civCamera.scale, 0, 0, civCamera.scale, civCamera.x, civCamera.y);
 
-  const cx = civCanvas.width/2;
-  const cy = civCanvas.height/2;
+  if (!civilizationShellMeta) { civCtx.restore(); return; }
+  const { cx: sx, cy: sy, eraShellRadius, dimAngle, shellOrder, shellGap } = civilizationShellMeta;
   const minDim = Math.min(civCanvas.width, civCanvas.height);
-  const sx = cx, sy = cy;
   civilizationOrbitTime += 0.0035;
 
-  // 文明深空——混合色彩星云
-  drawNebulaCloud2(civCtx, sx, sy, minDim*1.05, '#FFB07A', 0.04);
-  drawNebulaCloud2(civCtx, sx-220, sy+80, minDim*0.6, '#A285FF', 0.03);
-  drawNebulaCloud2(civCtx, sx+260, sy-60, minDim*0.55, '#63E6FF', 0.025);
-  drawNebulaCloud2(civCtx, sx, sy+200, minDim*0.5, '#FF8FB3', 0.022);
+  // ====== Layer 1：深空星云（混色，最远）======
+  drawNebulaCloud2(civCtx, sx, sy, minDim*1.15, '#FFB07A', 0.035);
+  drawNebulaCloud2(civCtx, sx-minDim*0.28, sy+minDim*0.12, minDim*0.55, '#A285FF', 0.028);
+  drawNebulaCloud2(civCtx, sx+minDim*0.32, sy-minDim*0.10, minDim*0.5, '#63E6FF', 0.024);
+  drawNebulaCloud2(civCtx, sx, sy+minDim*0.32, minDim*0.45, '#FF8FB3', 0.022);
 
-  // 中心同心环——时代轨道的回声
-  civCtx.strokeStyle = 'rgba(255,176,122,0.12)'; civCtx.lineWidth = 1;
-  [110, 175, 245, minDim*0.32].forEach(r => {
-    civCtx.beginPath(); civCtx.ellipse(sx, sy, r, r*0.78, 0, 0, Math.PI*2); civCtx.stroke();
+  // ====== Layer 2：每段时代的"壳层"——同心椭圆 + 壳上漂浮的微星 ======
+  shellOrder.forEach((eid, i) => {
+    const r = eraShellRadius[eid];
+    const dimByFilter = civilizationActiveEra && civilizationActiveEra !== eid && eid !== 'null';
+    const a = dimByFilter ? 0.18 : (civilizationFocusedEra === eid ? 1 : 0.85);
+    civCtx.beginPath();
+    civCtx.ellipse(sx, sy, r, r*0.78, 0, 0, Math.PI*2);
+    civCtx.strokeStyle = `rgba(255,176,122,${0.05 * a})`;
+    civCtx.lineWidth = civilizationFocusedEra === eid ? 1.4 : 0.8;
+    civCtx.setLineDash([2, 6]);
+    civCtx.stroke();
+    civCtx.setLineDash([]);
   });
 
-  // 中心核 —— 文明心跳
+  // ====== Layer 3：扇区方位线（六个 60°）——非常淡的辐射轨迹 ======
+  civilizationDimensions.forEach(d => {
+    const ang = dimAngle[d.id];
+    const dimByFilter = civilizationActiveDim && civilizationActiveDim !== d.id;
+    const a = dimByFilter ? 0.06 : (civilizationFocusedDim === d.id ? 0.5 : 0.18);
+    const r1 = eraShellRadius['null'] - shellGap*0.5;
+    const r2 = eraShellRadius['ancient-eg'] + shellGap*0.6;
+    civCtx.beginPath();
+    civCtx.moveTo(sx + Math.cos(ang)*r1, sy + Math.sin(ang)*r1*0.78);
+    civCtx.lineTo(sx + Math.cos(ang)*r2, sy + Math.sin(ang)*r2*0.78);
+    civCtx.strokeStyle = hexToRgba(d.color, 0.35 * a);
+    civCtx.lineWidth = civilizationFocusedDim === d.id ? 1.2 : 0.5;
+    civCtx.stroke();
+  });
+
+  // ====== Layer 4：中心心跳 ======
   const corePulse = 0.6 + 0.2*Math.sin(civilizationOrbitTime*8);
-  const coreGrad = civCtx.createRadialGradient(sx, sy, 0, sx, sy, 90);
-  coreGrad.addColorStop(0, hexToRgba('#FFFFFF', 0.65*corePulse));
-  coreGrad.addColorStop(0.4, hexToRgba('#FFB07A', 0.35*corePulse));
+  const coreGrad = civCtx.createRadialGradient(sx, sy, 0, sx, sy, 80);
+  coreGrad.addColorStop(0, hexToRgba('#FFFFFF', 0.6*corePulse));
+  coreGrad.addColorStop(0.45, hexToRgba('#FFB07A', 0.32*corePulse));
   coreGrad.addColorStop(1, 'transparent');
-  civCtx.fillStyle = coreGrad; civCtx.beginPath(); civCtx.arc(sx, sy, 90, 0, Math.PI*2); civCtx.fill();
+  civCtx.fillStyle = coreGrad; civCtx.beginPath(); civCtx.arc(sx, sy, 80, 0, Math.PI*2); civCtx.fill();
   civCtx.fillStyle = 'rgba(240,244,248,0.78)';
   civCtx.font = '11px sans-serif'; civCtx.textAlign='center';
   civCtx.fillText('文明记忆 · 心跳', sx, sy+4);
   civCtx.fillStyle = 'rgba(240,244,248,0.45)';
   civCtx.font = '9px sans-serif';
-  civCtx.fillText('Civilization Galaxy', sx, sy+18);
+  civCtx.fillText('Civilization Memory Universe', sx, sy+18);
 
-  // 历史时代星系（内环）
+  // ====== Layer 5：记忆光线（同 related 标签的人物之间）======
+  civilizationConnections.forEach(c => {
+    const filt = isFigureFiltered(c.a) || isFigureFiltered(c.b);
+    const hot = c.a.hover || c.b.hover;
+    const baseAlpha = filt ? 0.02 : (hot ? 0.45 : c.alpha);
+    civCtx.beginPath();
+    const mx = (c.a.x + c.b.x)/2;
+    const my = (c.a.y + c.b.y)/2 - 6;
+    civCtx.moveTo(c.a.x, c.a.y);
+    civCtx.quadraticCurveTo(mx, my, c.b.x, c.b.y);
+    const colorRef = c.a.parentRef ? c.a.parentRef.color : '#FFD37A';
+    civCtx.strokeStyle = hexToRgba(colorRef, baseAlpha);
+    civCtx.lineWidth = hot ? 1.0 : 0.45;
+    civCtx.stroke();
+  });
+
+  // ====== Layer 6：时代壳层标识星 ======
   civilizationEraNodes.forEach(era => {
-    const ang = era.baseAngle + civilizationOrbitTime*0.18;
-    era.x = sx + Math.cos(ang)*era.orbitR;
-    era.y = sy + Math.sin(ang)*era.orbitR*0.78;
-    drawNebulaCloud2(civCtx, era.x, era.y, 80, era.color, 0.06);
+    const dimByFilter = civilizationActiveEra && civilizationActiveEra !== era.id;
+    const a = dimByFilter ? 0.25 : 1;
+    drawNebulaCloud2(civCtx, era.x, era.y, 70, era.color, 0.05 * a);
     era.ringStars.forEach(rs => {
       rs.a += rs.sp;
       const rx = era.x + Math.cos(rs.a)*rs.r;
       const ry = era.y + Math.sin(rs.a)*rs.r*0.65;
-      civCtx.fillStyle = `rgba(255,255,255,${0.3 + Math.random()*0.25})`;
+      civCtx.fillStyle = `rgba(255,255,255,${(0.3 + Math.random()*0.2) * a})`;
       civCtx.beginPath(); civCtx.arc(rx, ry, rs.sz, 0, Math.PI*2); civCtx.fill();
     });
     const grad = civCtx.createRadialGradient(era.x-3, era.y-3, 0, era.x, era.y, era.radius);
-    grad.addColorStop(0, 'rgba(255,255,255,0.95)');
-    grad.addColorStop(0.5, hexToRgba(era.color, 0.85));
-    grad.addColorStop(1, hexToRgba(era.color, 0.25));
+    grad.addColorStop(0, `rgba(255,255,255,${0.95*a})`);
+    grad.addColorStop(0.5, hexToRgba(era.color, 0.85 * a));
+    grad.addColorStop(1, hexToRgba(era.color, 0.25 * a));
     civCtx.fillStyle = grad;
     civCtx.beginPath(); civCtx.arc(era.x, era.y, era.radius, 0, Math.PI*2); civCtx.fill();
     if(era.hover) {
       civCtx.strokeStyle = 'rgba(255,255,255,0.55)'; civCtx.lineWidth=1.4;
       civCtx.beginPath(); civCtx.arc(era.x, era.y, era.radius+10, 0, Math.PI*2); civCtx.stroke();
     }
-    civCtx.fillStyle = `rgba(240,244,248,${0.72 + (era.hover?0.25:0)})`;
+    civCtx.fillStyle = `rgba(240,244,248,${(0.72 + (era.hover?0.25:0)) * a})`;
     civCtx.font = '10.5px sans-serif'; civCtx.textAlign='center';
     civCtx.shadowColor = era.color; civCtx.shadowBlur = 10;
     civCtx.fillText(era.name, era.x, era.y+era.radius+14);
     civCtx.shadowBlur = 0;
   });
 
-  // 影响力星系（外环）
+  // ====== Layer 7：扇区灯塔（影响力星系，挂在最外圈外）======
   civilizationDimNodes.forEach(dim => {
-    const ang = dim.baseAngle + civilizationOrbitTime*0.08;
-    const ndx = sx + Math.cos(ang)*dim.orbitR;
-    const ndy = sy + Math.sin(ang)*dim.orbitR*0.78;
-    // 让人物跟随影响力星系一起公转
-    const dx = ndx - dim.x, dy = ndy - dim.y;
-    dim.x = ndx; dim.y = ndy;
-    civilizationFigureNodes.forEach(f => {
-      if(f.dim === dim.id) { f.x += dx; f.y += dy; }
-    });
+    const dimByFilter = civilizationActiveDim && civilizationActiveDim !== dim.id;
+    const a = dimByFilter ? 0.25 : 1;
 
-    // 大星云
-    drawNebulaCloud2(civCtx, dim.x, dim.y, 180, dim.color, 0.07 + (dim.hover?0.04:0));
-    // 卫星粉尘
+    drawNebulaCloud2(civCtx, dim.x, dim.y, 130, dim.color, (0.06 + (dim.hover?0.04:0)) * a);
     dim.satellites.forEach(st => {
       st.a += st.sp;
       const px = dim.x + Math.cos(st.a)*st.r;
       const py = dim.y + Math.sin(st.a)*st.r*0.7;
-      civCtx.fillStyle = `rgba(255,255,255,${0.18 + Math.random()*0.2})`;
+      civCtx.fillStyle = `rgba(255,255,255,${(0.18 + Math.random()*0.18) * a})`;
       civCtx.beginPath(); civCtx.arc(px, py, st.sz, 0, Math.PI*2); civCtx.fill();
     });
 
-    // 与中心心跳的能量光带（聚焦时高亮）
-    const hot = (civilizationFocusedDim === dim.id) || dim.hover;
-    civCtx.beginPath(); civCtx.moveTo(sx, sy);
-    const midX = (sx+dim.x)/2, midY = (sy+dim.y)/2 - 30;
-    civCtx.quadraticCurveTo(midX, midY, dim.x, dim.y);
-    const lineGrad = civCtx.createLinearGradient(sx, sy, dim.x, dim.y);
-    lineGrad.addColorStop(0, hexToRgba('#FFB07A', hot?0.35:0.12));
-    lineGrad.addColorStop(1, hexToRgba(dim.color, hot?0.55:0.22));
-    civCtx.strokeStyle = lineGrad; civCtx.lineWidth = hot?1.6:1.0; civCtx.stroke();
-
-    // 核心球
-    const coreG = civCtx.createRadialGradient(dim.x-6, dim.y-6, 0, dim.x, dim.y, dim.radius);
-    coreG.addColorStop(0, 'rgba(255,255,255,0.95)');
-    coreG.addColorStop(0.5, hexToRgba(dim.color, 0.95));
-    coreG.addColorStop(1, hexToRgba(dim.color, 0.3));
+    const coreG = civCtx.createRadialGradient(dim.x-5, dim.y-5, 0, dim.x, dim.y, dim.radius);
+    coreG.addColorStop(0, `rgba(255,255,255,${0.95 * a})`);
+    coreG.addColorStop(0.5, hexToRgba(dim.color, 0.95 * a));
+    coreG.addColorStop(1, hexToRgba(dim.color, 0.3 * a));
     civCtx.fillStyle = coreG;
     civCtx.beginPath(); civCtx.arc(dim.x, dim.y, dim.radius*(dim.hover?1.08:1), 0, Math.PI*2); civCtx.fill();
 
@@ -5090,45 +5372,48 @@ function drawCivilizationView() {
       civCtx.beginPath(); civCtx.arc(dim.x, dim.y, dim.radius+14, 0, Math.PI*2); civCtx.stroke();
     }
 
-    civCtx.fillStyle = `rgba(255,255,255,${0.85})`;
+    civCtx.fillStyle = `rgba(255,255,255,${0.85 * a})`;
     civCtx.font = '13px sans-serif'; civCtx.textAlign = 'center';
     civCtx.shadowColor = dim.color; civCtx.shadowBlur = 14;
     civCtx.fillText(dim.name, dim.x, dim.y + dim.radius + 22);
     civCtx.shadowBlur = 0;
   });
 
-  // 人物 → 时代 的细光线（如果有 era 关联）
+  // ====== Layer 8：人物星点 —— 真正的"星海" ======
   civilizationFigureNodes.forEach(f => {
-    if(!f.eraRef) return;
-    const e = f.eraRef;
-    civCtx.beginPath();
-    civCtx.moveTo(f.x, f.y);
-    civCtx.lineTo(e.x, e.y);
-    civCtx.strokeStyle = hexToRgba(e.color, f.hover?0.4:0.1);
-    civCtx.lineWidth = f.hover?1:0.6;
-    civCtx.stroke();
-  });
+    // 微小漂移：让每颗星轻微围绕原位呼吸 (1~2px)，制造"星海呼吸"
+    const drift = 0.6 + 0.4*Math.sin(civilizationOrbitTime*4 + f.driftSeed);
+    const wobble = 1.4;
+    f.x = (civilizationShellMeta.cx) + Math.cos(f.baseAngle)*f.baseR + Math.cos(civilizationOrbitTime*1.2 + f.driftSeed)*wobble;
+    f.y = (civilizationShellMeta.cy) + Math.sin(f.baseAngle)*f.baseR*0.78 + Math.sin(civilizationOrbitTime*1.2 + f.driftSeed*1.3)*wobble*0.7;
 
-  // 人物星点
-  civilizationFigureNodes.forEach(f => {
+    const filtered = isFigureFiltered(f);
+    const a = filtered ? 0.15 : 1;
     const tw = 0.7 + 0.3*Math.sin(civilizationOrbitTime*15 + f.twinkle);
-    const r = f.radius * (f.hover?1.8:1) * tw;
-    const glow = civCtx.createRadialGradient(f.x, f.y, 0, f.x, f.y, r*4);
-    glow.addColorStop(0, hexToRgba(f.parentRef?f.parentRef.color:'#FFD37A', f.hover?0.55:0.28));
+    const r = f.radius * (f.hover?1.8:1) * tw * drift;
+    const colorRef = f.parentRef ? f.parentRef.color : '#FFD37A';
+
+    // 外晕
+    const glow = civCtx.createRadialGradient(f.x, f.y, 0, f.x, f.y, r*5);
+    glow.addColorStop(0, hexToRgba(colorRef, (f.hover?0.55:0.28) * a));
     glow.addColorStop(1, 'transparent');
     civCtx.fillStyle = glow;
-    civCtx.beginPath(); civCtx.arc(f.x, f.y, r*4, 0, Math.PI*2); civCtx.fill();
-    civCtx.fillStyle = `rgba(255,255,255,${f.hover?1:0.92})`;
+    civCtx.beginPath(); civCtx.arc(f.x, f.y, r*5, 0, Math.PI*2); civCtx.fill();
+
+    // 内核
+    civCtx.fillStyle = `rgba(255,255,255,${(f.hover?1:0.92) * a})`;
     civCtx.beginPath(); civCtx.arc(f.x, f.y, r, 0, Math.PI*2); civCtx.fill();
+
+    // hover 时的名字浮窗
     if(f.hover) {
       civCtx.fillStyle = 'rgba(255,255,255,0.95)';
       civCtx.font = '11px sans-serif'; civCtx.textAlign='center';
-      civCtx.shadowColor = f.parentRef?f.parentRef.color:'#FFD37A'; civCtx.shadowBlur = 12;
+      civCtx.shadowColor = colorRef; civCtx.shadowBlur = 12;
       civCtx.fillText(`${f.avatar} ${f.name}`, f.x, f.y - 14);
       civCtx.shadowBlur = 0;
     }
-    // 在筛选/搜索状态下，被命中的人物补一行小字（无论是否 hover）
-    if(!isFigureFiltered(f) && (civilizationSearch || civilizationActiveDim || civilizationActiveEra) && !f.hover) {
+    // 筛选/搜索时显示名字
+    if(!filtered && (civilizationSearch || civilizationActiveDim || civilizationActiveEra) && !f.hover) {
       civCtx.fillStyle = 'rgba(255,255,255,0.62)';
       civCtx.font = '10px sans-serif'; civCtx.textAlign='center';
       civCtx.fillText(f.name, f.x, f.y + 12);
@@ -5136,6 +5421,38 @@ function drawCivilizationView() {
   });
 
   civCtx.restore();
+}
+
+// 屏幕空间的"记忆低语"浮窗（虚空中点击召唤出的匿名声音，仿诗云的 unrank）
+function drawCivilizationWhispers() {
+  if(!civCtx || civilizationWhispersAlive.length === 0) return;
+  civCtx.save();
+  civCtx.setTransform(1,0,0,1,0,0);
+  civilizationWhispersAlive = civilizationWhispersAlive.filter(w => w.life > 0);
+  civilizationWhispersAlive.forEach(w => {
+    w.life -= 0.0055;
+    w.y -= 0.18;
+    const a = Math.max(0, Math.min(1, w.life)) * 0.95;
+    civCtx.font = '13px "Songti SC","Source Han Serif SC",serif';
+    civCtx.textAlign = 'center';
+    civCtx.shadowColor = '#FFD37A'; civCtx.shadowBlur = 16;
+    civCtx.fillStyle = `rgba(255,243,217,${a})`;
+    civCtx.fillText(w.text, w.x, w.y);
+    civCtx.shadowBlur = 0;
+    civCtx.font = '10px sans-serif';
+    civCtx.fillStyle = `rgba(240,244,248,${a*0.55})`;
+    civCtx.fillText('— 一段没有作者的记忆', w.x, w.y + 18);
+  });
+  civCtx.restore();
+}
+
+function summonCivilizationWhisper(screenX, screenY) {
+  const text = civilizationWhispers[Math.floor(Math.random()*civilizationWhispers.length)];
+  civilizationWhispersAlive.push({
+    text, x: screenX, y: screenY, life: 1.0
+  });
+  // 最多同时存活 5 条
+  if (civilizationWhispersAlive.length > 5) civilizationWhispersAlive.shift();
 }
 
 function drawCivilizationStarfield() {
@@ -5256,6 +5573,7 @@ function handleCivilizationMouseMove(pos) {
   civilizationEraNodes.forEach(e => e.hover = false);
   civilizationFigureNodes.forEach(f => f.hover = false);
   civilizationFocusedDim = null;
+  civilizationFocusedEra = null;
 
   const f = civFigureAt(pos);
   const d = !f ? civDimAt(pos) : null;
@@ -5263,6 +5581,7 @@ function handleCivilizationMouseMove(pos) {
   if(f) {
     f.hover = true;
     if(f.parentRef) civilizationFocusedDim = f.parentRef.id;
+    if(f.eraRef) civilizationFocusedEra = f.eraRef.id; else civilizationFocusedEra = 'null';
     civCanvas.style.cursor = 'pointer';
     showTooltip(`${f.avatar} ${f.name}`, `${f.year}<br>影响力：${f.parentRef?f.parentRef.name:''}${f.eraRef?` · ${f.eraRef.name}`:''}<br>点击展开人物记忆`);
   } else if(d) {
@@ -5273,21 +5592,27 @@ function handleCivilizationMouseMove(pos) {
     showTooltip(`${d.name} · 影响力星系`, `${d.desc}<br>挂载 ${count} 颗人物星`);
   } else if(e) {
     e.hover = true;
+    civilizationFocusedEra = e.id;
     civCanvas.style.cursor = 'pointer';
-    showTooltip(`${e.name} · 历史时代`, `${e.period}<br>${e.summary}`);
+    const count = civilizationFigureNodes.filter(x => x.era === e.id).length;
+    showTooltip(`${e.name} · 历史时代`, `${e.period}<br>${e.summary}<br>记忆中保留 ${count} 位被命名的人。`);
   } else {
-    civCanvas.style.cursor = 'grab';
+    civCanvas.style.cursor = 'crosshair'; // 暗示"在虚空中点一下，听一段记忆低语"
     hideTooltip();
   }
 }
 
-function handleCivilizationClick(pos) {
+function handleCivilizationClick(pos, screenX, screenY) {
   const f = civFigureAt(pos);
   if(f) { openCivilizationFigure(f); return; }
   const d = civDimAt(pos);
   if(d) { openCivilizationDimension(d); return; }
   const e = civEraAt(pos);
   if(e) { openCivilizationEra(e); return; }
+  // 虚空——召唤一段匿名记忆（仿诗云：在空处点击 unrank 出诗）
+  if (typeof screenX === 'number' && typeof screenY === 'number') {
+    summonCivilizationWhisper(screenX, screenY);
+  }
 }
 
 // ----- 事件绑定（仅当处于 civilization 视图时生效）-----
@@ -5316,8 +5641,9 @@ if(civCanvas) {
     if(currentView !== 'civilization') return;
     if(civCamera.dragged) return;
     const rect = civCanvas.getBoundingClientRect();
-    const pos = civCamera.screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
-    handleCivilizationClick(pos);
+    const sx = e.clientX - rect.left, sy = e.clientY - rect.top;
+    const pos = civCamera.screenToWorld(sx, sy);
+    handleCivilizationClick(pos, sx, sy);
   });
   window.addEventListener('resize', () => {
     if(currentView !== 'civilization') return;

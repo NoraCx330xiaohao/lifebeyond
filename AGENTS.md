@@ -23,7 +23,15 @@
   - 触发：dock 第 4 个节点 `data-view="civilization"` → `showView('civilization')` → `initCivilizationView()`。**不在社区子模块里**，是独立顶层视图，仿照 shiyun（诗云）形态做"自由漫游的星海"。
   - 容器：`#view-civilization`（独立 canvas `#civilization-canvas`、HUD `#civilization-hud`、工具栏 `#civilization-toolbar`、图例 `#civilization-legend`）。
   - 渲染管线：独立 `civCanvas / civCtx / civCamera`（来自 `makeCamera()`）+ 独立 `animateCivilizationView()` 循环。屏幕空间星空 + 世界空间内容（应用 `civCamera.scale/x/y` 变换）。事件监听器在 `currentView !== 'civilization'` 时全部短路返回。
-  - 数据：`civilizationDimensions`（6 影响力星系：社会贡献 / 创新推动 / 和平行动 / 人文精神 / 教育影响 / 时代改变）+ `civilizationEras`（6 历史时代：古代中国 / 古希腊 / 古埃及 / 丝绸之路 / 文艺复兴 / 工业革命）+ `civilizationFigures`（人物只挂载在影响力星系下，可关联时代；按"影响 / 贡献 / 启发"组织，**不按财富与名气排序**）。
+  - 数据：`civilizationDimensions`（6 影响力扇区：社会贡献 / 创新推动 / 和平行动 / 人文精神 / 教育影响 / 时代改变）+ `civilizationEras`（6 历史时代壳层：当代 / 工业革命 / 文艺复兴 / 丝绸之路 / 古代中国 / 古希腊 / 古埃及）+ `civilizationFigures`（60+ 人物，每人锚定到 era × dim 二维坐标，不按财富与名气排序）+ `civilizationWhispers`（匿名记忆低语池）。
+  - **空间结构（仿诗云朝代壳层）**：
+    - **同心壳层** = 时代：内层是当代，外层是更古老的时代（最远到古埃及），每层一个椭圆环
+    - **角度扇区** = 影响力维度：六维各占 60°（六道辐射方向）
+    - **每颗人物星 = 时代壳半径 × 维度扇区角度 + 微扰动**（有"厚度"的星海）
+    - 时代标识星挂在该壳的西北方位，扇区灯塔挂在最外圈
+  - **背景星海**：三层粒子（深空尘埃 1200 + 中层微星 460 + 前景闪烁星 140）≈ 1800 颗光点
+  - **记忆光线**：`civilizationConnections` —— 共享 `related` 标签的人物两两之间的曲线，hover 时高亮（仿诗云的 4849 条赠诗弧线）
+  - **记忆低语**：`civilizationWhispers` 池中随机句子，**点击空白处**会从光标位置升起一段匿名独白并淡出（仿诗云"在虚空中点击 unrank 出诗"）。`summonCivilizationWhisper(x, y)` 写入 `civilizationWhispersAlive`，`drawCivilizationWhispers()` 每帧绘制并更新生命值。
   - 渲染：`initCivilizationSystem()` 基于 `civCanvas` 中心点布局（影响力外环 / 时代内环 / 人物挂载） → `drawCivilizationView()` 每帧绘制：背景星空 → 多色文明深空星云 → 同心环 → 中心文明心跳 → 时代内环（带卫星粉尘） → 影响力外环（带能量光带 + 卫星簇） → 人物到时代的细光线 → 人物星点（带 twinkle）。
   - 工具栏 `#civilization-toolbar`：影响力 chip + 时代 chip + 搜索框 + 重置按钮。`setCivDimFilter(id)` / `setCivEraFilter(id)` 会让 civCamera 飞到对应星系并放大；`onCivSearch(q)` / `isFigureFiltered(f)` 控制人物 dim/亮显。
   - 漫游：滚轮缩放 / 拖拽平移 / 点击星点（事件统一通过 `if (currentView !== 'civilization') return;` 短路保护，不与社区/足迹相互干扰）。
