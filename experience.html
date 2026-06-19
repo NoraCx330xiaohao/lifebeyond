@@ -5914,7 +5914,6 @@ function initCivilizationView() {
   resizeCivCanvas();
   civCamera.reset(0, 0);
   if(!civGL) initCivThreeScene(); else resizeCivThree();
-  autoDetectCivQuality();
   initCivilizationStarfield();
   initCivilizationSystem();
   renderCivilizationToolbar();
@@ -6267,6 +6266,10 @@ function initCivilizationSystem() {
 
 function drawCivilizationView() {
   if(currentView !== 'civilization' || !civCtx) return;
+  // 兜底：若 shellMeta / figure 数据丢失，按需重建一次（一帧内修复）
+  if(!civilizationShellMeta || !civilizationFigureNodes || civilizationFigureNodes.length === 0) {
+    try { initCivilizationSystem(); } catch(_) {}
+  }
   civCamera.update();
   civilizationFlowTime += 0.0085;       // 流场时间步进
   updateCivilizationField();             // 流场更新粒子位置
@@ -7107,23 +7110,31 @@ function startCivCinema() {
   playCivCinemaStation();
 }
 function playCivCinemaStation() {
-  if(!civCinemaActive) return;
-  if(civCinemaIndex >= civCinemaPlaylist.length) { stopCivCinema(); return; }
-  const s = civCinemaPlaylist[civCinemaIndex];
-  civCamera.targetX = window.innerWidth/2 - s.cx*s.scale;
-  civCamera.targetY = window.innerHeight/2 - s.cy*s.scale;
-  civCamera.targetScale = s.scale;
-  const banner = document.getElementById('civ-cinema-banner');
-  if(banner) {
-    document.getElementById('civ-cinema-step').textContent = `CINEMA · ${s.step}`;
-    document.getElementById('civ-cinema-title').textContent = s.title;
-    document.getElementById('civ-cinema-narration').textContent = s.narration;
-    banner.style.setProperty('--civ-cin-dur', s.dur+'ms');
-    banner.classList.remove('show');
-    void banner.offsetWidth; // 重置进度条动画
-    banner.classList.add('show');
+  try {
+    if(!civCinemaActive) return;
+    if(civCinemaIndex >= civCinemaPlaylist.length) { stopCivCinema(); return; }
+    const s = civCinemaPlaylist[civCinemaIndex];
+    if(!s) { stopCivCinema(); return; }
+    civCamera.targetX = window.innerWidth/2 - s.cx*s.scale;
+    civCamera.targetY = window.innerHeight/2 - s.cy*s.scale;
+    civCamera.targetScale = s.scale;
+    const banner = document.getElementById('civ-cinema-banner');
+    if(banner) {
+      const stepEl = document.getElementById('civ-cinema-step');
+      const titleEl = document.getElementById('civ-cinema-title');
+      const narEl = document.getElementById('civ-cinema-narration');
+      if(stepEl) stepEl.textContent = `CINEMA · ${s.step}`;
+      if(titleEl) titleEl.textContent = s.title;
+      if(narEl) narEl.textContent = s.narration;
+      banner.style.setProperty('--civ-cin-dur', s.dur+'ms');
+      banner.classList.remove('show');
+      void banner.offsetWidth;
+      banner.classList.add('show');
+    }
+    civCinemaTimer = setTimeout(() => { civCinemaIndex++; playCivCinemaStation(); }, s.dur);
+  } catch(_) {
+    stopCivCinema();
   }
-  civCinemaTimer = setTimeout(() => { civCinemaIndex++; playCivCinemaStation(); }, s.dur);
 }
 function stopCivCinema() {
   civCinemaActive = false;
@@ -7138,16 +7149,20 @@ function interruptCivCinema() { if(civCinemaActive) stopCivCinema(); }
 // ==================== Hover Label（借鉴 shiyun PoemHoverLabel.tsx）====================
 let civHoverLabelEl = null;
 function showCivHoverLabel(figure, sx, sy) {
-  if(!civHoverLabelEl) civHoverLabelEl = document.getElementById('civ-hover-label');
-  if(!civHoverLabelEl) return;
-  civHoverLabelEl.innerHTML = `${figure.avatar||''} ${figure.name}<span class="civ-hover-label-sub">${figure.year||''}</span>`;
-  civHoverLabelEl.style.left = sx + 'px';
-  civHoverLabelEl.style.top = sy + 'px';
-  civHoverLabelEl.classList.add('show');
+  try {
+    if(!civHoverLabelEl) civHoverLabelEl = document.getElementById('civ-hover-label');
+    if(!civHoverLabelEl || !figure) return;
+    civHoverLabelEl.innerHTML = `${figure.avatar||''} ${figure.name||''}<span class="civ-hover-label-sub">${figure.year||''}</span>`;
+    civHoverLabelEl.style.left = sx + 'px';
+    civHoverLabelEl.style.top = sy + 'px';
+    civHoverLabelEl.classList.add('show');
+  } catch(_) {}
 }
 function hideCivHoverLabel() {
-  if(!civHoverLabelEl) civHoverLabelEl = document.getElementById('civ-hover-label');
-  if(civHoverLabelEl) civHoverLabelEl.classList.remove('show');
+  try {
+    if(!civHoverLabelEl) civHoverLabelEl = document.getElementById('civ-hover-label');
+    if(civHoverLabelEl) civHoverLabelEl.classList.remove('show');
+  } catch(_) {}
 }
 
 // ==================== 画质切换（借鉴 shiyun detectQuality.ts + HUD.tsx）====================
@@ -7160,8 +7175,7 @@ function setCivQuality(q) {
   document.querySelectorAll('.civ-quality-toggle .civ-q-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.q === q);
   });
-  // 重新生成星海以应用新的粒子密度
-  if(civCanvas && currentView === 'civilization') initCivilizationStarfield();
+  // 仅切档位标志，不重建星海（避免任何重建过程中的潜在异常）
 }
 // 自动检测：低端设备（窄屏 / DPR 低 / hardwareConcurrency 少）默认低画质
 function autoDetectCivQuality() {
