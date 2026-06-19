@@ -5169,13 +5169,13 @@ function initCivThreeScene() {
       if(mDist > 1.0 && mDist < 700.0 && uMouseStr > 0.01){
         float falloff = 1.0 - mDist / 700.0;
         falloff = falloff * falloff;
-        float force = falloff * 95.0 * uMouseStr;
+        float force = falloff * 140.0 * uMouseStr;
         vec2 outward = normalize(toMouse);
         vec2 tangent = vec2(-outward.y, outward.x);
         // 切向 + 强力外推 + 鼠标拖拽
-        pos.xy += tangent * force * 0.8;
-        pos.xy += outward * force * 0.7;
-        pos.xy += uMouseVel * falloff * 30.0;
+        pos.xy += tangent * force * 1.0;
+        pos.xy += outward * force * 0.9;
+        pos.xy += uMouseVel * falloff * 50.0;
       }
       vec4 mv = modelViewMatrix * vec4(pos, 1.0);
       float twinkle = 0.55 + 0.45 * sin(uTime * 1.8 + pos.x * 0.08 + pos.y * 0.06);
@@ -5308,7 +5308,7 @@ function updateCivThreeScene() {
       const dwy = wy - _civMousePrevWorldY;
       const speedW = Math.sqrt(dwx*dwx + dwy*dwy);
       // Strength = recent move velocity, decays to 0 when still
-      _civMouseStrength = Math.min(1.0, _civMouseStrength * 0.92 + speedW * 0.025);
+      _civMouseStrength = Math.min(2.5, _civMouseStrength * 0.94 + speedW * 0.08);
       gl.uniforms.uMouseWorld.value.set(wx, wy);
       gl.uniforms.uMouseVel.value.set(dwx, dwy);
       gl.uniforms.uMouseStr.value = _civMouseStrength;
@@ -5316,12 +5316,27 @@ function updateCivThreeScene() {
       _civMousePrevWorldY = wy;
     }
   }
-  // camera drift — slow breathing orbit
+  // === Orbital camera: mouse drives continuous orbit around center ===
   const t = civilizationFlowTime;
-  gl.camera.position.x = Math.sin(t * 0.09) * 30 + civilizationViewTilt.x * 55;
-  gl.camera.position.y = Math.cos(t * 0.07) * 20 + civilizationViewTilt.y * 40;
-  gl.camera.position.z = 900 + Math.sin(t * 0.05) * 18;
-  gl.camera.lookAt(civilizationViewTilt.x * 25, civilizationViewTilt.y * 18, 0);
+  // Auto-rotate: continuous gentle orbit — the camera is always moving
+  var _civAutoYaw = t * 0.028;
+  var _civAutoPitch = Math.sin(t * 0.022) * 0.22;
+  // Mouse contribution: tilt drives orbit — edge of screen = ~quarter turn
+  var _civYaw   = _civAutoYaw   + civilizationViewTilt.x * 1.6;
+  var _civPitch = _civAutoPitch + civilizationViewTilt.y * 0.85;
+  // Clamp pitch to avoid flipping
+  _civPitch = Math.max(-1.1, Math.min(1.1, _civPitch));
+  // Orbit radius: breathing + mouse depth pulls closer
+  var _civOrbitR = 620 + Math.sin(t * 0.04) * 110 + civilizationViewTilt.depth * 160;
+  _civOrbitR = Math.max(140, _civOrbitR);
+  // Target: slow drift from center
+  var _civTargetX = Math.sin(t * 0.04) * 55;
+  var _civTargetY = Math.cos(t * 0.03) * 40;
+  // Compute camera position from spherical coords
+  gl.camera.position.x = _civTargetX + _civOrbitR * Math.cos(_civPitch) * Math.sin(_civYaw);
+  gl.camera.position.y = _civTargetY + _civOrbitR * Math.sin(_civPitch);
+  gl.camera.position.z = _civOrbitR * Math.cos(_civPitch) * Math.cos(_civYaw);
+  gl.camera.lookAt(_civTargetX, _civTargetY, 0);
   // nebula slow rotation
   for(let i = 0; i < gl.nebulae.length; i++){
     gl.nebulae[i].rotation.z += 0.00025 * (i % 2 === 0 ? 1 : -1);
@@ -6025,8 +6040,8 @@ function updateCivilizationField() {
     s.y += s.vy;
   }
   // 视角倾斜：lerp 到目标值，给 3D 视差感
-  civilizationViewTilt.x += (civilizationViewTilt.tx - civilizationViewTilt.x) * 0.05;
-  civilizationViewTilt.y += (civilizationViewTilt.ty - civilizationViewTilt.y) * 0.05;
+  civilizationViewTilt.x += (civilizationViewTilt.tx - civilizationViewTilt.x) * 0.035;
+  civilizationViewTilt.y += (civilizationViewTilt.ty - civilizationViewTilt.y) * 0.035;
   // 方向键平移：每帧累积 worldspace 偏移，连续按住可漂移整片宇宙
   if (civilizationKeyState.up) civilizationKeyPan.y += 4.2;
   if (civilizationKeyState.down) civilizationKeyPan.y -= 4.2;
