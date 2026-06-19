@@ -5057,6 +5057,46 @@ let civilizationFlowTime = 0;
 let civilizationMouseField = { wx: 0, wy: 0, prevWx: 0, prevWy: 0, vx: 0, vy: 0, strength: 0, lastSeen: 0 };
 let civilizationCameraDrift = { x: 0, y: 0 };
 let civilizationNodeMotes = [];
+// === Wave packets: 鼠标运动 → 波 → 在场内自传播 ===
+const civilizationWavesActive = []; // {x, y, t, lifespan, amp, speed}
+let civilizationLastEmitSx = null, civilizationLastEmitSy = null, civilizationLastEmitT = 0;
+function emitCivilizationWave(sx, sy, vx, vy) {
+  const speed = Math.sqrt(vx*vx + vy*vy);
+  const amp = Math.min(1.4, speed / 26);
+  if (amp < 0.18) return;
+  if (civilizationWavesActive.length > 22) civilizationWavesActive.shift();
+  civilizationWavesActive.push({ x: sx, y: sy, t: 0, lifespan: 2.6, amp, speed: 230 + Math.min(speed * 4, 220) });
+}
+function recordCivilizationMouseMove(sx, sy) {
+  const now = performance.now();
+  if (civilizationLastEmitSx === null || (now - civilizationLastEmitT) > 38) {
+    if (civilizationLastEmitSx !== null) {
+      const dx = sx - civilizationLastEmitSx;
+      const dy = sy - civilizationLastEmitSy;
+      if (Math.abs(dx) + Math.abs(dy) > 6) emitCivilizationWave(sx, sy, dx, dy);
+    }
+    civilizationLastEmitSx = sx; civilizationLastEmitSy = sy; civilizationLastEmitT = now;
+  }
+}
+function civilizationWaveDisplacement(px, py) {
+  let fx = 0, fy = 0;
+  for (let i = 0; i < civilizationWavesActive.length; i++) {
+    const w = civilizationWavesActive[i];
+    const dx = px - w.x, dy = py - w.y;
+    const r = Math.sqrt(dx*dx + dy*dy) + 0.001;
+    const ringR = w.t * w.speed;
+    const dist = Math.abs(r - ringR);
+    if (dist > 80) continue;
+    const lifeRatio = w.t / w.lifespan;
+    if (lifeRatio >= 1) continue;
+    const ringEnv = Math.exp(-dist*dist / 1500);
+    const lifeEnv = (1 - lifeRatio) * (1 - lifeRatio);
+    const force = ringEnv * lifeEnv * w.amp * 5.2;
+    fx += (dx / r) * force;
+    fy += (dy / r) * force;
+  }
+  return { fx, fy };
+}
 // 用便宜的 sin 双层近似 curl noise，返回 (x,y) 在时刻 t 的速度向量
 function civilizationFlowAt(x, y, t) {
   const s = 0.0022;
@@ -5114,28 +5154,93 @@ function resizeCivCanvas() {
 
 function initCivilizationStarfield() {
   const w = civCanvas.width, h = civCanvas.height;
+  const cx = w/2, cy = h/2;
+  const minDim = Math.min(w, h);
   const palette = ['#FFB07A','#A285FF','#63E6FF','#FF8FB3','#FFD37A','#f0f4f8','#9DD6FF','#FFCBA4'];
-  // 三层："深空尘埃 / 中层微星 / 前景闪烁星"，每颗都有"家位"和速度，受流场+鼠标重力+弹簧回家
-  function makeStar(layer, count, sizeRange, alphaRange, speedScale) {
+  // 仿星系结构：4 条对数螺旋臂 + 银晕 + 5 个密集星团口袋 + 虚空空洞
+  const arms = 4;
+  const armTurn = 1.65;   // 螺旋紧密度
+  const armR0 = minDim * 0.06;
+  const armRMax = minDim * 0.72;
+  const voids = []; // 虚空中心 — 这些区域附近粒子会被排斥
+  for (let i = 0; i < 4; i++) {
+    voids.push({ vx: cx + (Math.random()-0.5)*minDim*0.85, vy: cy + (Math.random()-0.5)*minDim*0.55, vr: minDim * (0.06 + Math.random()*0.08) });
+  }
+  const clusters = []; // 密集团，沿臂线随机选
+  for (let i = 0; i < 6; i++) {
+    const armIdx = i % arms;
+    const t = 0.2 + Math.random()*0.7;
+    const armOffset = (armIdx / arms) * Math.PI*2;
+    const r = armR0 + t * armRMax;
+    const angle = armOffset + t * armTurn * Math.PI*2;
+    clusters.push({ cx: cx + Math.cos(angle)*r, cy: cy + Math.sin(angle)*r*0.62, cr: minDim*(0.04+Math.random()*0.05) });
+  }
+  function inVoid(x, y) {
+    for (let i = 0; i < voids.length; i++) {
+      const v = voids[i];
+      const dx = x - v.vx, dy = y - v.vy;
+      if (dx*dx + dy*dy < v.vr*v.vr) return true;
+    }
+    return false;
+  }
+  function spiralPos() {
+    const armIdx = Math.floor(Math.random() * arms);
+    const t = Math.pow(Math.random(), 0.6); // 偏向远端
+    const armOffset = (armIdx / arms) * Math.PI*2;
+    const r = armR0 + t * armRMax;
+    const angle = armOffset + t * armTurn * Math.PI*2;
+    // 加一点扰动让臂有"羽毛"感
+    const jitter = (Math.random() - 0.5) * minDim * 0.08 * (0.4 + t);
+    const aJitter = (Math.random() - 0.5) * 0.5;
+    const x = cx + Math.cos(angle + aJitter) * r + jitter;
+    const y = cy + Math.sin(angle + aJitter) * r * 0.62 + jitter * 0.6;
+    return { x, y };
+  }
+  function clusterPos() {
+    const c = clusters[Math.floor(Math.random()*clusters.length)];
+    const a = Math.random() * Math.PI*2;
+    const r = Math.pow(Math.random(), 1.6) * c.cr;
+    return { x: c.cx + Math.cos(a)*r, y: c.cy + Math.sin(a)*r };
+  }
+  function haloPos() {
+    return { x: Math.random()*w, y: Math.random()*h };
+  }
+  function sample(dist) {
+    // 8 次重采样躲虚空
+    let p;
+    for (let i = 0; i < 8; i++) {
+      p = dist();
+      if (!inVoid(p.x, p.y)) break;
+    }
+    return p;
+  }
+  function makeStar(layer, count, sizeRange, alphaRange, speedScale, distFn) {
     return Array.from({ length: count }, () => {
-      const hx = Math.random() * w, hy = Math.random() * h;
+      const p = sample(distFn);
       return {
-        hx, hy,                   // 家位（流场不在时回到此处）
-        x: hx, y: hy,             // 当前位置
-        vx: 0, vy: 0,             // 速度
+        hx: p.x, hy: p.y,
+        x: p.x, y: p.y,
+        vx: 0, vy: 0,
         size: Math.random() * sizeRange[1] + sizeRange[0],
         alpha: Math.random() * alphaRange[1] + alphaRange[0],
         twinkle: Math.random() * Math.PI * 2,
         speed: Math.random() * speedScale + speedScale * 0.3,
         color: palette[Math.floor(Math.random() * palette.length)],
-        depth: layer === 0 ? 0.35 : layer === 1 ? 0.65 : 1.0,  // 深度因子（视差用）
+        depth: layer === 0 ? 0.35 : layer === 1 ? 0.65 : 1.0,
         layer
       };
     });
   }
-  const deep = makeStar(0, 1200, [0.15, 0.8],  [0.06, 0.25], 0.01);
-  const mid  = makeStar(1, 460,  [0.4, 1.2],   [0.18, 0.4],  0.02);
-  const near = makeStar(2, 140,  [0.7, 1.7],   [0.3, 0.55],  0.04);
+  // 60% 沿螺旋臂、20% 在团内、20% 在银晕（保持总数 1800 不变）
+  const deep = makeStar(0, 720, [0.15, 0.8], [0.06, 0.25], 0.01, spiralPos)
+    .concat(makeStar(0, 240, [0.15, 0.8], [0.06, 0.25], 0.01, clusterPos))
+    .concat(makeStar(0, 240, [0.15, 0.8], [0.06, 0.25], 0.01, haloPos));
+  const mid = makeStar(1, 280, [0.4, 1.2], [0.18, 0.4], 0.02, spiralPos)
+    .concat(makeStar(1, 100, [0.4, 1.2], [0.18, 0.4], 0.02, clusterPos))
+    .concat(makeStar(1, 80, [0.4, 1.2], [0.18, 0.4], 0.02, haloPos));
+  const near = makeStar(2, 90, [0.7, 1.7], [0.3, 0.55], 0.04, spiralPos)
+    .concat(makeStar(2, 30, [0.7, 1.7], [0.3, 0.55], 0.04, clusterPos))
+    .concat(makeStar(2, 20, [0.7, 1.7], [0.3, 0.55], 0.04, haloPos));
   civilizationStarfield = deep.concat(mid).concat(near);
 }
 
@@ -5520,28 +5625,43 @@ function summonCivilizationWhisper(screenX, screenY) {
 
 // === 流体场更新：每帧读 flow + mouse + spring + damping，把粒子位置推一步 ===
 function updateCivilizationField() {
+  // 衰减全部活动波包
+  for (let i = civilizationWavesActive.length - 1; i >= 0; i--) {
+    const w = civilizationWavesActive[i];
+    w.t += 0.016;
+    if (w.t >= w.lifespan) civilizationWavesActive.splice(i, 1);
+  }
+  // 鼠标速度残留（保留的微弱直接 drag，让指针下方有"伴随气流"）
   const m = civilizationMouseField;
-  // 鼠标重力强度衰减（停下后慢慢消失）
-  m.strength *= 0.955;
-  // 速度衰减（让前一帧的鼠标 drag 自然散开）
+  m.strength *= 0.95;
   m.vx *= 0.86; m.vy *= 0.86;
-  // 相机微漂（轻微 parallax 用）
-  civilizationCameraDrift.x = Math.sin(civilizationFlowTime * 0.18) * 6;
-  civilizationCameraDrift.y = Math.cos(civilizationFlowTime * 0.13) * 4;
+  // 相机微漂（深度视差）
+  civilizationCameraDrift.x = Math.sin(civilizationFlowTime * 0.18) * 7;
+  civilizationCameraDrift.y = Math.cos(civilizationFlowTime * 0.13) * 4.5;
 
-  // 把每颗星推一小步：flow + mouseGravity + spring 回家
   for (let i = 0, len = civilizationStarfield.length; i < len; i++) {
     const s = civilizationStarfield[i];
     const flow = civilizationFlowAt(s.x, s.y, civilizationFlowTime);
-    const grav = civilizationMouseGravityAt(s.x, s.y);
-    // 弹簧力：让粒子有"家"，不会被流场带走
-    const sx = (s.hx - s.x) * 0.012;
-    const sy = (s.hy - s.y) * 0.012;
-    // depth 越小（远处）越懒响应（有视差感）
-    const respond = 0.4 + s.depth * 0.6;
-    s.vx += (flow.vx + grav.vx) * respond + sx;
-    s.vy += (flow.vy + grav.vy) * respond + sy;
-    s.vx *= 0.91; s.vy *= 0.91;
+    // 波传播位移：来自所有活动波包的合力
+    const wave = civilizationWaveDisplacement(s.x, s.y);
+    // 鼠标极弱"伴随"力（仅在指针下方半径 60px 内、衰减极快）
+    let mfx = 0, mfy = 0;
+    if (m.strength > 0.05) {
+      const ddx = s.x - m.x, ddy = s.y - m.y;
+      const rr = Math.sqrt(ddx*ddx + ddy*ddy);
+      if (rr < 70) {
+        const k = (1 - rr / 70) * m.strength * 0.18;
+        mfx = m.vx * k * 0.06; mfy = m.vy * k * 0.06;
+      }
+    }
+    // 弹簧力：让粒子有"家"，不会被场带走
+    const spx = (s.hx - s.x) * 0.0085;
+    const spy = (s.hy - s.y) * 0.0085;
+    // depth 视差响应
+    const respond = 0.45 + s.depth * 0.55;
+    s.vx += (flow.vx * respond) + wave.fx + mfx + spx;
+    s.vy += (flow.vy * respond) + wave.fy + mfy + spy;
+    s.vx *= 0.93; s.vy *= 0.93;
     s.x += s.vx;
     s.y += s.vy;
   }
@@ -5557,6 +5677,20 @@ function drawCivilizationStarfield() {
     const py = s.y + civilizationCameraDrift.y * s.depth;
     civCtx.fillStyle = hexToRgba(s.color, s.alpha*tw);
     civCtx.beginPath(); civCtx.arc(px, py, s.size, 0, Math.PI*2); civCtx.fill();
+  }
+  // 绘制活动波包：极淡的扩散涟漪，让"波在传播"这件事可见
+  for (let i = 0; i < civilizationWavesActive.length; i++) {
+    const w = civilizationWavesActive[i];
+    const lifeRatio = w.t / w.lifespan;
+    if (lifeRatio >= 1) continue;
+    const ringR = w.t * w.speed;
+    const a = (1 - lifeRatio) * (1 - lifeRatio) * w.amp * 0.18;
+    const grad = civCtx.createRadialGradient(w.x, w.y, ringR * 0.85, w.x, w.y, ringR * 1.15);
+    grad.addColorStop(0, 'rgba(255,255,255,0)');
+    grad.addColorStop(0.5, `rgba(255,228,193,${a})`);
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    civCtx.fillStyle = grad;
+    civCtx.beginPath(); civCtx.arc(w.x, w.y, ringR * 1.15, 0, Math.PI*2); civCtx.fill();
   }
 }
 
@@ -5665,17 +5799,18 @@ function civFigureAt(pos) {
 }
 
 function handleCivilizationMouseMove(pos, sx, sy) {
-  // 屏幕坐标注入流场重力（粒子在屏幕空间，故重力中心也用屏幕空间）
+  // 屏幕坐标 → 注入"伴随气流" + 发射波包传播到整个场
   if (typeof sx === 'number' && typeof sy === 'number') {
     const m = civilizationMouseField;
-    m.prevWx = m.wx; m.prevWy = m.wy;
-    m.wx = sx; m.wy = sy;
-    const dvx = m.wx - m.prevWx, dvy = m.wy - m.prevWy;
-    m.vx = Math.max(-12, Math.min(12, dvx * 0.12));
-    m.vy = Math.max(-12, Math.min(12, dvy * 0.12));
+    m.x = sx; m.y = sy;
+    const dvx = sx - (m.prevSx || sx), dvy = sy - (m.prevSy || sy);
+    m.prevSx = sx; m.prevSy = sy;
+    m.vx = Math.max(-14, Math.min(14, dvx));
+    m.vy = Math.max(-14, Math.min(14, dvy));
     const speed = Math.sqrt(dvx * dvx + dvy * dvy);
-    m.strength = Math.min(1.6, m.strength + Math.min(speed * 0.06, 0.5));
-    m.lastSeen = civilizationFlowTime;
+    m.strength = Math.min(1.6, m.strength + Math.min(speed * 0.05, 0.5));
+    // 关键：把鼠标运动发射成 wave packet（在场内自传播 2.6s）
+    recordCivilizationMouseMove(sx, sy);
   }
 
   civilizationDimNodes.forEach(d => d.hover = false);
@@ -5711,13 +5846,33 @@ function handleCivilizationMouseMove(pos, sx, sy) {
   }
 }
 
+// 让相机"飞入"指定世界坐标（使用现有 lerp，但先把 detail card 推迟到飞入完成）
+function flyCivCameraTo(worldX, worldY, scale, onArrive) {
+  const w = civCanvas.width, h = civCanvas.height;
+  civCamera.targetX = w/2 - worldX * scale;
+  civCamera.targetY = h/2 - worldY * scale;
+  civCamera.targetScale = scale;
+  if (typeof onArrive === 'function') {
+    setTimeout(onArrive, 720);
+  }
+}
+
 function handleCivilizationClick(pos, screenX, screenY) {
   const f = civFigureAt(pos);
-  if(f) { openCivilizationFigure(f); return; }
+  if(f) {
+    flyCivCameraTo(f.x, f.y, 1.85, () => openCivilizationFigure(f));
+    return;
+  }
   const d = civDimAt(pos);
-  if(d) { openCivilizationDimension(d); return; }
+  if(d) {
+    flyCivCameraTo(d.x, d.y, 1.55, () => openCivilizationDimension(d));
+    return;
+  }
   const e = civEraAt(pos);
-  if(e) { openCivilizationEra(e); return; }
+  if(e) {
+    flyCivCameraTo(e.x, e.y, 1.65, () => openCivilizationEra(e));
+    return;
+  }
   // 虚空——召唤一段匿名记忆（仿诗云：在空处点击 unrank 出诗）
   if (typeof screenX === 'number' && typeof screenY === 'number') {
     summonCivilizationWhisper(screenX, screenY);
