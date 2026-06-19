@@ -501,7 +501,9 @@
     .civ-toolbar-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
     .civ-toolbar-label { font-size:10.5px; color:var(--text-dim); letter-spacing:0.12em; min-width:38px; }
     .civ-chip-group { display:flex; flex-wrap:wrap; gap:5px; flex:1; }
-    .civ-chip { padding:3px 9px; font-size:10.5px; letter-spacing:0.05em; color:var(--text-dim); background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; cursor:pointer; transition:all 0.25s ease; }
+    .civ-chip { padding:3px 9px; font-size:10.5px; letter-spacing:0.05em; color:var(--text-dim); background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; cursor:pointer; transition:all 0.25s ease; display:inline-flex; align-items:center; gap:5px; }
+    .civ-chip-dot { width:7px; height:7px; border-radius:50%; flex:none; }
+    .civ-chip-period { font-style:normal; font-size:9.2px; opacity:0.6; letter-spacing:0.04em; font-family:'JetBrains Mono', ui-monospace, monospace; margin-left:2px; }
     .civ-chip:hover { color:#fff; border-color:rgba(255,176,122,0.4); background:rgba(255,176,122,0.10); }
     .civ-chip.active { color:#fff; background:rgba(255,176,122,0.20); border-color:rgba(255,176,122,0.6); box-shadow:0 0 14px rgba(255,176,122,0.25); }
     .civ-chip.civ-chip-era.active { background:rgba(99,230,255,0.18); border-color:rgba(99,230,255,0.55); box-shadow:0 0 14px rgba(99,230,255,0.22); }
@@ -6923,7 +6925,7 @@ function renderCivilizationToolbar() {
   }
   if(eraEl) {
     eraEl.innerHTML = `<span class="civ-chip civ-chip-era ${!civilizationActiveEra?'active':''}" onclick="setCivEraFilter(null)">全部</span>` +
-      civilizationEras.map(e => `<span class="civ-chip civ-chip-era ${civilizationActiveEra===e.id?'active':''}" onclick="setCivEraFilter('${e.id}')">${e.name}</span>`).join('');
+      civilizationEras.map(e => `<span class="civ-chip civ-chip-era ${civilizationActiveEra===e.id?'active':''}" onclick="setCivEraFilter('${e.id}')" title="${e.period} · ${e.summary}"><i class="civ-chip-dot" style="background:${e.color};box-shadow:0 0 8px ${e.color}"></i>${e.name}<em class="civ-chip-period">${e.period}</em></span>`).join('');
   }
 }
 
