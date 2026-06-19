@@ -1032,7 +1032,7 @@
       <div class="dock-label">彼岸足迹</div>
     </div>
     <div class="dock-node" data-view="civilization">
-      <div class="dock-orb">⌬</div>
+      <div class="dock-orb">🌌</div>
       <div class="dock-label">文明记忆</div>
     </div>
     <div class="dock-node" data-view="community">
@@ -5223,14 +5223,14 @@ function initCivThreeScene() {
   const nearPts = new THREE.Points(nearGeo, starMat);
   nearPts.position.z = 80; // closer to camera
   scene.add(nearPts);
-  // ---- Layer 2.5: Scattered halo stars — 大幅增加，更亮更明显，鼠标可推开 ----
-  const scatterCount = 50000;
+  // ---- Layer 2.5: Scattered halo stars — 极致密度（鼠标进入即触发星浪），更亮更明显，鼠标可推开 ----
+  const scatterCount = 110000;
   const scatterPos = new Float32Array(scatterCount * 3);
   const scatterCol = new Float32Array(scatterCount * 3);
   const scatterSz  = new Float32Array(scatterCount);
-  // 用 viewport 大小 × 1.8 铺满整个可视区域 + 缓冲
-  const scatterRangeX = window.innerWidth * 1.8;
-  const scatterRangeY = window.innerHeight * 1.8;
+  // 用 viewport 大小 × 1.95 铺满整个可视区域 + 缓冲，确保鼠标进入立即落在星点云内
+  const scatterRangeX = window.innerWidth * 1.95;
+  const scatterRangeY = window.innerHeight * 1.95;
   for(let i = 0; i < scatterCount; i++){
     const i3 = i * 3;
     // 完全均匀分布 — 不沿螺旋臂、不聚集星团，只是散落
@@ -6293,6 +6293,18 @@ function handleCivilizationClick(pos, screenX, screenY) {
 
 // ----- 事件绑定（仅当处于 civilization 视图时生效）-----
 if(civCanvas) {
+  civCanvas.addEventListener('mouseenter', e => {
+    if(currentView !== 'civilization') return;
+    // 鼠标进入即从光标位置发射一圈"欢迎波"，让用户立刻看到星浪
+    const rect = civCanvas.getBoundingClientRect();
+    const sx = e.clientX - rect.left, sy = e.clientY - rect.top;
+    // 三圈不同速度的波，叠出涟漪感
+    civilizationWavesActive.push({ x: sx, y: sy, t: 0, lifespan: 1.6, amp: 0.55, speed: 145, maxR: 240 });
+    civilizationWavesActive.push({ x: sx, y: sy, t: 0, lifespan: 1.4, amp: 0.42, speed: 110, maxR: 200 });
+    civilizationWavesActive.push({ x: sx, y: sy, t: 0, lifespan: 1.2, amp: 0.30, speed:  85, maxR: 160 });
+    // 同时给 GPU 鼠标力初值，让 shader 立刻有反应
+    _civMouseStrength = Math.max(_civMouseStrength, 1.4);
+  });
   civCanvas.addEventListener('mousedown', e => {
     if(currentView !== 'civilization') return;
     civCamera.startPan(e.clientX, e.clientY);

@@ -62,6 +62,17 @@ body {
   animation: starsPan 90s linear infinite;
   opacity: 0.85;
 }
+/* 交互星海层 — 鼠标可推开的星点 + 星座连线 + 流动星系 */
+#cosmic-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  mix-blend-mode: screen;
+}
 @keyframes starsPan {
   from { transform: translateY(0); }
   to   { transform: translateY(-60px); }
@@ -429,6 +440,7 @@ footer a:hover { color: var(--gold); }
 <body>
 
 <div class="stars-layer"></div>
+<canvas id="cosmic-canvas" aria-hidden="true"></canvas>
 <div class="glow-orb gold"></div>
 <div class="glow-orb purple"></div>
 <div class="glow-orb pink"></div>
@@ -770,6 +782,234 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     }
   });
 });
+
+// ===== 交互星海背景：鼠标可推开 + 星系流动 + 星座连线 =====
+(function cosmicCanvas(){
+  const cvs = document.getElementById('cosmic-canvas');
+  if (!cvs) return;
+  const ctx = cvs.getContext('2d');
+  let W = 0, H = 0, dpr = Math.min(2, window.devicePixelRatio || 1);
+
+  function resize(){
+    W = window.innerWidth; H = window.innerHeight;
+    cvs.width = W * dpr; cvs.height = H * dpr;
+    cvs.style.width = W + 'px'; cvs.style.height = H + 'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // 调色板 —— 与首页主题一致
+  const palette = [
+    [255,255,255], [255,211,122], [162,133,255],
+    [99,230,255], [255,143,179], [200,225,255]
+  ];
+
+  // 1. 散落星点（可被鼠标推开 + 缓慢回归）
+  const STAR_COUNT = 480;
+  const stars = [];
+  for (let i = 0; i < STAR_COUNT; i++){
+    const c = palette[(Math.random()*palette.length)|0];
+    const r = Math.random();
+    stars.push({
+      x: Math.random()*W, y: Math.random()*H,
+      ox: 0, oy: 0,        // 当前时刻自然位置
+      vx: 0, vy: 0,        // 受鼠标推动的速度
+      bx: Math.random()*W, by: Math.random()*H,  // 基础锚点
+      r: r < 0.78 ? (0.5 + Math.random()*0.9) : (1.4 + Math.random()*1.2),
+      tw: Math.random()*Math.PI*2,        // twinkle 相位
+      tws: 0.6 + Math.random()*1.4,       // twinkle 速度
+      drift: 0.02 + Math.random()*0.06,   // 自身漂移幅度
+      dphase: Math.random()*Math.PI*2,
+      col: c
+    });
+    stars[i].x = stars[i].bx; stars[i].y = stars[i].by;
+  }
+
+  // 2. 星座（5 个）：每个星座有一组节点 + 一组连线
+  const constellations = [
+    { name:'Pegasus', nodes:[ [0,0],[80,-40],[160,10],[120,80],[40,70] ],         lines:[[0,1],[1,2],[2,3],[3,4],[4,0]] },
+    { name:'Lyra',    nodes:[ [0,0],[40,-60],[100,-30],[80,40],[20,30] ],         lines:[[0,1],[1,2],[2,3],[3,4],[4,0],[0,2]] },
+    { name:'Orion',   nodes:[ [0,0],[60,-20],[130,-30],[40,50],[100,60],[170,40] ], lines:[[0,1],[1,2],[3,4],[4,5],[1,4]] },
+    { name:'Cygnus',  nodes:[ [0,0],[60,-40],[120,-80],[60,40],[120,80] ],        lines:[[0,1],[1,2],[0,3],[3,4]] },
+    { name:'Cassio',  nodes:[ [0,0],[60,-30],[120,10],[180,-30],[240,0] ],        lines:[[0,1],[1,2],[2,3],[3,4]] }
+  ];
+  // 给每个星座分配一个屏幕位置 + 颜色 + 缓慢漂移
+  const constInst = constellations.map((c, i) => ({
+    base: c,
+    cx: (0.18 + (i / constellations.length) * 0.7) * W + (Math.random()-0.5)*120,
+    cy: (0.22 + (i % 2) * 0.4) * H + (Math.random()-0.5)*80,
+    rot: Math.random()*Math.PI*2,
+    rotSpeed: (Math.random()-0.5)*0.0008,
+    scale: 0.85 + Math.random()*0.6,
+    col: palette[(i*2) % palette.length],
+    dphase: Math.random()*Math.PI*2
+  }));
+
+  // 3. 流动的远景星系（4~5 团）：缓慢旋转的螺旋
+  const galaxies = [];
+  for (let i = 0; i < 5; i++){
+    galaxies.push({
+      cx: Math.random()*W, cy: Math.random()*H,
+      r: 80 + Math.random()*180,
+      rot: Math.random()*Math.PI*2,
+      rotSpeed: (Math.random()-0.5)*0.0003,
+      arms: 2 + ((Math.random()*3)|0),
+      dots: [],
+      col: palette[(i + 1) % palette.length],
+      driftX: (Math.random()-0.5)*0.06,
+      driftY: (Math.random()-0.5)*0.04
+    });
+    const g = galaxies[i];
+    const N = 140;
+    for (let j = 0; j < N; j++){
+      const arm = (j % g.arms);
+      const t = (j / N) * Math.PI * 2.4;
+      g.dots.push({
+        a: t + arm * (Math.PI*2/g.arms),
+        d: 8 + (j / N) * g.r,
+        s: 0.4 + Math.random()*0.6
+      });
+    }
+  }
+
+  // 4. 鼠标
+  let mxc = -9999, myc = -9999, mActive = false, mLastT = 0;
+  window.addEventListener('mousemove', e => {
+    mxc = e.clientX; myc = e.clientY; mActive = true; mLastT = performance.now();
+  });
+  window.addEventListener('mouseleave', () => { mActive = false; });
+
+  // 5. 主循环
+  let t0 = performance.now();
+  function frame(){
+    const now = performance.now();
+    const t = (now - t0) / 1000;
+    ctx.clearRect(0, 0, W, H);
+
+    // ----- 远景星系 -----
+    for (let i = 0; i < galaxies.length; i++){
+      const g = galaxies[i];
+      g.rot += g.rotSpeed;
+      g.cx += g.driftX; g.cy += g.driftY;
+      if (g.cx < -g.r) g.cx = W + g.r;
+      if (g.cx > W + g.r) g.cx = -g.r;
+      if (g.cy < -g.r) g.cy = H + g.r;
+      if (g.cy > H + g.r) g.cy = -g.r;
+      const cr = g.col;
+      for (let j = 0; j < g.dots.length; j++){
+        const d = g.dots[j];
+        const a = d.a + g.rot;
+        const x = g.cx + Math.cos(a) * d.d;
+        const y = g.cy + Math.sin(a) * d.d * 0.55; // 椭圆
+        const alpha = 0.06 + 0.05 * Math.sin(t * 1.2 + j);
+        ctx.fillStyle = `rgba(${cr[0]},${cr[1]},${cr[2]},${alpha})`;
+        ctx.fillRect(x, y, d.s*1.2, d.s*1.2);
+      }
+    }
+
+    // ----- 星座 -----
+    for (let i = 0; i < constInst.length; i++){
+      const ci = constInst[i];
+      ci.rot += ci.rotSpeed;
+      const cosR = Math.cos(ci.rot), sinR = Math.sin(ci.rot);
+      const driftX = Math.sin(t * 0.18 + ci.dphase) * 14;
+      const driftY = Math.cos(t * 0.14 + ci.dphase) * 10;
+      const sc = ci.scale;
+      const pts = ci.base.nodes.map(n => {
+        const x = n[0]*sc, y = n[1]*sc;
+        const rx = x*cosR - y*sinR;
+        const ry = x*sinR + y*cosR;
+        return [ci.cx + rx + driftX, ci.cy + ry + driftY];
+      });
+      // 鼠标距离判断（高亮整个星座）
+      let minD = 99999;
+      if (mActive){
+        for (let p = 0; p < pts.length; p++){
+          const dx = pts[p][0] - mxc, dy = pts[p][1] - myc;
+          const d2 = dx*dx + dy*dy;
+          if (d2 < minD) minD = d2;
+        }
+      }
+      const hot = minD < 180*180 ? (1 - Math.sqrt(minD)/180) : 0;
+      // 连线
+      const cr = ci.col;
+      ctx.lineWidth = 0.6 + hot * 0.9;
+      ctx.strokeStyle = `rgba(${cr[0]},${cr[1]},${cr[2]},${0.18 + hot*0.55})`;
+      ctx.beginPath();
+      for (let l = 0; l < ci.base.lines.length; l++){
+        const [a,b] = ci.base.lines[l];
+        ctx.moveTo(pts[a][0], pts[a][1]);
+        ctx.lineTo(pts[b][0], pts[b][1]);
+      }
+      ctx.stroke();
+      // 节点
+      for (let p = 0; p < pts.length; p++){
+        const x = pts[p][0], y = pts[p][1];
+        const r = 1.6 + hot * 1.6 + Math.sin(t*2 + p)*0.3;
+        const grd = ctx.createRadialGradient(x,y,0,x,y,r*4);
+        grd.addColorStop(0, `rgba(${cr[0]},${cr[1]},${cr[2]},${0.85 + hot*0.15})`);
+        grd.addColorStop(1, `rgba(${cr[0]},${cr[1]},${cr[2]},0)`);
+        ctx.fillStyle = grd;
+        ctx.beginPath(); ctx.arc(x, y, r*4, 0, Math.PI*2); ctx.fill();
+      }
+    }
+
+    // ----- 散落星点（鼠标推开） -----
+    const pushR = 140, pushR2 = pushR * pushR;
+    for (let i = 0; i < stars.length; i++){
+      const s = stars[i];
+      // 自身漂移
+      const ax = Math.sin(t * s.drift * 4 + s.dphase) * 18;
+      const ay = Math.cos(t * s.drift * 3 + s.dphase) * 14;
+      const targetX = s.bx + ax;
+      const targetY = s.by + ay;
+      // 鼠标推力
+      if (mActive){
+        const dx = s.x - mxc, dy = s.y - myc;
+        const d2 = dx*dx + dy*dy;
+        if (d2 < pushR2 && d2 > 0.5){
+          const d = Math.sqrt(d2);
+          const force = (1 - d / pushR) * 1.2;
+          s.vx += (dx / d) * force;
+          s.vy += (dy / d) * force;
+        }
+      }
+      // 弹簧回归 + 阻尼
+      s.vx += (targetX - s.x) * 0.012;
+      s.vy += (targetY - s.y) * 0.012;
+      s.vx *= 0.92; s.vy *= 0.92;
+      s.x += s.vx; s.y += s.vy;
+      // twinkle
+      s.tw += 0.016 * s.tws;
+      const a = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(s.tw));
+      const c = s.col;
+      ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
+      // 大星加光晕
+      if (s.r > 1.4){
+        const g2 = ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*5);
+        g2.addColorStop(0, `rgba(${c[0]},${c[1]},${c[2]},${a*0.45})`);
+        g2.addColorStop(1, `rgba(${c[0]},${c[1]},${c[2]},0)`);
+        ctx.fillStyle = g2;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r*5, 0, Math.PI*2); ctx.fill();
+      }
+    }
+
+    // ----- 鼠标光晕 -----
+    if (mActive){
+      const grd = ctx.createRadialGradient(mxc,myc,0,mxc,myc,160);
+      grd.addColorStop(0, 'rgba(255,211,122,0.10)');
+      grd.addColorStop(0.5, 'rgba(162,133,255,0.05)');
+      grd.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grd;
+      ctx.beginPath(); ctx.arc(mxc, myc, 160, 0, Math.PI*2); ctx.fill();
+    }
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
 </script>
 </body>
 </html>

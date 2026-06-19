@@ -4,7 +4,8 @@
 单 HTML 文件的「数字彼岸」沉浸式宇宙界面。所有 CSS / JS / Three.js 代码内联在 `index.html`，通过 native-static 模板的 Python http.server 提供静态预览。
 
 ## 关键文件
-- `index.html`：主入口（含 5 个视图：彼岸 / 聊天 / 彼岸动态 / 社区 / 星图）。
+- `index.html`：作品集落地页（含交互星海背景 `#cosmic-canvas`：480 颗鼠标可推开的星点 + 5 组发光星座 + 5 团螺旋星系，与原 `.stars-layer` 静态背景叠加）。
+- `experience.html`：主入口（含 5 个视图：彼岸 / 聊天 / 彼岸动态 / 社区 / 星图），dock 第 4 位是文明记忆（图标 🌌）。
 - `.coze`：native-static 模板的运行配置，监听 `${DEPLOY_RUN_PORT}`。
 
 ## 重要模块定位
