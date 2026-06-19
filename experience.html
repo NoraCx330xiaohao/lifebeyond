@@ -522,6 +522,18 @@
     .civ-legend-dot.civ-legend-era { background:#63E6FF; box-shadow:0 0 10px rgba(99,230,255,0.6); }
     .civ-legend-dot.civ-legend-figure { background:#FFFFFF; box-shadow:0 0 8px rgba(255,255,255,0.7); width:6px; height:6px; }
 
+    /* H 键沉浸模式 — 借鉴 shiyun FRONTEND_GUIDE 的 uiHidden（toggleUI） */
+    #view-civilization.civ-immersive .civilization-hud,
+    #view-civilization.civ-immersive .civilization-toolbar,
+    #view-civilization.civ-immersive .civilization-legend,
+    #view-civilization.civ-immersive .civ-onboarding-overlay,
+    #view-civilization.civ-immersive .civ-detail-panel { opacity:0; pointer-events:none; transition:opacity 480ms ease; }
+    #view-civilization .civilization-hud,
+    #view-civilization .civilization-toolbar,
+    #view-civilization .civilization-legend { transition:opacity 480ms ease; }
+    .civ-immersive-hint { position:absolute; left:50%; bottom:120px; transform:translateX(-50%); z-index:30; padding:8px 18px; font-size:11px; letter-spacing:0.18em; color:rgba(255,200,160,0.75); background:rgba(8,4,20,0.45); border:1px solid rgba(255,176,122,0.18); border-radius:999px; backdrop-filter:blur(18px); pointer-events:none; opacity:0; transition:opacity 600ms ease; }
+    #view-civilization.civ-immersive .civ-immersive-hint { opacity:0.85; }
+
     @media (max-width:900px) {
       .civilization-hud { top:24px; left:24px; max-width:240px; padding:14px 16px; }
       .civilization-toolbar { top:24px; right:24px; width:260px; }
@@ -1215,13 +1227,14 @@
       </div>
     </div>
 
-    <div class="civilization-hint" id="civilization-hint">滚轮缩放 · 拖拽漫游 · 方向键 / WASD 平移宇宙 · 鼠标向四角倾斜视角 · 点击空白从虚空捞出一段匿名记忆</div>
+    <div class="civilization-hint" id="civilization-hint">滚轮缩放 · 拖拽漫游 · 方向键 / WASD 平移宇宙 · 鼠标向四角倾斜视角 · 点击空白从虚空捞出一段匿名记忆 · 按 H 进入沉浸模式</div>
 
     <div class="civilization-legend" id="civilization-legend">
       <div class="civ-legend-item"><span class="civ-legend-dot" style="background:#FFB07A"></span>影响力星系</div>
       <div class="civ-legend-item"><span class="civ-legend-dot civ-legend-era"></span>历史时代</div>
       <div class="civ-legend-item"><span class="civ-legend-dot civ-legend-figure"></span>人物</div>
     </div>
+    <div class="civ-immersive-hint" id="civ-immersive-hint">沉浸模式 · 按 H 键退回界面</div>
     <!-- 文明记忆引导（首次进入时显示，参考 shiyun Onboarding） -->
     <div class="civ-onb" id="civ-onb" style="display:none">
       <div class="civ-onb-card">
@@ -5867,6 +5880,23 @@ function initCivilizationView() {
   // 首次进入引导（参考 shiyun Onboarding — localStorage 控制，只显示一次）
   showCivOnboarding();
   tryRestoreCivilizationFromHash();
+  bindCivilizationImmersiveKey();
+}
+
+// H 键沉浸模式 — 借鉴 shiyun FRONTEND_GUIDE 的 toggleUI / uiHidden
+let civImmersiveBound = false;
+function bindCivilizationImmersiveKey() {
+  if(civImmersiveBound) return;
+  civImmersiveBound = true;
+  document.addEventListener('keydown', (e) => {
+    if(currentView !== 'civilization') return;
+    const tag = (e.target && e.target.tagName) || '';
+    if(tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if(e.key !== 'h' && e.key !== 'H') return;
+    const view = document.getElementById('view-civilization');
+    if(!view) return;
+    view.classList.toggle('civ-immersive');
+  });
 }
 
 function resizeCivCanvas() {
