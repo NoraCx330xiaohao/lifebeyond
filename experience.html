@@ -559,6 +559,19 @@
     /* —— 文明记忆视图未激活时，强制屏蔽所有 fixed/absolute 子节点，避免遮挡其他视图与底部 dock —— */
     #view-civilization:not(.active) { visibility:hidden !important; pointer-events:none !important; }
     #view-civilization:not(.active) * { visibility:hidden !important; pointer-events:none !important; opacity:0 !important; }
+    /* onboarding 显示期间，强制隐藏所有文明记忆标签，让卡片正文完全不被遮挡 */
+    #view-civilization.onb-active .civilization-hud,
+    #view-civilization.onb-active .civilization-toolbar,
+    #view-civilization.onb-active .civilization-legend,
+    #view-civilization.onb-active .civilization-hint,
+    #view-civilization.onb-active .civ-quality-toggle,
+    #view-civilization.onb-active .civ-immersive-hint,
+    #view-civilization.onb-active .civ-cinema-banner,
+    #view-civilization.onb-active .civ-hover-label {
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
     .civ-quality-toggle .civ-q-btn { padding:3px 10px; border-radius:999px; cursor:pointer; color:rgba(255,255,255,0.55); transition:all 200ms ease; }
     .civ-quality-toggle .civ-q-btn:hover { color:#fff; }
     .civ-quality-toggle .civ-q-btn.active { background:rgba(255,176,122,0.22); color:#FFB07A; }
@@ -568,7 +581,7 @@
       .civilization-hud { top:24px; left:24px; max-width:240px; padding:14px 16px; }
       .civilization-toolbar { top:24px; right:24px; width:260px; }
       .civilization-legend { right:24px; bottom:140px; }
-    .civ-onb { position:fixed; inset:0; z-index:50; background:rgba(2,2,16,0.72); display:flex; align-items:center; justify-content:center; backdrop-filter:blur(6px); }
+    .civ-onb { position:fixed; inset:0; z-index:999; background:rgba(2,2,16,0.72); display:flex; align-items:center; justify-content:center; backdrop-filter:blur(6px); }
     .civ-onb-card { background:linear-gradient(180deg,rgba(14,16,26,0.95),rgba(7,8,15,0.93)); border:1px solid rgba(255,210,122,0.18); border-radius:16px; padding:28px 26px 22px; max-width:380px; width:90%; box-shadow:0 18px 60px rgba(0,0,0,0.55); animation:civOnbRise .32s cubic-bezier(.2,.7,.2,1); }
     @keyframes civOnbRise { from { opacity:0; transform:translateY(14px); } }
     .civ-onb-step { font-size:11px; color:var(--muted); letter-spacing:.12em; margin-bottom:8px; }
@@ -5971,7 +5984,7 @@ function initCivilizationStarfield() {
   const minDim = Math.min(w, h);
   const palette = ['#FFB07A','#A285FF','#63E6FF','#FF8FB3','#FFD37A','#f0f4f8','#9DD6FF','#FFCBA4'];
   // 仿星系结构：4 条对数螺旋臂 + 银晕 + 5 个密集星团口袋 + 虚空空洞
-  const arms = 4;
+  const arms = 8;
   const armTurn = 1.65;   // 螺旋紧密度
   const armR0 = minDim * 0.06;
   const armRMax = minDim * 0.72;
@@ -6284,7 +6297,7 @@ function drawCivilizationView() {
   }
   civCamera.update();
   civilizationFlowTime += 0.0085;       // 流场时间步进
-  civilizationGalaxyRot += 0.00010;     // 银河整体极缓自转（约 0.006°/帧 ≈ 0.35°/秒，仿真实星空）
+  civilizationGalaxyRot += 0.00004;     // 银河整体极缓自转（约 0.14°/秒，几近静止呼吸感）
   updateCivilizationField();             // 流场更新粒子位置
   updateCivThreeScene();                 // Three.js GPU 星海渲染
   civCtx.setTransform(1,0,0,1,0,0);
@@ -6389,9 +6402,9 @@ function drawCivilizationView() {
   // ====== Layer 4.3：4 旋臂螺旋银河（复刻 shiyun GALAXY 配方：BRANCHES=4 / TWIST=5.2 / ARM_SPREAD=0.42 / 指数盘）======
   const cx = civCanvas.width/2, cy = civCanvas.height/2;
   const galaxyR = Math.min(cx, cy) * 1.55;
-  const BRANCHES = 4;
+  const BRANCHES = 8;
   const TWIST = 5.2;
-  const ARM_SPREAD = 0.42;
+  const ARM_SPREAD = 0.32;
   const galaxySpinAngle = civilizationOrbitTime * 0.018; // shiyun DECOR_RATE 0.019 rad/s
   const expR = (h, cap) => Math.min(cap, -h * Math.log(1 - Math.random()*0.9999));
   const gauss3 = () => Math.random() + Math.random() + Math.random() - 1.5;
@@ -7292,6 +7305,9 @@ function showCivOnboarding() {
   const el = document.getElementById('civ-onb');
   if (!el) return;
   el.style.display = 'flex';
+  // 让 view-civilization 进入 onb-active 模式，CSS 会强制隐藏 hud/toolbar/legend/hint/quality 等所有标签
+  const view = document.getElementById('view-civilization');
+  if (view) view.classList.add('onb-active');
   renderCivOnbStep();
 }
 function renderCivOnbStep() {
@@ -7310,6 +7326,8 @@ function nextCivOnb() {
 function closeCivOnb() {
   const el = document.getElementById('civ-onb');
   if (el) el.style.display = 'none';
+  const view = document.getElementById('view-civilization');
+  if (view) view.classList.remove('onb-active');
   try { localStorage.setItem(CIV_ONB_KEY, '1'); } catch(e) {}
 }
 
