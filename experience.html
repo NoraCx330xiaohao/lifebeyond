@@ -5209,6 +5209,34 @@ function initCivThreeScene() {
   const nearPts = new THREE.Points(nearGeo, starMat);
   nearPts.position.z = 80; // closer to camera
   scene.add(nearPts);
+  // ---- Layer 2.5: Scattered halo stars (4500 points, evenly spread across viewport, mouse-reactive) ----
+  const scatterCount = 4500;
+  const scatterPos = new Float32Array(scatterCount * 3);
+  const scatterCol = new Float32Array(scatterCount * 3);
+  const scatterSz  = new Float32Array(scatterCount);
+  // 用 viewport 大小 + 余量来铺满整个可视区域
+  const scatterRangeX = window.innerWidth * 1.4;
+  const scatterRangeY = window.innerHeight * 1.4;
+  for(let i = 0; i < scatterCount; i++){
+    const i3 = i * 3;
+    // 完全均匀分布 — 不沿螺旋臂、不聚集星团，只是散落
+    scatterPos[i3]     = (Math.random() - 0.5) * scatterRangeX;
+    scatterPos[i3 + 1] = (Math.random() - 0.5) * scatterRangeY;
+    scatterPos[i3 + 2] = (Math.random() - 0.5) * 600 - 100; // 偏后景
+    const c = spiralPalette[Math.floor(Math.random() * spiralPalette.length)];
+    const bright = 0.25 + Math.random() * 0.55; // 整体偏暗，让原螺旋臂仍然显眼
+    scatterCol[i3]     = c[0] * bright;
+    scatterCol[i3 + 1] = c[1] * bright;
+    scatterCol[i3 + 2] = c[2] * bright;
+    // 大小分两档：80% 极小尘埃 + 20% 稍大点
+    scatterSz[i] = Math.random() < 0.8 ? (0.4 + Math.random() * 1.0) : (1.4 + Math.random() * 1.6);
+  }
+  const scatterGeo = new THREE.BufferGeometry();
+  scatterGeo.setAttribute('position', new THREE.BufferAttribute(scatterPos, 3));
+  scatterGeo.setAttribute('color',    new THREE.BufferAttribute(scatterCol, 3));
+  scatterGeo.setAttribute('aSize',    new THREE.BufferAttribute(scatterSz, 1));
+  const scatterPts = new THREE.Points(scatterGeo, starMat); // 共享 starMat → 自动获得鼠标涡流 + curl flow
+  scene.add(scatterPts);
   // ---- Layer 3: Nebula clouds (8 large semi-transparent planes) ----
   const nebColors = [0x2a1254, 0x0c2a4a, 0x1a0a3a, 0x0a2240, 0x3a1060, 0x082848, 0x260e4e, 0x0e2e52];
   const nebMeshes = [];
