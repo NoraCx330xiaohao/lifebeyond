@@ -5864,6 +5864,7 @@ function initCivilizationView() {
   }
   // 首次进入引导（参考 shiyun Onboarding — localStorage 控制，只显示一次）
   showCivOnboarding();
+  tryRestoreCivilizationFromHash();
 }
 
 function resizeCivCanvas() {
@@ -7184,9 +7185,44 @@ function openCivilizationFigure(f) {
     <div class="actions">
       <button class="primary" onclick="addCivilizationMemory('${f.name}')">收藏到记忆</button>
       <button onclick="openCivilizationCommunity('${f.name}')">查看社区讨论</button>
+      <button onclick="shareCivilizationFigure('${f.name}')">分享星点</button>
       <button onclick="closeOverlay()">关闭</button>
     </div>`;
   document.getElementById('memory-overlay').classList.add('active');
+  // permalink: 写入 URL hash，让链接可分享 / 刷新可恢复（参考 shiyun permalink.ts）
+  try {
+    const slug = encodeURIComponent(f.name);
+    history.replaceState(null, '', location.pathname + location.search + '#civ=' + slug);
+  } catch (e) {}
+}
+
+// 分享星点 —— 复制当前 hash URL 到剪贴板（参考 shiyun permalink + Cinema 分享按钮）
+function shareCivilizationFigure(name) {
+  const slug = encodeURIComponent(name);
+  const url = location.origin + location.pathname + '#civ=' + slug;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('已复制：' + name + ' 的星点链接');
+    }).catch(() => {
+      prompt('复制以下链接分享：', url);
+    });
+  } else {
+    prompt('复制以下链接分享：', url);
+  }
+}
+
+// 进入文明记忆时尝试根据 #civ=xxx 恢复
+function tryRestoreCivilizationFromHash() {
+  const m = (location.hash || '').match(/#civ=([^&]+)/);
+  if (!m) return;
+  const name = decodeURIComponent(m[1]);
+  setTimeout(() => {
+    if (typeof civilizationFigureNodes === 'undefined') return;
+    const t = civilizationFigureNodes.find(x => x.name === name);
+    if (t) {
+      flyCivCameraTo(t.x, t.y, 1.85, () => openCivilizationFigure(t));
+    }
+  }, 600);
 }
 
 function openCivilizationDimension(d) {
