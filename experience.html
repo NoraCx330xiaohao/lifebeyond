@@ -5223,27 +5223,35 @@ function initCivThreeScene() {
   const nearPts = new THREE.Points(nearGeo, starMat);
   nearPts.position.z = 80; // closer to camera
   scene.add(nearPts);
-  // ---- Layer 2.5: Scattered halo stars (4500 points, evenly spread across viewport, mouse-reactive) ----
-  const scatterCount = 22000;
+  // ---- Layer 2.5: Scattered halo stars — 大幅增加，更亮更明显，鼠标可推开 ----
+  const scatterCount = 50000;
   const scatterPos = new Float32Array(scatterCount * 3);
   const scatterCol = new Float32Array(scatterCount * 3);
   const scatterSz  = new Float32Array(scatterCount);
-  // 用 viewport 大小 + 余量来铺满整个可视区域
-  const scatterRangeX = window.innerWidth * 1.4;
-  const scatterRangeY = window.innerHeight * 1.4;
+  // 用 viewport 大小 × 1.8 铺满整个可视区域 + 缓冲
+  const scatterRangeX = window.innerWidth * 1.8;
+  const scatterRangeY = window.innerHeight * 1.8;
   for(let i = 0; i < scatterCount; i++){
     const i3 = i * 3;
     // 完全均匀分布 — 不沿螺旋臂、不聚集星团，只是散落
     scatterPos[i3]     = (Math.random() - 0.5) * scatterRangeX;
     scatterPos[i3 + 1] = (Math.random() - 0.5) * scatterRangeY;
-    scatterPos[i3 + 2] = (Math.random() - 0.5) * 600 - 100; // 偏后景
+    scatterPos[i3 + 2] = (Math.random() - 0.5) * 700 - 50; // 跨越前后景，让鼠标推开效果更立体
     const c = spiralPalette[Math.floor(Math.random() * spiralPalette.length)];
-    const bright = 0.25 + Math.random() * 0.55; // 整体偏暗，让原螺旋臂仍然显眼
+    // 整体加亮：0.45~1.0（从原 0.25~0.80）
+    const bright = 0.45 + Math.random() * 0.55;
     scatterCol[i3]     = c[0] * bright;
     scatterCol[i3 + 1] = c[1] * bright;
     scatterCol[i3 + 2] = c[2] * bright;
-    // 大小分两档：80% 极小尘埃 + 20% 稍大点
-    scatterSz[i] = Math.random() < 0.8 ? (0.4 + Math.random() * 1.0) : (1.4 + Math.random() * 1.6);
+    // 大小分三档：60% 小尘埃 + 30% 中星 + 10% 亮星，整体放大
+    const sizeRand = Math.random();
+    if(sizeRand < 0.6){
+      scatterSz[i] = 0.8 + Math.random() * 1.4;        // 小尘埃 0.8-2.2
+    } else if(sizeRand < 0.9){
+      scatterSz[i] = 2.0 + Math.random() * 2.0;        // 中星 2.0-4.0
+    } else {
+      scatterSz[i] = 3.5 + Math.random() * 2.8;        // 亮星 3.5-6.3
+    }
   }
   const scatterGeo = new THREE.BufferGeometry();
   scatterGeo.setAttribute('position', new THREE.BufferAttribute(scatterPos, 3));
@@ -5307,8 +5315,8 @@ function updateCivThreeScene() {
       const dwx = wx - _civMousePrevWorldX;
       const dwy = wy - _civMousePrevWorldY;
       const speedW = Math.sqrt(dwx*dwx + dwy*dwy);
-      // Strength = recent move velocity, decays to 0 when still
-      _civMouseStrength = Math.min(2.5, _civMouseStrength * 0.94 + speedW * 0.08);
+      // Strength = recent move velocity, 衰减更慢 + 累加更快 + 上限更高
+      _civMouseStrength = Math.min(4.0, _civMouseStrength * 0.965 + speedW * 0.15);
       gl.uniforms.uMouseWorld.value.set(wx, wy);
       gl.uniforms.uMouseVel.value.set(dwx, dwy);
       gl.uniforms.uMouseStr.value = _civMouseStrength;
