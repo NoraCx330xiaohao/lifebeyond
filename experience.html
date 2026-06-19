@@ -550,7 +550,7 @@
     .civ-cinema-banner.show .civ-cinema-progress span { transform:translateX(100%); }
 
     /* Hover Label — 借鉴 shiyun PoemHoverLabel.tsx */
-    .civ-hover-label { position:absolute; z-index:33; padding:5px 11px; background:rgba(8,4,20,0.78); backdrop-filter:blur(14px); border:1px solid rgba(255,176,122,0.28); border-radius:999px; font-size:11px; letter-spacing:0.08em; color:#fff; pointer-events:none; opacity:0; transform:translate(14px, -28px); transition:opacity 220ms ease; white-space:nowrap; }
+    .civ-hover-label { position:absolute; z-index:33; padding:5px 11px; background:rgba(8,4,20,0.78); backdrop-filter:blur(14px); border:1px solid rgba(255,176,122,0.28); border-radius:999px; font-size:11px; letter-spacing:0.08em; color:#fff; pointer-events:none; opacity:0; transform:translate(14px, -28px); transition:opacity 320ms ease, left 110ms ease-out, top 110ms ease-out; white-space:nowrap; will-change:left,top,opacity; }
     .civ-hover-label.show { opacity:0.96; }
     .civ-hover-label-sub { color:#FFB07A; opacity:0.78; margin-left:6px; font-size:10px; }
 
@@ -5985,7 +5985,7 @@ function initCivilizationStarfield() {
   const minDim = Math.min(w, h);
   const palette = ['#FFB07A','#A285FF','#63E6FF','#FF8FB3','#FFD37A','#f0f4f8','#9DD6FF','#FFCBA4'];
   // 仿星系结构：4 条对数螺旋臂 + 银晕 + 5 个密集星团口袋 + 虚空空洞
-  const arms = 8;
+  const arms = 12;
   const armTurn = 1.65;   // 螺旋紧密度
   const armR0 = minDim * 0.06;
   const armRMax = minDim * 0.72;
@@ -6060,22 +6060,22 @@ function initCivilizationStarfield() {
     });
   }
   // === 五层星海，总数 ~9000（远 → 近，更密更小，纯光点） ===
-  const deep = makeStar(0, 2400, [0.18, 0.7], [0.16, 0.4], 0.01, spiralPos)
-    .concat(makeStar(0, 800, [0.18, 0.7], [0.16, 0.4], 0.01, clusterPos))
-    .concat(makeStar(0, 800, [0.18, 0.7], [0.16, 0.4], 0.01, haloPos));
-  const mid = makeStar(1, 1900, [0.4, 1.2], [0.3, 0.58], 0.02, spiralPos)
-    .concat(makeStar(1, 520, [0.4, 1.2], [0.3, 0.58], 0.02, clusterPos))
-    .concat(makeStar(1, 380, [0.4, 1.2], [0.3, 0.58], 0.02, haloPos));
-  const near = makeStar(2, 880, [0.7, 1.7], [0.42, 0.74], 0.04, spiralPos)
-    .concat(makeStar(2, 320, [0.7, 1.7], [0.42, 0.74], 0.04, clusterPos))
-    .concat(makeStar(2, 180, [0.7, 1.7], [0.42, 0.74], 0.04, haloPos));
+  const deep = makeStar(0, 2400, [0.18, 0.7], [0.10, 0.28], 0.01, spiralPos)
+    .concat(makeStar(0, 800, [0.18, 0.7], [0.10, 0.28], 0.01, clusterPos))
+    .concat(makeStar(0, 800, [0.18, 0.7], [0.10, 0.28], 0.01, haloPos));
+  const mid = makeStar(1, 1900, [0.4, 1.2], [0.20, 0.42], 0.02, spiralPos)
+    .concat(makeStar(1, 520, [0.4, 1.2], [0.20, 0.42], 0.02, clusterPos))
+    .concat(makeStar(1, 380, [0.4, 1.2], [0.20, 0.42], 0.02, haloPos));
+  const near = makeStar(2, 880, [0.7, 1.7], [0.30, 0.55], 0.04, spiralPos)
+    .concat(makeStar(2, 320, [0.7, 1.7], [0.30, 0.55], 0.04, clusterPos))
+    .concat(makeStar(2, 180, [0.7, 1.7], [0.30, 0.55], 0.04, haloPos));
   // Layer 3 用 depth=1.25 让视差更夸张
-  const fore = makeStar(2, 270, [1.2, 2.6], [0.6, 0.9], 0.06, spiralPos)
-    .concat(makeStar(2, 90, [1.2, 2.6], [0.6, 0.9], 0.06, clusterPos))
-    .concat(makeStar(2, 50, [1.2, 2.6], [0.6, 0.9], 0.06, haloPos));
+  const fore = makeStar(2, 270, [1.2, 2.6], [0.45, 0.72], 0.06, spiralPos)
+    .concat(makeStar(2, 90, [1.2, 2.6], [0.45, 0.72], 0.06, clusterPos))
+    .concat(makeStar(2, 50, [1.2, 2.6], [0.45, 0.72], 0.06, haloPos));
   fore.forEach(s => { s.depth = 1.25; s.layer = 3; });
   // Layer 4 焦点超亮（小但极亮的锚点光，不形成大气泡）
-  const anchor = makeStar(2, 70, [2.4, 4.2], [0.85, 1.0], 0.08, haloPos);
+  const anchor = makeStar(2, 70, [2.4, 4.2], [0.7, 0.9], 0.08, haloPos);
   anchor.forEach(s => { s.depth = 1.45; s.layer = 4; s.glow = true; });
   civilizationStarfield = deep.concat(mid).concat(near).concat(fore).concat(anchor);
 }
@@ -6293,7 +6293,7 @@ function drawCivilizationView() {
   }
   civCamera.update();
   civilizationFlowTime += 0.0085;       // 流场时间步进
-  civilizationGalaxyRot += 0.000008;    // 银河整体极缓自转（约 0.025°/秒，几乎察觉不到的呼吸感）
+  civilizationGalaxyRot += 0.000004;    // 银河整体几乎静止的呼吸感（约 0.012°/秒）
   updateCivilizationField();             // 流场更新粒子位置
   updateCivThreeScene();                 // Three.js GPU 星海渲染
   civCtx.setTransform(1,0,0,1,0,0);
@@ -6395,13 +6395,13 @@ function drawCivilizationView() {
   civCtx.font = '9px sans-serif';
   civCtx.fillText('Civilization Memory Universe', sx, sy+18);
 
-  // ====== Layer 4.3：4 旋臂螺旋银河（复刻 shiyun GALAXY 配方：BRANCHES=4 / TWIST=5.2 / ARM_SPREAD=0.42 / 指数盘）======
+  // ====== Layer 4.3：12 旋臂螺旋银河（复刻 shiyun GALAXY 配方：BRANCHES=12 / TWIST=5.2 / ARM_SPREAD=0.32 / 指数盘）======
   const cx = civCanvas.width/2, cy = civCanvas.height/2;
   const galaxyR = Math.min(cx, cy) * 1.55;
-  const BRANCHES = 8;
+  const BRANCHES = 12;
   const TWIST = 5.2;
   const ARM_SPREAD = 0.32;
-  const galaxySpinAngle = civilizationOrbitTime * 0.018; // shiyun DECOR_RATE 0.019 rad/s
+  const galaxySpinAngle = civilizationOrbitTime * 0.006; // 极缓自转
   const expR = (h, cap) => Math.min(cap, -h * Math.log(1 - Math.random()*0.9999));
   const gauss3 = () => Math.random() + Math.random() + Math.random() - 1.5;
   // === DUST：4500 颗微弱柔光（构成星云填充）===
@@ -6967,7 +6967,7 @@ function drawCivilizationStarfield() {
   const chHalf = civCanvas.height / 2;
   for (let i = 0, len = civilizationStarfield.length; i < len; i++) {
     const s = civilizationStarfield[i];
-    const tw = 0.7 + 0.3*Math.sin(civilizationFlowTime*30*s.speed + s.twinkle);
+    const tw = 0.82 + 0.12*Math.sin(civilizationFlowTime*7*s.speed + s.twinkle);
     // 整体旋转：每颗星绕画布中心旋转（depth 越大转得越明显）
     const rotAng = civilizationGalaxyRot * (0.35 + s.depth * 0.65);
     const cosR = Math.cos(rotAng), sinR = Math.sin(rotAng);
@@ -7282,11 +7282,25 @@ function civEraAt(pos) {
   }
   return null;
 }
+// 命中容差：基础 +9，且当前已 hover 的星点享受额外 +6 粘性区，避免边缘抖动让 tooltip/标签闪烁
+let civLastHoverFigureName = null;
 function civFigureAt(pos) {
+  // 先检查上次命中（粘性，扩大命中半径让它"咬住"不闪）
+  if (civLastHoverFigureName) {
+    const last = civilizationFigureNodes.find(f => f.name === civLastHoverFigureName);
+    if (last) {
+      const dx = pos.x - last.x, dy = pos.y - last.y;
+      if (Math.sqrt(dx*dx + dy*dy) < last.radius + 15) return last;
+    }
+  }
   for(const f of civilizationFigureNodes) {
     const dx = pos.x - f.x, dy = pos.y - f.y;
-    if(Math.sqrt(dx*dx + dy*dy) < f.radius + 9) return f;
+    if(Math.sqrt(dx*dx + dy*dy) < f.radius + 9) {
+      civLastHoverFigureName = f.name;
+      return f;
+    }
   }
+  civLastHoverFigureName = null;
   return null;
 }
 
