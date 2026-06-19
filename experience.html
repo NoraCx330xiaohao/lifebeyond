@@ -7395,7 +7395,11 @@ function handleCivilizationClick(pos, screenX, screenY) {
     flyCivCameraTo(e.x, e.y, 1.65, () => openCivilizationEra(e));
     return;
   }
-  // 虚空——召唤一段匿名记忆（仿诗云：在空处点击 unrank 出诗）
+  // 虚空——飞向那一片星海 + 召唤一段匿名记忆
+  // 飞相机：保持/微增缩放，让点击点落到屏幕中央
+  const curScale = civCamera ? civCamera.scale : 1;
+  const targetScale = Math.min(2.4, Math.max(1.0, curScale * 1.15));
+  flyCivCameraTo(pos.x, pos.y, targetScale);
   if (typeof screenX === 'number' && typeof screenY === 'number') {
     summonCivilizationWhisper(screenX, screenY);
   }
