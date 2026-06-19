@@ -6539,6 +6539,7 @@ function drawCivilizationStarfield() {
       });
     }
   }
+  // 1.5) 8 团 nebula 雾团（顶层声明 tx/ty 视角偏移）
   const tx = civilizationViewTilt.x;
   const ty = civilizationViewTilt.y;
   for (let i = 0; i < civilizationNebulae.length; i++) {
@@ -6558,9 +6559,7 @@ function drawCivilizationStarfield() {
     civCtx.beginPath(); civCtx.arc(0, 0, Math.max(n.rx, n.ry), 0, Math.PI*2); civCtx.fill();
     civCtx.restore();
   }
-  // 多层视差：depth 小（远处）整体偏移量小，depth 大（近处）跟着相机漂得多 + 鼠标视角倾斜
-  const tx = civilizationViewTilt.x;
-  const ty = civilizationViewTilt.y;
+  // 多层视差：depth 小（远处）整体偏移量小，depth 大（近处）跟着相机漂得多 + 鼠标视角倾斜（复用顶部 tx/ty）
   for (let i = 0, len = civilizationStarfield.length; i < len; i++) {
     const s = civilizationStarfield[i];
     const tw = 0.7 + 0.3*Math.sin(civilizationFlowTime*30*s.speed + s.twinkle);
