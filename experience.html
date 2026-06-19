@@ -524,6 +524,18 @@
       .civilization-hud { top:24px; left:24px; max-width:240px; padding:14px 16px; }
       .civilization-toolbar { top:24px; right:24px; width:260px; }
       .civilization-legend { right:24px; bottom:140px; }
+    .civ-onb { position:fixed; inset:0; z-index:50; background:rgba(2,2,16,0.72); display:flex; align-items:center; justify-content:center; backdrop-filter:blur(6px); }
+    .civ-onb-card { background:linear-gradient(180deg,rgba(14,16,26,0.95),rgba(7,8,15,0.93)); border:1px solid rgba(255,210,122,0.18); border-radius:16px; padding:28px 26px 22px; max-width:380px; width:90%; box-shadow:0 18px 60px rgba(0,0,0,0.55); animation:civOnbRise .32s cubic-bezier(.2,.7,.2,1); }
+    @keyframes civOnbRise { from { opacity:0; transform:translateY(14px); } }
+    .civ-onb-step { font-size:11px; color:var(--muted); letter-spacing:.12em; margin-bottom:8px; }
+    .civ-onb-title { font-size:20px; font-weight:600; letter-spacing:.14em; color:var(--gold); margin-bottom:10px; }
+    .civ-onb-body { font-size:14px; line-height:1.7; color:var(--fg); margin-bottom:18px; }
+    .civ-onb-dots { display:flex; gap:6px; justify-content:center; margin-bottom:16px; }
+    .civ-onb-dots span { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.18); }
+    .civ-onb-dots span.on { background:var(--gold); box-shadow:0 0 6px var(--gold); }
+    .civ-onb-actions { display:flex; gap:10px; justify-content:flex-end; }
+    .civ-onb-skip { background:none; border:1px solid rgba(255,255,255,0.12); color:var(--muted); padding:7px 16px; border-radius:8px; cursor:pointer; font-size:13px; }
+    .civ-onb-next { background:var(--gold); color:#1a1206; border:none; padding:7px 20px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; }
     }
     .community-feed-wrapper { position:absolute; top:0; left:0; right:0; bottom:0; z-index:25; display:none; padding-top:120px; background:radial-gradient(ellipse at 20% 10%, rgba(12,31,58,0.65) 0%, rgba(7,20,38,0.75) 40%, rgba(3,8,15,0.85) 100%); }
     .view-community-has-feed .community-feed-wrapper { left:auto; width:360px; right:0; background:rgba(3,8,15,0.48); backdrop-filter:blur(32px); border-left:1px solid rgba(255,255,255,0.08); padding-top:110px; }
@@ -1207,6 +1219,19 @@
       <div class="civ-legend-item"><span class="civ-legend-dot" style="background:#FFB07A"></span>影响力星系</div>
       <div class="civ-legend-item"><span class="civ-legend-dot civ-legend-era"></span>历史时代</div>
       <div class="civ-legend-item"><span class="civ-legend-dot civ-legend-figure"></span>人物</div>
+    </div>
+    <!-- 文明记忆引导（首次进入时显示，参考 shiyun Onboarding） -->
+    <div class="civ-onb" id="civ-onb" style="display:none">
+      <div class="civ-onb-card">
+        <div class="civ-onb-step" id="civ-onb-step">1 / 3</div>
+        <div class="civ-onb-title" id="civ-onb-title">文明记忆 · 星海漫游</div>
+        <div class="civ-onb-body" id="civ-onb-body">每位影响文明进程的人是一颗恒星；六维影响力构成星系，七个时代环绕成壳。整片星海在呼吸，在缓缓旋转。</div>
+        <div class="civ-onb-dots" id="civ-onb-dots"><span class="on"></span><span></span><span></span></div>
+        <div class="civ-onb-actions">
+          <button class="civ-onb-skip" onclick="closeCivOnb()">跳过</button>
+          <button class="civ-onb-next" id="civ-onb-next" onclick="nextCivOnb()">下一步</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -5837,6 +5862,8 @@ function initCivilizationView() {
     civilizationAnimating = true;
     animateCivilizationView();
   }
+  // 首次进入引导（参考 shiyun Onboarding — localStorage 控制，只显示一次）
+  showCivOnboarding();
 }
 
 function resizeCivCanvas() {
@@ -6951,6 +6978,41 @@ function civFigureAt(pos) {
     if(Math.sqrt(dx*dx + dy*dy) < f.radius + 9) return f;
   }
   return null;
+}
+
+// ── 文明记忆首次引导（参考 shiyun Onboarding） ──────────────────────
+const CIV_ONB_KEY = 'lifebeyond_civ_onboarded_v1';
+const CIV_ONB_STEPS = [
+  { t: '文明记忆 · 星海漫游', d: '每位影响文明进程的人是一颗恒星；六维影响力构成星系，七个时代环绕成壳。整片星海在呼吸，在缓缓旋转。' },
+  { t: '点星读记忆 · 点虚空听低语', d: '点亮的星 = 历史人物，点击展开记忆；星与星之间的虚空，点一下会升起一段匿名低语——从噪声中捞出的文明回响。' },
+  { t: '漫游 · 筛选 · 收藏', d: '滚轮缩放 / 拖拽平移 / WASD微调视角；工具栏按维度或时代筛选星系；点击星点可收藏到记忆体系。' }
+];
+let civOnbStep = 0;
+function showCivOnboarding() {
+  try { if (localStorage.getItem(CIV_ONB_KEY)) return; } catch(e) {}
+  civOnbStep = 0;
+  const el = document.getElementById('civ-onb');
+  if (!el) return;
+  el.style.display = 'flex';
+  renderCivOnbStep();
+}
+function renderCivOnbStep() {
+  const s = CIV_ONB_STEPS[civOnbStep];
+  document.getElementById('civ-onb-step').textContent = `${civOnbStep+1} / ${CIV_ONB_STEPS.length}`;
+  document.getElementById('civ-onb-title').textContent = s.t;
+  document.getElementById('civ-onb-body').textContent = s.d;
+  const dots = document.getElementById('civ-onb-dots');
+  dots.innerHTML = CIV_ONB_STEPS.map((_,i) => `<span${i===civOnbStep?' class="on"':''}></span>`).join('');
+  document.getElementById('civ-onb-next').textContent = civOnbStep === CIV_ONB_STEPS.length - 1 ? '开始漫游' : '下一步';
+}
+function nextCivOnb() {
+  if (civOnbStep < CIV_ONB_STEPS.length - 1) { civOnbStep++; renderCivOnbStep(); }
+  else closeCivOnb();
+}
+function closeCivOnb() {
+  const el = document.getElementById('civ-onb');
+  if (el) el.style.display = 'none';
+  try { localStorage.setItem(CIV_ONB_KEY, '1'); } catch(e) {}
 }
 
 function handleCivilizationMouseMove(pos, sx, sy) {
