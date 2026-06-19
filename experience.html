@@ -5375,6 +5375,7 @@ const civCanvas = document.getElementById('civilization-canvas');
 const civCtx = civCanvas ? civCanvas.getContext('2d') : null;
 const civCamera = makeCamera();
 let civilizationStarfield = [];
+let civilizationNebulae = [];
 // === 流场（Flow Field）状态：把整片星海当作一个连续流体场处理 ===
 let civilizationFlowTime = 0;
 let civilizationMouseField = { wx: 0, wy: 0, prevWx: 0, prevWy: 0, vx: 0, vy: 0, strength: 0, lastSeen: 0 };
@@ -5846,6 +5847,7 @@ function resizeCivCanvas() {
 }
 
 function initCivilizationStarfield() {
+  civilizationNebulae = []; // 让 drawCivilizationStarfield 在新尺寸下重新生成
   const w = civCanvas.width, h = civCanvas.height;
   const cx = w/2, cy = h/2;
   const minDim = Math.min(w, h);
@@ -5924,17 +5926,30 @@ function initCivilizationStarfield() {
       };
     });
   }
-  // 60% 沿螺旋臂、20% 在团内、20% 在银晕（保持总数 1800 不变）
-  const deep = makeStar(0, 720, [0.15, 0.8], [0.06, 0.25], 0.01, spiralPos)
-    .concat(makeStar(0, 240, [0.15, 0.8], [0.06, 0.25], 0.01, clusterPos))
-    .concat(makeStar(0, 240, [0.15, 0.8], [0.06, 0.25], 0.01, haloPos));
-  const mid = makeStar(1, 280, [0.4, 1.2], [0.18, 0.4], 0.02, spiralPos)
-    .concat(makeStar(1, 100, [0.4, 1.2], [0.18, 0.4], 0.02, clusterPos))
-    .concat(makeStar(1, 80, [0.4, 1.2], [0.18, 0.4], 0.02, haloPos));
-  const near = makeStar(2, 90, [0.7, 1.7], [0.3, 0.55], 0.04, spiralPos)
-    .concat(makeStar(2, 30, [0.7, 1.7], [0.3, 0.55], 0.04, clusterPos))
-    .concat(makeStar(2, 20, [0.7, 1.7], [0.3, 0.55], 0.04, haloPos));
-  civilizationStarfield = deep.concat(mid).concat(near);
+  // === 五层星海，总数约 6700（远 → 近） ===
+  // Layer 0: 远方银河尘 (3000) - 极小、低 alpha、稀微闪烁
+  // Layer 1: 中层星群 (2200) - 中等亮度
+  // Layer 2: 近层亮星 (1100) - 明显发光
+  // Layer 3: 前景大星 (350) - 大且呼吸
+  // Layer 4: 焦点超亮 (60) - 视觉锚点
+  const deep = makeStar(0, 1800, [0.25, 1.0], [0.18, 0.42], 0.01, spiralPos)
+    .concat(makeStar(0, 600, [0.25, 1.0], [0.18, 0.42], 0.01, clusterPos))
+    .concat(makeStar(0, 600, [0.25, 1.0], [0.18, 0.42], 0.01, haloPos));
+  const mid = makeStar(1, 1500, [0.6, 1.8], [0.32, 0.62], 0.02, spiralPos)
+    .concat(makeStar(1, 400, [0.6, 1.8], [0.32, 0.62], 0.02, clusterPos))
+    .concat(makeStar(1, 300, [0.6, 1.8], [0.32, 0.62], 0.02, haloPos));
+  const near = makeStar(2, 700, [1.0, 2.6], [0.45, 0.78], 0.04, spiralPos)
+    .concat(makeStar(2, 250, [1.0, 2.6], [0.45, 0.78], 0.04, clusterPos))
+    .concat(makeStar(2, 150, [1.0, 2.6], [0.45, 0.78], 0.04, haloPos));
+  // Layer 3 用 depth=1.4 让视差更夸张
+  const fore = makeStar(2, 230, [1.8, 4.0], [0.62, 0.92], 0.06, spiralPos)
+    .concat(makeStar(2, 80, [1.8, 4.0], [0.62, 0.92], 0.06, clusterPos))
+    .concat(makeStar(2, 40, [1.8, 4.0], [0.62, 0.92], 0.06, haloPos));
+  fore.forEach(s => { s.depth = 1.25; s.layer = 3; });
+  // Layer 4 焦点超亮
+  const anchor = makeStar(2, 60, [3.5, 6.5], [0.85, 1.0], 0.08, haloPos);
+  anchor.forEach(s => { s.depth = 1.45; s.layer = 4; s.glow = true; });
+  civilizationStarfield = deep.concat(mid).concat(near).concat(fore).concat(anchor);
 }
 
 // 「记忆低语」浮窗：从虚空中召唤的匿名声音
@@ -6047,13 +6062,10 @@ function initCivilizationSystem() {
   // 缓存壳层信息，给 draw 用
   civilizationShellMeta = { cx, cy, eraShellRadius, dimAngle, dimRingR, shellBase, shellGap, shellOrder };
 
-  // 预算"记忆光线"：只保留**有意义的影响关系**，避免变成神经图。
-  // 规则：
-  //   1) 过滤掉过于通用的 related 标签（六大维度、时代名、宽泛角色名）
-  //   2) 每人最多连 1 条（取最近的一个同标签邻居）
-  //   3) 整体上限：人数 × 0.6 条
+  // 预算"记忆光线"：恢复 constellation network 视觉，分两层：
+  //   A) 私人影响关系（mentor/同流派）—— 用过滤后的私人 related 标签
+  //   B) 同时代 × 同维度子星群内 —— 形成"星座链"
   civilizationConnections = [];
-  // 通用标签——这些不构成"个人影响关系"，不在它们上连线
   const GENERIC_TAGS = new Set([
     '社会贡献','创新推动','和平行动','人文精神','教育影响','时代改变',
     '古代中国','古希腊','古埃及','丝绸之路','文艺复兴','工业革命',
@@ -6061,37 +6073,57 @@ function initCivilizationSystem() {
     '教育推动者','和平推动者','人道主义者','女性科学家','留学生',
     '探险家','匠人','农学家','改革者'
   ]);
+  // ---- A) 私人影响关系：每人最多 2 条 ----
   const tagMap = {};
   civilizationFigureNodes.forEach(f => {
     (f.related || []).forEach(t => {
-      if (GENERIC_TAGS.has(t)) return;       // 跳过通用标签
+      if (GENERIC_TAGS.has(t)) return;
       (tagMap[t] = tagMap[t] || []).push(f);
     });
   });
-  // 每人只允许出现在 1 条连线里（避免某人变成 hub）
-  const connectedOnce = new Set();
+  const connectionCount = {}; // 每人当前连线数
+  const seenPair = new Set();
   Object.values(tagMap).forEach(group => {
     if (group.length < 2) return;
     for (let i = 0; i < group.length; i++) {
       const a = group[i];
-      if (connectedOnce.has(a.name)) continue;
-      // 找最近的一个还没被连过的同标签邻居
-      const nearest = group
-        .filter(b => b !== a && !connectedOnce.has(b.name))
+      if ((connectionCount[a.name] || 0) >= 2) continue;
+      const candidates = group
+        .filter(b => b !== a && (connectionCount[b.name] || 0) < 2)
         .map(b => ({ b, d: Math.hypot(b.x - a.x, b.y - a.y) }))
-        .sort((p, q) => p.d - q.d)[0];
-      if (nearest) {
-        civilizationConnections.push({ a, b: nearest.b, alpha: 0.05 + Math.random() * 0.03 });
-        connectedOnce.add(a.name);
-        connectedOnce.add(nearest.b.name);
-      }
+        .sort((p, q) => p.d - q.d)
+        .slice(0, 2);
+      candidates.forEach(({ b }) => {
+        if ((connectionCount[a.name] || 0) >= 2) return;
+        const key = [a.name, b.name].sort().join('|');
+        if (seenPair.has(key)) return;
+        seenPair.add(key);
+        civilizationConnections.push({ a, b, alpha: 0.10 + Math.random() * 0.08, kind: 'influence' });
+        connectionCount[a.name] = (connectionCount[a.name] || 0) + 1;
+        connectionCount[b.name] = (connectionCount[b.name] || 0) + 1;
+      });
     }
   });
-  // 总量上限
-  const maxLines = Math.floor(civilizationFigureNodes.length * 0.6);
-  if (civilizationConnections.length > maxLines) {
-    civilizationConnections = civilizationConnections.slice(0, maxLines);
-  }
+  // ---- B) 同 era × 同 dim 子星群内：形成短星链 ----
+  const groupMap = {};
+  civilizationFigureNodes.forEach(f => {
+    const k = `${f.era || 'null'}|${f.dim}`;
+    (groupMap[k] = groupMap[k] || []).push(f);
+  });
+  Object.values(groupMap).forEach(group => {
+    if (group.length < 2) return;
+    // 每个子群按距离排序，串成一条短链（最多 8 段）
+    const sorted = group.slice().sort((p, q) => Math.atan2(p.y - civCanvas.height/2, p.x - civCanvas.width/2) - Math.atan2(q.y - civCanvas.height/2, q.x - civCanvas.width/2));
+    for (let i = 0; i < sorted.length - 1 && i < 8; i++) {
+      const a = sorted[i], b = sorted[i+1];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d > 240) continue; // 只连相距不远的
+      const key = [a.name, b.name].sort().join('|');
+      if (seenPair.has(key)) continue;
+      seenPair.add(key);
+      civilizationConnections.push({ a, b, alpha: 0.06 + Math.random() * 0.05, kind: 'constellation' });
+    }
+  });
 }
 
 function drawCivilizationView() {
@@ -6490,6 +6522,42 @@ function updateCivilizationField() {
 
 function drawCivilizationStarfield() {
   if(!civCtx) return;
+  // === Layer -1: 8 团巨型 nebula 雾团 (每帧绘制；柔和发光) ===
+  if (!civilizationNebulae || civilizationNebulae.length === 0) {
+    civilizationNebulae = [];
+    const nebColors = ['#3a1f5e','#1e3a70','#4a1f4f','#1a4a5a','#5a2540','#244a6e','#3a4a1f','#4a3a1f'];
+    for (let i = 0; i < 8; i++) {
+      civilizationNebulae.push({
+        x: Math.random() * civCanvas.width,
+        y: Math.random() * civCanvas.height,
+        rx: 200 + Math.random() * 320,
+        ry: 140 + Math.random() * 240,
+        color: nebColors[i % nebColors.length],
+        rot: Math.random() * Math.PI * 2,
+        drift: Math.random() * 0.0006 + 0.0002,
+        alpha: 0.10 + Math.random() * 0.18
+      });
+    }
+  }
+  const tx = civilizationViewTilt.x;
+  const ty = civilizationViewTilt.y;
+  for (let i = 0; i < civilizationNebulae.length; i++) {
+    const n = civilizationNebulae[i];
+    n.rot += n.drift;
+    const px = n.x + civilizationCameraDrift.x * 0.35 + tx * 18;
+    const py = n.y + civilizationCameraDrift.y * 0.35 + ty * 12;
+    const grad = civCtx.createRadialGradient(px, py, 0, px, py, Math.max(n.rx, n.ry));
+    const c = hexToRgba(n.color, n.alpha);
+    grad.addColorStop(0, c);
+    grad.addColorStop(0.4, hexToRgba(n.color, n.alpha * 0.55));
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    civCtx.save();
+    civCtx.translate(px, py); civCtx.rotate(n.rot);
+    civCtx.scale(n.rx / Math.max(n.rx,n.ry), n.ry / Math.max(n.rx,n.ry));
+    civCtx.fillStyle = grad;
+    civCtx.beginPath(); civCtx.arc(0, 0, Math.max(n.rx, n.ry), 0, Math.PI*2); civCtx.fill();
+    civCtx.restore();
+  }
   // 多层视差：depth 小（远处）整体偏移量小，depth 大（近处）跟着相机漂得多 + 鼠标视角倾斜
   const tx = civilizationViewTilt.x;
   const ty = civilizationViewTilt.y;
@@ -6504,6 +6572,11 @@ function drawCivilizationStarfield() {
     const sizeFactor = 1 + Math.abs(parallax) * 0.18 * (Math.abs(tx) + Math.abs(ty));
     civCtx.fillStyle = hexToRgba(s.color, s.alpha*tw);
     civCtx.beginPath(); civCtx.arc(px, py, s.size * sizeFactor, 0, Math.PI*2); civCtx.fill();
+    // 焦点超亮星 + Layer 3 大星：加柔光晕
+    if (s.glow || s.layer === 3) {
+      civCtx.fillStyle = hexToRgba(s.color, s.alpha*tw*0.18);
+      civCtx.beginPath(); civCtx.arc(px, py, s.size * sizeFactor * 3.6, 0, Math.PI*2); civCtx.fill();
+    }
   }
   // 虚空星座（点击空白时升起的临时连线）
   drawCivilizationConstellations();
