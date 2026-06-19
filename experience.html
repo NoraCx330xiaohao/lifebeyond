@@ -5612,18 +5612,23 @@ function initCivThreeScene() {
   anchorGeo.setAttribute('aSize',    new THREE.BufferAttribute(anchorSz, 1));
   const anchorPts = new THREE.Points(anchorGeo, starMat);
   scene.add(anchorPts);
-  // ---- Layer 3: Nebula clouds (8 large semi-transparent planes) ----
-  const nebColors = [0x2a1254, 0x0c2a4a, 0x1a0a3a, 0x0a2240, 0x3a1060, 0x082848, 0x260e4e, 0x0e2e52];
+  // ---- Layer 3: Nebula clouds (12 large semi-transparent planes，更多体积感雾团) ----
+  const nebColors = [
+    0x2a1254, 0x0c2a4a, 0x1a0a3a, 0x0a2240,
+    0x3a1060, 0x082848, 0x260e4e, 0x0e2e52,
+    0x4a1864, 0x102e5a, 0x301848, 0x0a3260
+  ];
   const nebMeshes = [];
-  for(let i = 0; i < 8; i++){
-    const size = 400 + Math.random() * 600;
+  for(let i = 0; i < 12; i++){
+    const size = 380 + Math.random() * 720;
     const geo = new THREE.PlaneGeometry(size, size);
     const mat = new THREE.MeshBasicMaterial({
-      color: nebColors[i], transparent: true, opacity: 0.12 + Math.random() * 0.1,
+      color: nebColors[i % nebColors.length], transparent: true,
+      opacity: 0.09 + Math.random() * 0.10,
       blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide
     });
     const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set((Math.random()-0.5)*1200, (Math.random()-0.5)*1200, -300 - Math.random()*400);
+    mesh.position.set((Math.random()-0.5)*1500, (Math.random()-0.5)*1500, -250 - Math.random()*550);
     mesh.rotation.z = Math.random() * Math.PI;
     scene.add(mesh);
     nebMeshes.push(mesh);
@@ -5911,10 +5916,10 @@ function initCivilizationSystem() {
   const minDim = Math.min(civCanvas.width, civCanvas.height);
 
   // === 同心壳层布局：每个时代一层壳，半径递增（仿诗云朝代壳层）===
-  // era id → shell radius（从内到外：当代 → 古代）
+  // 第一层（当代）抬高到 0.20，让中心透气；壳间距 0.078，整个外圈仍在屏幕内
   const shellOrder = ['null', 'industry', 'renaissance', 'silk-road', 'ancient-cn', 'ancient-gr', 'ancient-eg'];
-  const shellGap = minDim * 0.075;
-  const shellBase = minDim * 0.14;
+  const shellGap = minDim * 0.078;
+  const shellBase = minDim * 0.20;
   const eraShellRadius = {};
   shellOrder.forEach((id, i) => { eraShellRadius[id] = shellBase + i*shellGap; });
 
@@ -5957,31 +5962,50 @@ function initCivilizationSystem() {
     };
   });
 
-  // 人物：每颗星的坐标 = (era 壳半径) × (dim 扇区角度 + 同维内人物分散偏移)
-  // 这就把每个人精准地"卡"进了 时代×维度 的二维坐标。
-  const slotCount = {}; // key = `${era}|${dim}`
+  // 人物：每颗星的坐标 = (era 壳半径) × (dim 扇区角度)，在每个 (era, dim) 子集中按
+  // 「子星群 (sub-cluster) + 多层径向 + 扇区角度散开」的方式重新分布，确保中心不挤、有空隙。
+  //
+  // 分布策略：
+  //   · 同一 (era, dim) 内人物按 slot 分组：每 5 人一组成 "sub-cluster"
+  //   · 每组绕一个"群心"分布在 ~22° 锥角内，群心之间错开 28°，留出可呼吸的空白
+  //   · 径向 3 层：壳半径 ±[24, 0, -24] 错开，让壳真正有厚度
+  //   · 极少量随机 jitter，但保持簇内紧凑、簇间有空隙
+  const slotCount = {};
   civilizationFigureNodes = civilizationFigures.map(f => {
     const eraKey = f.era || 'null';
     const key = eraKey + '|' + f.dim;
-    slotCount[key] = (slotCount[key]||0);
+    slotCount[key] = (slotCount[key] || 0);
     const slot = slotCount[key]++;
     const shellR = eraShellRadius[eraKey];
-    const baseA = dimAngle[f.dim];
-    // 在 60° 扇区内分散，每个人物最多同维同代时错开 ±18°
-    const jitterA = ((slot % 5) - 2) * (Math.PI/30) + (Math.random()-0.5)*0.04;
-    const angle = baseA + jitterA;
-    // 在壳的内外做小幅扰动，让光点有厚度
-    const shellOffset = ((slot % 3) - 1) * 14 + (Math.random()-0.5)*8;
-    const r = shellR + shellOffset;
+    const baseA  = dimAngle[f.dim];
+
+    // 60° 扇区一半 = 30°；中心 ±28° 内分配 sub-cluster，留出扇区边界呼吸带
+    const subClusterIdx = Math.floor(slot / 5);  // 0,1,2...  每 5 人一簇
+    const inClusterIdx  = slot % 5;
+    // sub-cluster 群心角度：第 0 簇在中心，1 簇在 +28°，2 簇在 -28°，3 簇 +14°，4 簇 -14°
+    const clusterCenterTable = [0, 0.49, -0.49, 0.245, -0.245, 0.39, -0.39, 0.13, -0.13];
+    const clusterCenterAng = (clusterCenterTable[subClusterIdx % clusterCenterTable.length] || 0);
+    // 簇内 5 人按梅花桩分布：中心 + 上左下右四方
+    const innerOffsetA = [0, -0.07, 0.07, -0.035, 0.035][inClusterIdx];
+    const innerOffsetR = [0, 22, -22, -14, 14][inClusterIdx];
+    // 多层径向：每个 sub-cluster 也错开壳层 ±18 / ±36
+    const layerOffsetR = ((subClusterIdx % 3) - 1) * 18;
+    // 微小自然 jitter（不破坏聚簇）
+    const jitterA = (Math.random() - 0.5) * 0.025;
+    const jitterR = (Math.random() - 0.5) * 6;
+
+    const angle = baseA + clusterCenterAng + innerOffsetA + jitterA;
+    const r     = shellR + layerOffsetR + innerOffsetR + jitterR;
     return {
       ...f, eraKey, slot,
       angle, r, baseR: r, baseAngle: angle,
-      x: cx + Math.cos(angle)*r,
-      y: cy + Math.sin(angle)*r*0.78,
-      radius: 4.4 + Math.random()*1.2,
-      hover:false, brightness: 0.88,
-      twinkle: Math.random()*Math.PI*2,
-      driftSeed: Math.random()*Math.PI*2
+      subCluster: subClusterIdx,
+      x: cx + Math.cos(angle) * r,
+      y: cy + Math.sin(angle) * r * 0.78,
+      radius: 4.0 + Math.random() * 1.2,
+      hover: false, brightness: 0.88,
+      twinkle: Math.random() * Math.PI * 2,
+      driftSeed: Math.random() * Math.PI * 2
     };
   });
   // 关联引用
@@ -5993,33 +6017,51 @@ function initCivilizationSystem() {
   // 缓存壳层信息，给 draw 用
   civilizationShellMeta = { cx, cy, eraShellRadius, dimAngle, dimRingR, shellBase, shellGap, shellOrder };
 
-  // 预算"记忆光线"：把 related 标签相同的人物两两连线（取最近的几个，限总数）
+  // 预算"记忆光线"：只保留**有意义的影响关系**，避免变成神经图。
+  // 规则：
+  //   1) 过滤掉过于通用的 related 标签（六大维度、时代名、宽泛角色名）
+  //   2) 每人最多连 1 条（取最近的一个同标签邻居）
+  //   3) 整体上限：人数 × 0.6 条
   civilizationConnections = [];
+  // 通用标签——这些不构成"个人影响关系"，不在它们上连线
+  const GENERIC_TAGS = new Set([
+    '社会贡献','创新推动','和平行动','人文精神','教育影响','时代改变',
+    '古代中国','古希腊','古埃及','丝绸之路','文艺复兴','工业革命',
+    '科学家','艺术家','作家','发明家','创业者','哲学家',
+    '教育推动者','和平推动者','人道主义者','女性科学家','留学生',
+    '探险家','匠人','农学家','改革者'
+  ]);
   const tagMap = {};
   civilizationFigureNodes.forEach(f => {
-    (f.related||[]).forEach(t => { (tagMap[t] = tagMap[t] || []).push(f); });
+    (f.related || []).forEach(t => {
+      if (GENERIC_TAGS.has(t)) return;       // 跳过通用标签
+      (tagMap[t] = tagMap[t] || []).push(f);
+    });
   });
+  // 每人只允许出现在 1 条连线里（避免某人变成 hub）
+  const connectedOnce = new Set();
   Object.values(tagMap).forEach(group => {
     if (group.length < 2) return;
-    // 每组最多连 4 条，按距离排序选最近的
-    for (let i=0; i<group.length; i++){
+    for (let i = 0; i < group.length; i++) {
       const a = group[i];
-      const candidates = group.filter(b => b !== a)
-        .map(b => ({b, d: Math.hypot(b.x-a.x, b.y-a.y)}))
-        .sort((p,q) => p.d - q.d)
-        .slice(0, 2);
-      candidates.forEach(({b}) => {
-        if (a.name < b.name) civilizationConnections.push({a, b, alpha: 0.06 + Math.random()*0.04});
-      });
+      if (connectedOnce.has(a.name)) continue;
+      // 找最近的一个还没被连过的同标签邻居
+      const nearest = group
+        .filter(b => b !== a && !connectedOnce.has(b.name))
+        .map(b => ({ b, d: Math.hypot(b.x - a.x, b.y - a.y) }))
+        .sort((p, q) => p.d - q.d)[0];
+      if (nearest) {
+        civilizationConnections.push({ a, b: nearest.b, alpha: 0.05 + Math.random() * 0.03 });
+        connectedOnce.add(a.name);
+        connectedOnce.add(nearest.b.name);
+      }
     }
   });
-  // 去重
-  const seen = new Set();
-  civilizationConnections = civilizationConnections.filter(c => {
-    const k = c.a.name + '|' + c.b.name;
-    if (seen.has(k)) return false;
-    seen.add(k); return true;
-  });
+  // 总量上限
+  const maxLines = Math.floor(civilizationFigureNodes.length * 0.6);
+  if (civilizationConnections.length > maxLines) {
+    civilizationConnections = civilizationConnections.slice(0, maxLines);
+  }
 }
 
 function drawCivilizationView() {
