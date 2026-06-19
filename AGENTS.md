@@ -17,6 +17,14 @@
   - 数据：`communityPosts`（含 `image` 字段为 Unsplash 缩略图）。
   - 渲染：`renderCommunityPosts(posts)` 输出 `.post-card`，`.post-card-img` 内组合 `<img class="pc-thumb">` + `<span class="pc-emoji">`。
   - 帖子提示：`.community-hint`（位于 `bottom:160px`，避开底部菜单）。
+  - 共有 6 个标签页：`resonance / discover / following / trending / nearby / civilization`。前 5 个为原社区模块，**禁止删改**；第 6 个为「文明记忆宇宙」。
+  - 标签切换通过 `switchCommunityTab(tab)`，galaxy-only 标签（`resonance` 与 `civilization`）会隐藏帖子流；其余标签在右侧 360px 抽屉里渲染 `.community-feed`。
+- **文明记忆宇宙（civilization）**：
+  - 数据：`civilizationDimensions`（6 影响力星系：社会贡献 / 创新推动 / 和平行动 / 人文精神 / 教育影响 / 时代改变）+ `civilizationEras`（6 历史时代：古代中国 / 古希腊 / 古埃及 / 丝绸之路 / 文艺复兴 / 工业革命）+ `civilizationFigures`（人物只是挂载在影响力星系下的星，可关联时代；按"影响 / 贡献 / 启发"组织，**不按财富与名气排序**）。
+  - 渲染：`initCivilizationSystem()` → `drawCivilizationSector()` 在自己的 sector（位于六边形布局的第 6 个位置）绘制：中心心跳 → 时代内环 → 影响力外环 → 人物星点 → 人物到时代的细光线。
+  - 交互：`handleCivilizationMouseMove / handleCivilizationClick`，hover 显示 tooltip，点击星点 / 影响力星系 / 时代分别打开 `openCivilizationFigure / openCivilizationDimension / openCivilizationEra`。
+  - 跨星系联动：人物详情卡的 `related` 标签由 `navigateCivilizationTag(tag)` 处理；时代关键词跳到对应时代星系，"留学生 / 创业者 / 教育推动者"等跳到「发现星系」。
+  - 收藏入口：`addCivilizationMemory(name)` 写入 `localStorage['lifebeyond_civ_memories']`，与「彼岸足迹 → 阅读笔记」共享记忆体系。
 - **天气组件**：`#weather-widget` 已固定到左下角，`bottom:28px; left:48px;` 与 `.spatial-dock` 等高。
 - **光标特效**：`initCosmicCursor()`（保留）；点击时 `spawnRipple` 产生光晕扩散（保留）。
 

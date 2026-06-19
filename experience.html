@@ -467,6 +467,19 @@
     .community-close { display:inline-block; margin-bottom:14px; padding:8px 16px; background:var(--glass); backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:18px; font-size:11px; letter-spacing:0.1em; color:var(--text-dim); cursor:pointer; pointer-events:auto; transition:all 0.3s ease; }
     .community-close:hover { color:var(--text); border-color:rgba(255,211,122,0.25); background:var(--glass-strong); transform:translateX(-2px); }
     .community-hint { position:absolute; bottom:160px; left:50%; transform:translateX(-50%); z-index:24; font-size:10px; letter-spacing:0.1em; color:var(--text-dim); pointer-events:none; opacity:0.7; padding:6px 14px; background:var(--glass); backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:16px; }
+
+    /* 文明记忆宇宙 · 详情卡样式 */
+    .civ-related-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+    .civ-related-tag { display:inline-block; padding:4px 10px; font-size:11px; letter-spacing:0.05em; color:#FFD37A; background:rgba(255,176,122,0.10); border:1px solid rgba(255,176,122,0.25); border-radius:14px; cursor:pointer; transition:all 0.25s ease; }
+    .civ-related-tag:hover { color:#fff; background:rgba(255,176,122,0.25); border-color:rgba(255,255,255,0.45); transform:translateY(-1px); }
+    .civ-figure-list { display:flex; flex-direction:column; gap:6px; max-height:280px; overflow-y:auto; padding-right:4px; }
+    .civ-figure-list::-webkit-scrollbar { width:3px; }
+    .civ-figure-list::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.12); border-radius:2px; }
+    .civ-figure-row { display:flex; align-items:center; gap:10px; padding:8px 12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; transition:all 0.25s ease; }
+    .civ-figure-row:hover { background:rgba(255,176,122,0.10); border-color:rgba(255,176,122,0.35); transform:translateX(2px); }
+    .civ-figure-avatar { width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; font-size:14px; flex-shrink:0; }
+    .civ-figure-name { flex:1; font-size:13px; color:var(--text); }
+    .civ-figure-year { font-size:10.5px; color:var(--text-dim); letter-spacing:0.05em; }
     .community-feed-wrapper { position:absolute; top:0; left:0; right:0; bottom:0; z-index:25; display:none; padding-top:120px; background:radial-gradient(ellipse at 20% 10%, rgba(12,31,58,0.65) 0%, rgba(7,20,38,0.75) 40%, rgba(3,8,15,0.85) 100%); }
     .view-community-has-feed .community-feed-wrapper { left:auto; width:360px; right:0; background:rgba(3,8,15,0.48); backdrop-filter:blur(32px); border-left:1px solid rgba(255,255,255,0.08); padding-top:110px; }
     .view-community-has-feed .community-feed { padding:16px 22px 80px; }
@@ -1075,6 +1088,10 @@
         <div class="planet-core"></div>
         <span class="planet-label">附近</span>
       </div>
+      <div class="community-nav-planet" data-tab="civilization" style="color:#FFB07A" onclick="switchCommunityTab('civilization')">
+        <div class="planet-core"></div>
+        <span class="planet-label">文明记忆</span>
+      </div>
     </div>
 
     <div class="community-feed-wrapper" id="community-feed-wrapper">
@@ -1085,6 +1102,7 @@
           <div class="community-tab" data-tab="following" onclick="switchCommunityTab('following', this)">关注</div>
           <div class="community-tab" data-tab="trending" onclick="switchCommunityTab('trending', this)">热门</div>
           <div class="community-tab" data-tab="nearby" onclick="switchCommunityTab('nearby', this)">附近</div>
+          <div class="community-tab" data-tab="civilization" onclick="switchCommunityTab('civilization', this)">文明记忆</div>
         </div>
         <div class="community-feed-header" id="community-feed-header" style="display:none;">
           <h2>社区光点</h2>
@@ -3979,7 +3997,8 @@ const communityModuleInfo = {
   discover: { title: '发现星系', desc: '探索未知的故事与社区。每一次移动都可能遇见新的光。', color: '#63E6FF' },
   following: { title: '关注轨道', desc: '你关注的灵魂围绕你的星系运行，留下光的涟漪。', color: '#5A4BFF' },
   trending: { title: '热门超新星', desc: '此刻最亮的话题与讨论，像超新星一样照亮社区。', color: '#FF6B9D' },
-  nearby: { title: '附近星图', desc: '同一座城市、同一片天空下，附近的记忆以星座相连。', color: '#6fb3b6' }
+  nearby: { title: '附近星图', desc: '同一座城市、同一片天空下，附近的记忆以星座相连。', color: '#6fb3b6' },
+  civilization: { title: '文明记忆宇宙', desc: '六片影响力星系穿过六段历史时代，人物只是挂在星系下的星。漫游一段被记住的人类记忆。', color: '#FFB07A' }
 };
 
 function getCommunitySector(tab) { return communitySectors[tab] || { x: 0, y: 0 }; }
@@ -3993,7 +4012,7 @@ function initCommunity() {
   initCommunityStarfield();
   initCommunityWaveParticles();
 
-  const sectors = ['resonance','discover','following','trending','nearby'];
+  const sectors = ['resonance','discover','following','trending','nearby','civilization'];
   communitySectors = {};
   sectors.forEach((s,i) => {
     const angle = (i/sectors.length)*Math.PI*2 - Math.PI/2;
@@ -4031,6 +4050,7 @@ function initCommunity() {
   initFollowingSystem();
   initTrendingSystem();
   initNearbySystem();
+  initCivilizationSystem();
   communityModulesReady = true;
 
   animateCommunity();
@@ -4149,6 +4169,7 @@ function drawCommunity() {
   drawFollowingSector(cx, cy, minDim);
   drawTrendingSector(cx, cy, minDim);
   drawNearbySector(cx, cy, minDim);
+  drawCivilizationSector(cx, cy, minDim);
 
   drawCommunitySectorConnections(cx, cy);
 
@@ -4165,7 +4186,7 @@ function drawCommunityUniverseBackground(cx, cy, minDim) {
 }
 
 function drawCommunitySectorConnections(cx, cy) {
-  const tabs = ['resonance','discover','following','trending','nearby'];
+  const tabs = ['resonance','discover','following','trending','nearby','civilization'];
   cCtx.strokeStyle = 'rgba(99,230,255,0.04)';
   cCtx.lineWidth = 1;
   for(let i=0;i<tabs.length;i++) {
@@ -4261,6 +4282,7 @@ window.addEventListener('mousemove', e => {
     else if(currentCommunityTab === 'following') handleFollowingMouseMove(pos);
     else if(currentCommunityTab === 'trending') handleTrendingMouseMove(pos);
     else if(currentCommunityTab === 'nearby') handleNearbyMouseMove(pos);
+    else if(currentCommunityTab === 'civilization') handleCivilizationMouseMove(pos);
     return;
   }
   cCamera.panTo(e.clientX, e.clientY);
@@ -4282,6 +4304,8 @@ cCanvas.addEventListener('click', e => {
     handleTrendingClick(pos);
   } else if(currentCommunityTab === 'nearby') {
     handleNearbyClick(pos);
+  } else if(currentCommunityTab === 'civilization') {
+    handleCivilizationClick(pos);
   }
 });
 cCanvas.addEventListener('dblclick', e => {
@@ -4689,6 +4713,474 @@ function handleNearbyClick(pos) {
   document.getElementById('memory-overlay').classList.add('active');
 }
 
+// ==================== CIVILIZATION GALAXY MODULE ====================
+// 「文明记忆宇宙」：六片影响力星系 × 六段历史时代 × 挂在其下的人物星点。
+// 设计原则：影响、贡献、社会影响、启发，而非财富与名气。
+const civilizationDimensions = [
+  { id:'social',     name:'社会贡献', color:'#FFD37A', desc:'用一己之力惠及众人，把日常的善变成结构性的改变。' },
+  { id:'innovation', name:'创新推动', color:'#63E6FF', desc:'撬动时代的发明与思想，让世界跨过原本难以跨过的门槛。' },
+  { id:'peace',      name:'和平行动', color:'#A285FF', desc:'用温柔与勇气止息战火，把对话作为永远不放弃的方法。' },
+  { id:'humanity',   name:'人文精神', color:'#FF8FB3', desc:'写下、画下、唱下人之所以为人的诗篇。' },
+  { id:'education',  name:'教育影响', color:'#6fb3b6', desc:'把火种递到下一代手心，让知识与方法在岁月里复利。' },
+  { id:'era',        name:'时代改变', color:'#FFB07A', desc:'让世界翻到新的一页，从此前后的人活在不同的语境里。' }
+];
+
+const civilizationEras = [
+  { id:'ancient-cn',  name:'古代中国',   color:'#FFD37A', period:'BCE 2070 — CE 1912', summary:'青铜、竹简、唐诗宋词、四大发明，绵延三千年的连续记忆。' },
+  { id:'ancient-gr',  name:'古希腊',     color:'#63E6FF', period:'BCE 800 — BCE 146',  summary:'城邦、哲学、戏剧与几何，西方理性的童年。' },
+  { id:'ancient-eg',  name:'古埃及',     color:'#FFB07A', period:'BCE 3100 — BCE 30',  summary:'尼罗河上的金字塔与亡灵书，把死亡也写成一种永恒。' },
+  { id:'silk-road',   name:'丝绸之路',   color:'#A285FF', period:'BCE 130 — CE 1453',  summary:'横贯欧亚的商队与僧侣，让东西方第一次共用同一片星空。' },
+  { id:'renaissance', name:'文艺复兴',   color:'#FF8FB3', period:'CE 14世纪 — 17世纪', summary:'重新发现人，重新发现自然，让美与科学并肩生长。' },
+  { id:'industry',    name:'工业革命',   color:'#6fb3b6', period:'CE 1760 — 1840',     summary:'蒸汽、电力与计算，把人类拽出田野，扔进现代世界。' }
+];
+
+// 人物只是挂载 —— 隶属影响力星系，可关联历史时代。
+const civilizationFigures = [
+  { name:'特蕾莎修女', dim:'peace',     era:null,         year:'1910 — 1997', avatar:'🕊️',
+    quote:'我们都不是伟大的人，但我们可以怀着伟大的爱去做小事。',
+    journey:'在加尔各答街头照护无家者与垂死病人，把贫穷者的尊严看作神的尊严。',
+    related:['和平推动者','人道主义者','留学生'] },
+  { name:'马拉拉',     dim:'peace',     era:null,         year:'1997 —',      avatar:'📚',
+    quote:'一支笔、一本书、一个孩子、一位老师，可以改变世界。',
+    journey:'十几岁就为女童教育发声，被塔利班枪击仍未停下，最年轻诺贝尔和平奖得主。',
+    related:['教育推动者','和平推动者','留学生'] },
+  { name:'居里夫人',   dim:'innovation', era:null,        year:'1867 — 1934', avatar:'⚗️',
+    quote:'生活中没有什么可怕的事，只有需要被理解的事。',
+    journey:'两次诺贝尔奖，开创放射性研究，把科学的清贫坚持成了一种品格。',
+    related:['创新推动','女性科学家','留学生'] },
+  { name:'达·芬奇',     dim:'innovation', era:'renaissance', year:'1452 — 1519', avatar:'🎨',
+    quote:'简洁是终极的复杂。',
+    journey:'画家、解剖学家、工程师、发明家——文艺复兴最完整的人。',
+    related:['文艺复兴','艺术家','创业者'] },
+  { name:'鲁迅',        dim:'humanity',  era:'ancient-cn', year:'1881 — 1936', avatar:'🖋️',
+    quote:'横眉冷对千夫指，俯首甘为孺子牛。',
+    journey:'弃医从文，用最锋利的笔写最深的爱，是中国现代文学的开端。',
+    related:['人文精神','作家','留学生'] },
+  { name:'梵高',        dim:'humanity',  era:null,         year:'1853 — 1890', avatar:'🌻',
+    quote:'对我而言，最了不起的艺术家，就是热爱人的艺术家。',
+    journey:'生前只卖出过一幅画，把所有的孤独与温柔都涂给了麦田与星空。',
+    related:['人文精神','艺术家'] },
+  { name:'孔子',        dim:'education', era:'ancient-cn', year:'BCE 551 — 479', avatar:'📜',
+    quote:'有教无类。',
+    journey:'三千弟子，七十二贤人，第一个把教育从贵族手里普及到民间的中国人。',
+    related:['教育推动者','古代中国','人文精神'] },
+  { name:'苏格拉底',    dim:'education', era:'ancient-gr', year:'BCE 470 — 399', avatar:'🏛️',
+    quote:'我唯一知道的，就是我什么都不知道。',
+    journey:'用提问法把哲学从天上拉回街头，用生命守护思想自由。',
+    related:['古希腊','教育推动者','哲学家'] },
+  { name:'袁隆平',      dim:'social',    era:null,         year:'1930 — 2021', avatar:'🌾',
+    quote:'我有两个梦：禾下乘凉梦，杂交稻覆盖全球梦。',
+    journey:'把杂交水稻种到稻田、心田与全世界，让饥饿成为越来越遥远的记忆。',
+    related:['社会贡献','农学家','创新推动'] },
+  { name:'特蕾西·查普曼', dim:'social',  era:null,         year:'1964 —',      avatar:'🎸',
+    quote:'谈论一场革命，听上去像是低语。',
+    journey:'用民谣写社会议题，把麦克风对准被忽略的角落。',
+    related:['社会贡献','艺术家'] },
+  { name:'屠呦呦',      dim:'era',       era:'ancient-cn', year:'1930 —',      avatar:'🌿',
+    quote:'青蒿一握，水二升，绞取汁，尽服之。',
+    journey:'从古籍中找到青蒿素的灵感，挽救了全球数百万疟疾患者的生命。',
+    related:['时代改变','科学家','古代中国'] },
+  { name:'图灵',        dim:'era',       era:'industry',   year:'1912 — 1954', avatar:'🧮',
+    quote:'我们能看到的只是不远处，但我们可以看到那里有许多事要做。',
+    journey:'破译 Enigma，构想现代计算机，是一个被时代亏欠的天才。',
+    related:['时代改变','创新推动','工业革命','创业者'] }
+];
+
+// 渲染时态
+let civilizationDimNodes = [];   // 6 影响力星系
+let civilizationEraNodes = [];   // 6 时代星系
+let civilizationFigureNodes = [];// 人物星点
+let civilizationOrbitTime = 0;
+let civilizationFocusedDim = null; // hover/聚焦的影响力星系
+
+function initCivilizationSystem() {
+  const s = getCommunitySector('civilization');
+  const cx = cCanvas.width/2 + s.x, cy = cCanvas.height/2 + s.y;
+  const outerR = 360;
+  const innerR = 170;
+
+  // 影响力星系：六边形外环
+  civilizationDimNodes = civilizationDimensions.map((d, i) => {
+    const angle = (i/civilizationDimensions.length)*Math.PI*2 - Math.PI/2;
+    return {
+      ...d, baseAngle: angle, orbitR: outerR,
+      x: cx + Math.cos(angle)*outerR, y: cy + Math.sin(angle)*outerR*0.78,
+      radius: 32, brightness: 0.85, hover: false,
+      satellites: Array.from({length: 18}, () => ({
+        a: Math.random()*Math.PI*2, r: 50 + Math.random()*70,
+        sz: 0.6 + Math.random()*1.4, sp: (Math.random()-0.5)*0.0035
+      }))
+    };
+  });
+
+  // 历史时代：六边形内环（与外环错开 30°）
+  civilizationEraNodes = civilizationEras.map((e, i) => {
+    const angle = (i/civilizationEras.length)*Math.PI*2 - Math.PI/2 + Math.PI/6;
+    return {
+      ...e, baseAngle: angle, orbitR: innerR,
+      x: cx + Math.cos(angle)*innerR, y: cy + Math.sin(angle)*innerR*0.78,
+      radius: 18, brightness: 0.75, hover: false,
+      ringStars: Array.from({length: 8}, (_,k) => ({
+        a: (k/8)*Math.PI*2, r: 26 + Math.random()*8,
+        sz: 0.5 + Math.random()*0.9, sp: 0.002 + Math.random()*0.002
+      }))
+    };
+  });
+
+  // 人物：附着到所属影响力星系周围
+  const figureCountByDim = {};
+  civilizationFigureNodes = civilizationFigures.map((f) => {
+    figureCountByDim[f.dim] = (figureCountByDim[f.dim]||0);
+    const idx = figureCountByDim[f.dim]++;
+    return { ...f, figureIdx: idx, x:0, y:0, baseAngle:0, dist:0,
+      radius: 4.6, hover:false, brightness: 0.85, twinkle: Math.random()*Math.PI*2 };
+  });
+  // 计算每个人物在所属影响力星系周围的位置（小卫星簇）
+  civilizationFigureNodes.forEach(f => {
+    const parent = civilizationDimNodes.find(d => d.id === f.dim);
+    if(!parent) return;
+    const total = civilizationFigureNodes.filter(x => x.dim === f.dim).length;
+    const fa = (f.figureIdx/Math.max(total,1))*Math.PI*2 + parent.baseAngle*0.5 + Math.random()*0.4;
+    const fd = 60 + (f.figureIdx % 2)*20 + Math.random()*8;
+    f.baseAngle = fa; f.dist = fd;
+    f.x = parent.x + Math.cos(fa)*fd;
+    f.y = parent.y + Math.sin(fa)*fd*0.85;
+    f.parentRef = parent;
+    f.eraRef = f.era ? civilizationEraNodes.find(e => e.id === f.era) : null;
+  });
+}
+
+function drawCivilizationSector(cx, cy, minDim) {
+  const s = getCommunitySector('civilization');
+  const sx = cx + s.x, sy = cy + s.y;
+  civilizationOrbitTime += 0.0035;
+
+  // 大背景星云 —— 一片混合色彩的"文明深空"
+  drawNebulaCloud2(cCtx, sx, sy, minDim*1.05, '#FFB07A', 0.038);
+  drawNebulaCloud2(cCtx, sx-220, sy+80, minDim*0.6, '#A285FF', 0.028);
+  drawNebulaCloud2(cCtx, sx+260, sy-60, minDim*0.55, '#63E6FF', 0.024);
+  drawNebulaCloud2(cCtx, sx, sy+200, minDim*0.5, '#FF8FB3', 0.02);
+
+  // 中心同心环 —— 时代轨道的回声
+  cCtx.strokeStyle = 'rgba(255,176,122,0.12)'; cCtx.lineWidth = 1;
+  [110, 175, 245, 360].forEach(r => {
+    cCtx.beginPath(); cCtx.ellipse(sx, sy, r, r*0.78, 0, 0, Math.PI*2); cCtx.stroke();
+  });
+
+  // 中心核 —— 文明心跳
+  const corePulse = 0.6 + 0.2*Math.sin(civilizationOrbitTime*8);
+  const coreGrad = cCtx.createRadialGradient(sx, sy, 0, sx, sy, 90);
+  coreGrad.addColorStop(0, hexToRgba('#FFFFFF', 0.65*corePulse));
+  coreGrad.addColorStop(0.4, hexToRgba('#FFB07A', 0.35*corePulse));
+  coreGrad.addColorStop(1, 'transparent');
+  cCtx.fillStyle = coreGrad; cCtx.beginPath(); cCtx.arc(sx, sy, 90, 0, Math.PI*2); cCtx.fill();
+  cCtx.fillStyle = 'rgba(240,244,248,0.78)';
+  cCtx.font = '11px sans-serif'; cCtx.textAlign='center';
+  cCtx.fillText('文明记忆 · 心跳', sx, sy+4);
+  cCtx.fillStyle = 'rgba(240,244,248,0.45)';
+  cCtx.font = '9px sans-serif';
+  cCtx.fillText('Civilization Galaxy', sx, sy+18);
+
+  // 历史时代星系（内环）
+  civilizationEraNodes.forEach(era => {
+    const ang = era.baseAngle + civilizationOrbitTime*0.18;
+    era.x = sx + Math.cos(ang)*era.orbitR;
+    era.y = sy + Math.sin(ang)*era.orbitR*0.78;
+    drawNebulaCloud2(cCtx, era.x, era.y, 80, era.color, 0.06);
+    era.ringStars.forEach(rs => {
+      rs.a += rs.sp;
+      const rx = era.x + Math.cos(rs.a)*rs.r;
+      const ry = era.y + Math.sin(rs.a)*rs.r*0.65;
+      cCtx.fillStyle = `rgba(255,255,255,${0.3 + Math.random()*0.25})`;
+      cCtx.beginPath(); cCtx.arc(rx, ry, rs.sz, 0, Math.PI*2); cCtx.fill();
+    });
+    const grad = cCtx.createRadialGradient(era.x-3, era.y-3, 0, era.x, era.y, era.radius);
+    grad.addColorStop(0, 'rgba(255,255,255,0.95)');
+    grad.addColorStop(0.5, hexToRgba(era.color, 0.85));
+    grad.addColorStop(1, hexToRgba(era.color, 0.25));
+    cCtx.fillStyle = grad;
+    cCtx.beginPath(); cCtx.arc(era.x, era.y, era.radius, 0, Math.PI*2); cCtx.fill();
+    if(era.hover) {
+      cCtx.strokeStyle = 'rgba(255,255,255,0.55)'; cCtx.lineWidth=1.4;
+      cCtx.beginPath(); cCtx.arc(era.x, era.y, era.radius+10, 0, Math.PI*2); cCtx.stroke();
+    }
+    cCtx.fillStyle = `rgba(240,244,248,${0.72 + (era.hover?0.25:0)})`;
+    cCtx.font = '10.5px sans-serif'; cCtx.textAlign='center';
+    cCtx.shadowColor = era.color; cCtx.shadowBlur = 10;
+    cCtx.fillText(era.name, era.x, era.y+era.radius+14);
+    cCtx.shadowBlur = 0;
+  });
+
+  // 影响力星系（外环）
+  civilizationDimNodes.forEach(dim => {
+    const ang = dim.baseAngle + civilizationOrbitTime*0.08;
+    const ndx = sx + Math.cos(ang)*dim.orbitR;
+    const ndy = sy + Math.sin(ang)*dim.orbitR*0.78;
+    // 让人物跟随影响力星系一起公转
+    const dx = ndx - dim.x, dy = ndy - dim.y;
+    dim.x = ndx; dim.y = ndy;
+    civilizationFigureNodes.forEach(f => {
+      if(f.dim === dim.id) { f.x += dx; f.y += dy; }
+    });
+
+    // 大星云
+    drawNebulaCloud2(cCtx, dim.x, dim.y, 180, dim.color, 0.07 + (dim.hover?0.04:0));
+    // 卫星粉尘
+    dim.satellites.forEach(st => {
+      st.a += st.sp;
+      const px = dim.x + Math.cos(st.a)*st.r;
+      const py = dim.y + Math.sin(st.a)*st.r*0.7;
+      cCtx.fillStyle = `rgba(255,255,255,${0.18 + Math.random()*0.2})`;
+      cCtx.beginPath(); cCtx.arc(px, py, st.sz, 0, Math.PI*2); cCtx.fill();
+    });
+
+    // 与中心心跳的能量光带（聚焦时高亮）
+    const hot = (civilizationFocusedDim === dim.id) || dim.hover;
+    cCtx.beginPath(); cCtx.moveTo(sx, sy);
+    const midX = (sx+dim.x)/2, midY = (sy+dim.y)/2 - 30;
+    cCtx.quadraticCurveTo(midX, midY, dim.x, dim.y);
+    const lineGrad = cCtx.createLinearGradient(sx, sy, dim.x, dim.y);
+    lineGrad.addColorStop(0, hexToRgba('#FFB07A', hot?0.35:0.12));
+    lineGrad.addColorStop(1, hexToRgba(dim.color, hot?0.55:0.22));
+    cCtx.strokeStyle = lineGrad; cCtx.lineWidth = hot?1.6:1.0; cCtx.stroke();
+
+    // 核心球
+    const coreG = cCtx.createRadialGradient(dim.x-6, dim.y-6, 0, dim.x, dim.y, dim.radius);
+    coreG.addColorStop(0, 'rgba(255,255,255,0.95)');
+    coreG.addColorStop(0.5, hexToRgba(dim.color, 0.95));
+    coreG.addColorStop(1, hexToRgba(dim.color, 0.3));
+    cCtx.fillStyle = coreG;
+    cCtx.beginPath(); cCtx.arc(dim.x, dim.y, dim.radius*(dim.hover?1.08:1), 0, Math.PI*2); cCtx.fill();
+
+    if(dim.hover || civilizationFocusedDim === dim.id) {
+      cCtx.strokeStyle = 'rgba(255,255,255,0.5)'; cCtx.lineWidth = 1.5;
+      cCtx.beginPath(); cCtx.arc(dim.x, dim.y, dim.radius+14, 0, Math.PI*2); cCtx.stroke();
+    }
+
+    cCtx.fillStyle = `rgba(255,255,255,${0.85})`;
+    cCtx.font = '13px sans-serif'; cCtx.textAlign = 'center';
+    cCtx.shadowColor = dim.color; cCtx.shadowBlur = 14;
+    cCtx.fillText(dim.name, dim.x, dim.y + dim.radius + 22);
+    cCtx.shadowBlur = 0;
+  });
+
+  // 人物 → 时代 的细光线（如果有 era 关联）
+  civilizationFigureNodes.forEach(f => {
+    if(!f.eraRef) return;
+    const e = f.eraRef;
+    cCtx.beginPath();
+    cCtx.moveTo(f.x, f.y);
+    cCtx.lineTo(e.x, e.y);
+    cCtx.strokeStyle = hexToRgba(e.color, f.hover?0.4:0.1);
+    cCtx.lineWidth = f.hover?1:0.6;
+    cCtx.stroke();
+  });
+
+  // 人物星点
+  civilizationFigureNodes.forEach(f => {
+    const tw = 0.7 + 0.3*Math.sin(civilizationOrbitTime*15 + f.twinkle);
+    const r = f.radius * (f.hover?1.8:1) * tw;
+    const glow = cCtx.createRadialGradient(f.x, f.y, 0, f.x, f.y, r*4);
+    glow.addColorStop(0, hexToRgba(f.parentRef?f.parentRef.color:'#FFD37A', f.hover?0.55:0.28));
+    glow.addColorStop(1, 'transparent');
+    cCtx.fillStyle = glow;
+    cCtx.beginPath(); cCtx.arc(f.x, f.y, r*4, 0, Math.PI*2); cCtx.fill();
+    cCtx.fillStyle = `rgba(255,255,255,${f.hover?1:0.92})`;
+    cCtx.beginPath(); cCtx.arc(f.x, f.y, r, 0, Math.PI*2); cCtx.fill();
+    if(f.hover) {
+      cCtx.fillStyle = 'rgba(255,255,255,0.95)';
+      cCtx.font = '11px sans-serif'; cCtx.textAlign='center';
+      cCtx.shadowColor = f.parentRef?f.parentRef.color:'#FFD37A'; cCtx.shadowBlur = 12;
+      cCtx.fillText(`${f.avatar} ${f.name}`, f.x, f.y - 14);
+      cCtx.shadowBlur = 0;
+    }
+  });
+}
+
+function civDimAt(pos) {
+  for(const d of civilizationDimNodes) {
+    const dx = pos.x - d.x, dy = pos.y - d.y;
+    if(Math.sqrt(dx*dx + dy*dy) < d.radius + 12) return d;
+  }
+  return null;
+}
+function civEraAt(pos) {
+  for(const e of civilizationEraNodes) {
+    const dx = pos.x - e.x, dy = pos.y - e.y;
+    if(Math.sqrt(dx*dx + dy*dy) < e.radius + 10) return e;
+  }
+  return null;
+}
+function civFigureAt(pos) {
+  for(const f of civilizationFigureNodes) {
+    const dx = pos.x - f.x, dy = pos.y - f.y;
+    if(Math.sqrt(dx*dx + dy*dy) < f.radius + 9) return f;
+  }
+  return null;
+}
+
+function handleCivilizationMouseMove(pos) {
+  civilizationDimNodes.forEach(d => d.hover = false);
+  civilizationEraNodes.forEach(e => e.hover = false);
+  civilizationFigureNodes.forEach(f => f.hover = false);
+  civilizationFocusedDim = null;
+
+  const f = civFigureAt(pos);
+  const d = !f ? civDimAt(pos) : null;
+  const e = (!f && !d) ? civEraAt(pos) : null;
+  if(f) {
+    f.hover = true;
+    if(f.parentRef) civilizationFocusedDim = f.parentRef.id;
+    cCanvas.style.cursor = 'pointer';
+    showTooltip(`${f.avatar} ${f.name}`, `${f.year}<br>影响力：${f.parentRef?f.parentRef.name:''}${f.eraRef?` · ${f.eraRef.name}`:''}<br>点击展开人物记忆`);
+  } else if(d) {
+    d.hover = true;
+    civilizationFocusedDim = d.id;
+    cCanvas.style.cursor = 'pointer';
+    const count = civilizationFigureNodes.filter(x => x.dim === d.id).length;
+    showTooltip(`${d.name} · 影响力星系`, `${d.desc}<br>挂载 ${count} 颗人物星`);
+  } else if(e) {
+    e.hover = true;
+    cCanvas.style.cursor = 'pointer';
+    showTooltip(`${e.name} · 历史时代`, `${e.period}<br>${e.summary}`);
+  } else {
+    cCanvas.style.cursor = 'grab';
+    hideTooltip();
+  }
+}
+
+function handleCivilizationClick(pos) {
+  const f = civFigureAt(pos);
+  if(f) { openCivilizationFigure(f); return; }
+  const d = civDimAt(pos);
+  if(d) { openCivilizationDimension(d); return; }
+  const e = civEraAt(pos);
+  if(e) { openCivilizationEra(e); return; }
+}
+
+function openCivilizationFigure(f) {
+  const card = document.getElementById('memory-card');
+  const dim = f.parentRef;
+  const era = f.eraRef;
+  const tags = (f.related||[]).map(t => `<span class="civ-related-tag" onclick="navigateCivilizationTag('${t}')">${t}</span>`).join('');
+  card.innerHTML = `
+    <span class="tag" style="background:${hexToRgba(dim?dim.color:'#FFB07A',0.18)};color:${dim?dim.color:'#FFB07A'};">${dim?dim.name:'文明记忆'}${era?` · ${era.name}`:''}</span>
+    <h2>${f.avatar} ${f.name}</h2>
+    <div class="date">${f.year}</div>
+    <div class="content" style="line-height:1.85;">
+      <div style="border-left:2px solid ${hexToRgba(dim?dim.color:'#FFB07A',0.6)}; padding:6px 14px; margin-bottom:12px; font-style:italic; color:#f0f4f8; opacity:0.92;">「${f.quote}」</div>
+      <div style="margin-bottom:14px;">${f.journey}</div>
+      <div style="font-size:11px;color:var(--text-dim);letter-spacing:0.08em;margin-bottom:6px;">关联星系</div>
+      <div class="civ-related-row">${tags}</div>
+    </div>
+    <div class="actions">
+      <button class="primary" onclick="addCivilizationMemory('${f.name}')">收藏到记忆</button>
+      <button onclick="openCivilizationCommunity('${f.name}')">查看社区讨论</button>
+      <button onclick="closeOverlay()">关闭</button>
+    </div>`;
+  document.getElementById('memory-overlay').classList.add('active');
+}
+
+function openCivilizationDimension(d) {
+  const card = document.getElementById('memory-card');
+  const figs = civilizationFigureNodes.filter(f => f.dim === d.id);
+  const figList = figs.map(f => `<div class="civ-figure-row" onclick="closeOverlay(); setTimeout(()=>{const t=civilizationFigureNodes.find(x=>x.name==='${f.name}');if(t)openCivilizationFigure(t);},200);">
+    <span class="civ-figure-avatar" style="background:${hexToRgba(d.color,0.18)};">${f.avatar}</span>
+    <span class="civ-figure-name">${f.name}</span>
+    <span class="civ-figure-year">${f.year}</span>
+  </div>`).join('');
+  card.innerHTML = `
+    <span class="tag" style="background:${hexToRgba(d.color,0.18)};color:${d.color};">影响力星系</span>
+    <h2>${d.name}</h2>
+    <div class="date">挂载 ${figs.length} 颗人物星 · 不按财富与名气排序</div>
+    <div class="content" style="line-height:1.85;">
+      <p style="margin-bottom:14px;">${d.desc}</p>
+      <div style="font-size:11px;color:var(--text-dim);letter-spacing:0.08em;margin-bottom:8px;">星系下的灵魂</div>
+      <div class="civ-figure-list">${figList}</div>
+    </div>
+    <div class="actions">
+      <button class="primary" onclick="closeOverlay()">回到星系</button>
+    </div>`;
+  document.getElementById('memory-overlay').classList.add('active');
+}
+
+function openCivilizationEra(e) {
+  const card = document.getElementById('memory-card');
+  const figs = civilizationFigureNodes.filter(f => f.era === e.id);
+  const figList = figs.length
+    ? figs.map(f => `<div class="civ-figure-row" onclick="closeOverlay(); setTimeout(()=>{const t=civilizationFigureNodes.find(x=>x.name==='${f.name}');if(t)openCivilizationFigure(t);},200);">
+        <span class="civ-figure-avatar" style="background:${hexToRgba(e.color,0.18)};">${f.avatar}</span>
+        <span class="civ-figure-name">${f.name}</span>
+        <span class="civ-figure-year">${f.year}</span>
+      </div>`).join('')
+    : '<div style="color:var(--text-dim);font-size:12px;">这个时代的星点还在被慢慢点亮——欢迎你也成为记录者。</div>';
+  card.innerHTML = `
+    <span class="tag" style="background:${hexToRgba(e.color,0.18)};color:${e.color};">历史时代</span>
+    <h2>${e.name}</h2>
+    <div class="date">${e.period}</div>
+    <div class="content" style="line-height:1.85;">
+      <p style="margin-bottom:14px;">${e.summary}</p>
+      <div style="font-size:11px;color:var(--text-dim);letter-spacing:0.08em;margin-bottom:8px;">这片时代里被记住的人</div>
+      <div class="civ-figure-list">${figList}</div>
+    </div>
+    <div class="actions">
+      <button class="primary" onclick="closeOverlay()">回到星系</button>
+    </div>`;
+  document.getElementById('memory-overlay').classList.add('active');
+}
+
+function navigateCivilizationTag(tag) {
+  // 跨星系联动：人文/教育/和平/创新/留学生/创业者 等关键词跳到「发现星系」（保留原社区功能）；
+  // 时代关键词则跳到对应时代星系。
+  closeOverlay();
+  const eraMap = {'古代中国':'ancient-cn','古希腊':'ancient-gr','古埃及':'ancient-eg','丝绸之路':'silk-road','文艺复兴':'renaissance','工业革命':'industry'};
+  if(eraMap[tag]) {
+    const e = civilizationEraNodes.find(x => x.id === eraMap[tag]);
+    if(e) {
+      cCamera.targetX = window.innerWidth/2 - e.x * 1.6;
+      cCamera.targetY = window.innerHeight/2 - e.y * 1.6;
+      cCamera.targetScale = 1.6;
+      setTimeout(() => openCivilizationEra(e), 450);
+    }
+    return;
+  }
+  // 留学生 / 创业者 / 教育推动者 / 和平推动者 / 艺术家 / 哲学家 / 人道主义者 / 创新推动 等 → 跳「发现星系」
+  const discoverTags = ['留学生','创业者','教育推动者','和平推动者','艺术家','哲学家','人道主义者','作家','女性科学家','科学家','发明家','农学家','创新推动','社会贡献','人文精神','时代改变'];
+  if(discoverTags.includes(tag)) {
+    switchCommunityTab('discover');
+    setTimeout(() => {
+      const card = document.getElementById('memory-card');
+      card.innerHTML = `<span class="tag">跨星系联动</span><h2>「${tag}」回声</h2><div class="date">从「文明记忆宇宙」跳跃而来</div><div class="content">这里是发现星系，「${tag}」的能量在不同的星云里都有回响。继续在这片星云里漫游，会遇见更多与之相似的灵魂与社区。</div><div class="actions"><button class="primary" onclick="closeOverlay()">继续探索</button></div>`;
+      document.getElementById('memory-overlay').classList.add('active');
+    }, 550);
+    return;
+  }
+  switchCommunityTab('civilization');
+}
+
+function addCivilizationMemory(name) {
+  // 把人物收藏到记忆碎片（与彼岸足迹的"阅读笔记 / 100 次告白"为同一记忆体系）
+  try {
+    const key = 'lifebeyond_civ_memories';
+    const list = JSON.parse(localStorage.getItem(key) || '[]');
+    if(!list.includes(name)) list.push(name);
+    localStorage.setItem(key, JSON.stringify(list));
+  } catch(e) {}
+  const card = document.getElementById('memory-card');
+  card.innerHTML = `<span class="tag">已收藏</span><h2>${name} · 已加入你的记忆星座</h2><div class="date">「文明记忆宇宙」 → 你的星图</div><div class="content">这位人物的故事会作为一颗常驻星点，留在你的私人星图里。你可以随时回到「彼岸足迹 → 阅读笔记」找回 ta。</div><div class="actions"><button class="primary" onclick="closeOverlay()">继续漫游</button></div>`;
+  document.getElementById('memory-overlay').classList.add('active');
+}
+
+function openCivilizationCommunity(name) {
+  // 联动社区：从「文明记忆」跳到普通社区帖子流，并以人物名搜索/筛选（保留原帖列表）
+  switchCommunityTab('discover');
+  setTimeout(() => {
+    const card = document.getElementById('memory-card');
+    card.innerHTML = `<span class="tag">社区讨论</span><h2>关于 ${name} 的星海讨论</h2><div class="date">来自共鸣 / 发现 / 关注 / 热门 / 附近 的回声</div><div class="content">用户们在不同的星云里都在谈论 ta —— 留下感想，提一个问题，或者只是默默旁观。这片讨论会把分散在社区的回声汇集到一起。<br><br>（讨论数据为占位，后续可从社区帖子中按人物标签自动聚合。）</div><div class="actions"><button class="primary" onclick="closeOverlay()">回到社区</button></div>`;
+    document.getElementById('memory-overlay').classList.add('active');
+  }, 500);
+}
+
 // ==================== COMMUNITY FEED ====================
 function initCommunityFeed() { renderCommunityPosts(communityPosts); }
 
@@ -4702,13 +5194,15 @@ function switchCommunityTab(tab) {
   const feedHeader = document.getElementById('community-feed-header');
   const composerWrap = document.getElementById('community-composer-wrap');
   const viewCommunity = document.getElementById('view-community');
-  if(viewCommunity) viewCommunity.classList.toggle('view-community-has-feed', tab !== 'resonance');
 
   const sector = getCommunitySector(tab);
   cCamera.targetX = window.innerWidth/2 - (cCanvas.width/2 + sector.x) * cCamera.targetScale;
   cCamera.targetY = window.innerHeight/2 - (cCanvas.height/2 + sector.y) * cCamera.targetScale;
 
-  if (tab === 'resonance') {
+  const galaxyOnlyTab = (tab === 'resonance' || tab === 'civilization');
+  if(viewCommunity) viewCommunity.classList.toggle('view-community-has-feed', !galaxyOnlyTab);
+
+  if (galaxyOnlyTab) {
     if(galaxyOnly) { galaxyOnly.style.visibility = 'visible'; galaxyOnly.style.pointerEvents = ''; }
     if(galaxyHint) galaxyHint.style.display = '';
     if(feedWrapper) feedWrapper.style.display = 'none';
