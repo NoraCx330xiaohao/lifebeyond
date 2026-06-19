@@ -5052,6 +5052,39 @@ const civCanvas = document.getElementById('civilization-canvas');
 const civCtx = civCanvas ? civCanvas.getContext('2d') : null;
 const civCamera = makeCamera();
 let civilizationStarfield = [];
+// === 流场（Flow Field）状态：把整片星海当作一个连续流体场处理 ===
+let civilizationFlowTime = 0;
+let civilizationMouseField = { wx: 0, wy: 0, prevWx: 0, prevWy: 0, vx: 0, vy: 0, strength: 0, lastSeen: 0 };
+let civilizationCameraDrift = { x: 0, y: 0 };
+let civilizationNodeMotes = [];
+// 用便宜的 sin 双层近似 curl noise，返回 (x,y) 在时刻 t 的速度向量
+function civilizationFlowAt(x, y, t) {
+  const s = 0.0022;
+  const a = Math.sin(x * s + t * 0.42) + Math.cos(y * s * 1.27 - t * 0.31);
+  const b = Math.cos(x * s * 1.13 - t * 0.36) + Math.sin(y * s - t * 0.27);
+  // 二阶扰动让流场不规则
+  const c = Math.sin((x + y) * s * 0.6 + t * 0.18) * 0.6;
+  return { vx: (a + c) * 0.18, vy: (b - c) * 0.18 };
+}
+// 鼠标重力 / 涡流：在指针周围画一个软涡，让靠近的粒子被切向带动并轻轻吸入
+function civilizationMouseGravityAt(x, y) {
+  const m = civilizationMouseField;
+  if (m.strength < 0.02) return { vx: 0, vy: 0 };
+  const dx = x - m.wx, dy = y - m.wy;
+  const r = Math.sqrt(dx * dx + dy * dy) + 0.01;
+  const radius = 280 / Math.max(civCamera.scale, 0.5);
+  if (r > radius) return { vx: 0, vy: 0 };
+  const fall = 1 - r / radius;
+  const k = m.strength * fall * fall;
+  // 切向（轨道）+ 极弱内吸
+  const tx = -dy / r, ty = dx / r;
+  // 鼠标自身速度也注入流场（拖拽出尾迹）
+  const drag = 0.35;
+  return {
+    vx: tx * 0.9 * k - (dx / r) * 0.18 * k + m.vx * drag * fall,
+    vy: ty * 0.9 * k - (dy / r) * 0.18 * k + m.vy * drag * fall
+  };
+}
 let civilizationActiveDim = null;
 let civilizationActiveEra = null;
 let civilizationSearch = '';
@@ -5082,34 +5115,27 @@ function resizeCivCanvas() {
 function initCivilizationStarfield() {
   const w = civCanvas.width, h = civCanvas.height;
   const palette = ['#FFB07A','#A285FF','#63E6FF','#FF8FB3','#FFD37A','#f0f4f8','#9DD6FF','#FFCBA4'];
-  // 三层："深空尘埃 / 中层微星 / 前景闪烁星"，模仿诗云的深度感
-  const deep = Array.from({length: 1200}, () => ({
-    x: Math.random()*w, y: Math.random()*h,
-    size: Math.random()*0.8 + 0.15,
-    alpha: Math.random()*0.25 + 0.06,
-    twinkle: Math.random()*Math.PI*2,
-    speed: Math.random()*0.01 + 0.002,
-    color: palette[Math.floor(Math.random()*palette.length)],
-    layer: 0
-  }));
-  const mid = Array.from({length: 460}, () => ({
-    x: Math.random()*w, y: Math.random()*h,
-    size: Math.random()*1.2 + 0.4,
-    alpha: Math.random()*0.4 + 0.18,
-    twinkle: Math.random()*Math.PI*2,
-    speed: Math.random()*0.02 + 0.006,
-    color: palette[Math.floor(Math.random()*palette.length)],
-    layer: 1
-  }));
-  const near = Array.from({length: 140}, () => ({
-    x: Math.random()*w, y: Math.random()*h,
-    size: Math.random()*1.7 + 0.7,
-    alpha: Math.random()*0.55 + 0.3,
-    twinkle: Math.random()*Math.PI*2,
-    speed: Math.random()*0.04 + 0.012,
-    color: palette[Math.floor(Math.random()*palette.length)],
-    layer: 2
-  }));
+  // 三层："深空尘埃 / 中层微星 / 前景闪烁星"，每颗都有"家位"和速度，受流场+鼠标重力+弹簧回家
+  function makeStar(layer, count, sizeRange, alphaRange, speedScale) {
+    return Array.from({ length: count }, () => {
+      const hx = Math.random() * w, hy = Math.random() * h;
+      return {
+        hx, hy,                   // 家位（流场不在时回到此处）
+        x: hx, y: hy,             // 当前位置
+        vx: 0, vy: 0,             // 速度
+        size: Math.random() * sizeRange[1] + sizeRange[0],
+        alpha: Math.random() * alphaRange[1] + alphaRange[0],
+        twinkle: Math.random() * Math.PI * 2,
+        speed: Math.random() * speedScale + speedScale * 0.3,
+        color: palette[Math.floor(Math.random() * palette.length)],
+        depth: layer === 0 ? 0.35 : layer === 1 ? 0.65 : 1.0,  // 深度因子（视差用）
+        layer
+      };
+    });
+  }
+  const deep = makeStar(0, 1200, [0.15, 0.8],  [0.06, 0.25], 0.01);
+  const mid  = makeStar(1, 460,  [0.4, 1.2],   [0.18, 0.4],  0.02);
+  const near = makeStar(2, 140,  [0.7, 1.7],   [0.3, 0.55],  0.04);
   civilizationStarfield = deep.concat(mid).concat(near);
 }
 
@@ -5236,6 +5262,8 @@ function initCivilizationSystem() {
 function drawCivilizationView() {
   if(currentView !== 'civilization' || !civCtx) return;
   civCamera.update();
+  civilizationFlowTime += 0.0085;       // 流场时间步进
+  updateCivilizationField();             // 流场更新粒子位置
   civCtx.setTransform(1,0,0,1,0,0);
   civCtx.fillStyle = '#020a17';
   civCtx.fillRect(0, 0, civCanvas.width, civCanvas.height);
@@ -5243,12 +5271,47 @@ function drawCivilizationView() {
   drawCivilizationStarfield();
   // 屏幕空间记忆低语
   drawCivilizationWhispers();
-  // 世界空间内容
+  // 世界空间内容（叠加相机微漂作为活体感）
   civCtx.save();
-  civCtx.setTransform(civCamera.scale, 0, 0, civCamera.scale, civCamera.x, civCamera.y);
+  civCtx.setTransform(
+    civCamera.scale, 0, 0, civCamera.scale,
+    civCamera.x + civilizationCameraDrift.x,
+    civCamera.y + civilizationCameraDrift.y
+  );
 
   if (!civilizationShellMeta) { civCtx.restore(); return; }
   const { cx: sx, cy: sy, eraShellRadius, dimAngle, shellOrder, shellGap } = civilizationShellMeta;
+
+  // === 节点发射的缓慢漂浮粒子（在世界空间）===
+  // 节点会持续向外释放微粒子，给"星系活着"的呼吸感
+  if (!civilizationNodeMotes) civilizationNodeMotes = [];
+  if (civilizationNodeMotes.length < 220) {
+    // 每帧偶尔补一些（不一次性大量产生）
+    if (Math.random() < 0.5) {
+      const sources = [...civilizationDimNodes, ...civilizationEraNodes];
+      const src = sources[Math.floor(Math.random() * sources.length)];
+      if (src) {
+        const a = Math.random() * Math.PI * 2;
+        civilizationNodeMotes.push({
+          x: src.x, y: src.y,
+          vx: Math.cos(a) * (0.18 + Math.random() * 0.4),
+          vy: Math.sin(a) * (0.18 + Math.random() * 0.4) * 0.85,
+          life: 1, decay: 0.002 + Math.random() * 0.0028,
+          size: 0.6 + Math.random() * 1.2,
+          color: src.color || '#FFD37A'
+        });
+      }
+    }
+  }
+  for (let i = civilizationNodeMotes.length - 1; i >= 0; i--) {
+    const p = civilizationNodeMotes[i];
+    p.x += p.vx; p.y += p.vy;
+    p.vx *= 0.99; p.vy *= 0.99;
+    p.life -= p.decay;
+    if (p.life <= 0) { civilizationNodeMotes.splice(i, 1); continue; }
+    civCtx.fillStyle = hexToRgba(p.color, p.life * 0.35);
+    civCtx.beginPath(); civCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); civCtx.fill();
+  }
   const minDim = Math.min(civCanvas.width, civCanvas.height);
   civilizationOrbitTime += 0.0035;
 
@@ -5455,13 +5518,46 @@ function summonCivilizationWhisper(screenX, screenY) {
   if (civilizationWhispersAlive.length > 5) civilizationWhispersAlive.shift();
 }
 
+// === 流体场更新：每帧读 flow + mouse + spring + damping，把粒子位置推一步 ===
+function updateCivilizationField() {
+  const m = civilizationMouseField;
+  // 鼠标重力强度衰减（停下后慢慢消失）
+  m.strength *= 0.955;
+  // 速度衰减（让前一帧的鼠标 drag 自然散开）
+  m.vx *= 0.86; m.vy *= 0.86;
+  // 相机微漂（轻微 parallax 用）
+  civilizationCameraDrift.x = Math.sin(civilizationFlowTime * 0.18) * 6;
+  civilizationCameraDrift.y = Math.cos(civilizationFlowTime * 0.13) * 4;
+
+  // 把每颗星推一小步：flow + mouseGravity + spring 回家
+  for (let i = 0, len = civilizationStarfield.length; i < len; i++) {
+    const s = civilizationStarfield[i];
+    const flow = civilizationFlowAt(s.x, s.y, civilizationFlowTime);
+    const grav = civilizationMouseGravityAt(s.x, s.y);
+    // 弹簧力：让粒子有"家"，不会被流场带走
+    const sx = (s.hx - s.x) * 0.012;
+    const sy = (s.hy - s.y) * 0.012;
+    // depth 越小（远处）越懒响应（有视差感）
+    const respond = 0.4 + s.depth * 0.6;
+    s.vx += (flow.vx + grav.vx) * respond + sx;
+    s.vy += (flow.vy + grav.vy) * respond + sy;
+    s.vx *= 0.91; s.vy *= 0.91;
+    s.x += s.vx;
+    s.y += s.vy;
+  }
+}
+
 function drawCivilizationStarfield() {
   if(!civCtx) return;
-  civilizationStarfield.forEach(s => {
-    const tw = 0.7 + 0.3*Math.sin(civilizationOrbitTime*30*s.speed + s.twinkle);
+  // 多层视差：depth 小（远处）整体偏移量小，depth 大（近处）跟着相机漂得多
+  for (let i = 0, len = civilizationStarfield.length; i < len; i++) {
+    const s = civilizationStarfield[i];
+    const tw = 0.7 + 0.3*Math.sin(civilizationFlowTime*30*s.speed + s.twinkle);
+    const px = s.x + civilizationCameraDrift.x * s.depth;
+    const py = s.y + civilizationCameraDrift.y * s.depth;
     civCtx.fillStyle = hexToRgba(s.color, s.alpha*tw);
-    civCtx.beginPath(); civCtx.arc(s.x, s.y, s.size, 0, Math.PI*2); civCtx.fill();
-  });
+    civCtx.beginPath(); civCtx.arc(px, py, s.size, 0, Math.PI*2); civCtx.fill();
+  }
 }
 
 function isFigureFiltered(f) {
@@ -5568,7 +5664,20 @@ function civFigureAt(pos) {
   return null;
 }
 
-function handleCivilizationMouseMove(pos) {
+function handleCivilizationMouseMove(pos, sx, sy) {
+  // 屏幕坐标注入流场重力（粒子在屏幕空间，故重力中心也用屏幕空间）
+  if (typeof sx === 'number' && typeof sy === 'number') {
+    const m = civilizationMouseField;
+    m.prevWx = m.wx; m.prevWy = m.wy;
+    m.wx = sx; m.wy = sy;
+    const dvx = m.wx - m.prevWx, dvy = m.wy - m.prevWy;
+    m.vx = Math.max(-12, Math.min(12, dvx * 0.12));
+    m.vy = Math.max(-12, Math.min(12, dvy * 0.12));
+    const speed = Math.sqrt(dvx * dvx + dvy * dvy);
+    m.strength = Math.min(1.6, m.strength + Math.min(speed * 0.06, 0.5));
+    m.lastSeen = civilizationFlowTime;
+  }
+
   civilizationDimNodes.forEach(d => d.hover = false);
   civilizationEraNodes.forEach(e => e.hover = false);
   civilizationFigureNodes.forEach(f => f.hover = false);
@@ -5625,8 +5734,9 @@ if(civCanvas) {
     if(currentView !== 'civilization') return;
     if(civCamera.dragging) { civCamera.panTo(e.clientX, e.clientY); return; }
     const rect = civCanvas.getBoundingClientRect();
-    const pos = civCamera.screenToWorld(e.clientX - rect.left, e.clientY - rect.top);
-    handleCivilizationMouseMove(pos);
+    const sx = e.clientX - rect.left, sy = e.clientY - rect.top;
+    const pos = civCamera.screenToWorld(sx, sy);
+    handleCivilizationMouseMove(pos, sx, sy);
   });
   window.addEventListener('mouseup', () => {
     if(currentView !== 'civilization') return;
