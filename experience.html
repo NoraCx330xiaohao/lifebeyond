@@ -6073,7 +6073,7 @@ function initCivilizationSystem() {
     '教育推动者','和平推动者','人道主义者','女性科学家','留学生',
     '探险家','匠人','农学家','改革者'
   ]);
-  // ---- A) 私人影响关系：每人最多 2 条 ----
+  // ---- A) 私人影响关系：每人最多 4 条 ----
   const tagMap = {};
   civilizationFigureNodes.forEach(f => {
     (f.related || []).forEach(t => {
@@ -6087,18 +6087,18 @@ function initCivilizationSystem() {
     if (group.length < 2) return;
     for (let i = 0; i < group.length; i++) {
       const a = group[i];
-      if ((connectionCount[a.name] || 0) >= 2) continue;
+      if ((connectionCount[a.name] || 0) >= 4) continue;
       const candidates = group
-        .filter(b => b !== a && (connectionCount[b.name] || 0) < 2)
+        .filter(b => b !== a && (connectionCount[b.name] || 0) < 4)
         .map(b => ({ b, d: Math.hypot(b.x - a.x, b.y - a.y) }))
         .sort((p, q) => p.d - q.d)
-        .slice(0, 2);
+        .slice(0, 3);
       candidates.forEach(({ b }) => {
-        if ((connectionCount[a.name] || 0) >= 2) return;
+        if ((connectionCount[a.name] || 0) >= 4) return;
         const key = [a.name, b.name].sort().join('|');
         if (seenPair.has(key)) return;
         seenPair.add(key);
-        civilizationConnections.push({ a, b, alpha: 0.10 + Math.random() * 0.08, kind: 'influence' });
+        civilizationConnections.push({ a, b, alpha: 0.32 + Math.random() * 0.12, kind: 'influence' });
         connectionCount[a.name] = (connectionCount[a.name] || 0) + 1;
         connectionCount[b.name] = (connectionCount[b.name] || 0) + 1;
       });
@@ -6121,9 +6121,40 @@ function initCivilizationSystem() {
       const key = [a.name, b.name].sort().join('|');
       if (seenPair.has(key)) continue;
       seenPair.add(key);
-      civilizationConnections.push({ a, b, alpha: 0.06 + Math.random() * 0.05, kind: 'constellation' });
+      civilizationConnections.push({ a, b, alpha: 0.18 + Math.random() * 0.08, kind: 'constellation' });
     }
   });
+
+  // ---- C) 同维度跨时代主轴（每维度从内层到外层串接代表人物）——形成 6 条文明传承长链 ----
+  if (Array.isArray(civilizationDimensions)) {
+    civilizationDimensions.forEach(dim => {
+      // 按时代从近到远收集该维度的人物
+      const eras = (typeof civilizationEras !== 'undefined' && Array.isArray(civilizationEras)) ? civilizationEras : [];
+      const chain = [];
+      eras.forEach(era => {
+        const people = civilizationFigureNodes.filter(f => f.dim === dim.id && f.era === era.id);
+        if (people.length) {
+          // 取该 era 该 dim 中最靠近 60° 扇区中心的代表
+          const cx2 = civCanvas.width/2, cy2 = civCanvas.height/2;
+          const targetA = Math.atan2(dim.y - cy2, dim.x - cx2);
+          people.sort((p,q) => {
+            const angP = Math.atan2(p.y - cy2, p.x - cx2);
+            const angQ = Math.atan2(q.y - cy2, q.x - cx2);
+            return Math.abs(angP - targetA) - Math.abs(angQ - targetA);
+          });
+          chain.push(people[0]);
+        }
+      });
+      // 串接形成长链
+      for (let i = 0; i < chain.length - 1; i++) {
+        const a = chain[i], b = chain[i+1];
+        const key = [a.name, b.name].sort().join('|');
+        if (seenPair.has(key)) continue;
+        seenPair.add(key);
+        civilizationConnections.push({ a, b, alpha: 0.28 + Math.random() * 0.10, kind: 'influence' });
+      }
+    });
+  }
 }
 
 function drawCivilizationView() {
@@ -6229,20 +6260,82 @@ function drawCivilizationView() {
   civCtx.font = '9px sans-serif';
   civCtx.fillText('Civilization Memory Universe', sx, sy+18);
 
-  // ====== Layer 5：记忆光线（同 related 标签的人物之间）======
-  civilizationConnections.forEach(c => {
+  // ====== Layer 4.5：骨架（6 维主轴 + 7 时代同心环），让网络结构一眼可见 ======
+  const cx = civCanvas.width/2, cy = civCanvas.height/2;
+  // —— 6 维主轴（从中心放射 60° 间隔）——
+  if (Array.isArray(civilizationDimensionNodes) && civilizationDimensionNodes.length) {
+    civilizationDimensionNodes.forEach(d => {
+      const dx = d.x - cx, dy = d.y - cy;
+      const len = Math.hypot(dx, dy) || 1;
+      const ux = dx/len, uy = dy/len;
+      const grd = civCtx.createLinearGradient(cx + ux*40, cy + uy*40, d.x, d.y);
+      grd.addColorStop(0, hexToRgba(d.color, 0.04));
+      grd.addColorStop(0.55, hexToRgba(d.color, 0.18));
+      grd.addColorStop(1, hexToRgba(d.color, 0.04));
+      civCtx.beginPath();
+      civCtx.moveTo(cx + ux*40, cy + uy*40);
+      civCtx.lineTo(d.x, d.y);
+      civCtx.strokeStyle = grd;
+      civCtx.lineWidth = 0.7;
+      civCtx.stroke();
+    });
+  }
+  // —— 时代同心椭圆（每壳一圈虚线）——
+  if (Array.isArray(civilizationEraNodes) && civilizationEraNodes.length) {
+    civilizationEraNodes.forEach(era => {
+      const r = Math.hypot(era.x - cx, era.y - cy);
+      civCtx.save();
+      civCtx.translate(cx, cy);
+      civCtx.beginPath();
+      civCtx.setLineDash([2, 6]);
+      civCtx.ellipse(0, 0, r, r*0.92, 0, 0, Math.PI*2);
+      civCtx.strokeStyle = hexToRgba(era.color, 0.10);
+      civCtx.lineWidth = 0.6;
+      civCtx.stroke();
+      civCtx.setLineDash([]);
+      civCtx.restore();
+    });
+  }
+
+  // ====== Layer 5：记忆光线（同 related 标签 + 同 era×dim 星链）======
+  const tNow = (typeof civilizationFlowTime === 'number') ? civilizationFlowTime : (performance.now()*0.001);
+  civilizationConnections.forEach((c, idx) => {
     const filt = isFigureFiltered(c.a) || isFigureFiltered(c.b);
     const hot = c.a.hover || c.b.hover;
-    const baseAlpha = filt ? 0.02 : (hot ? 0.45 : c.alpha);
-    civCtx.beginPath();
+    // ⬆️ 大幅提升 alpha：让网络结构清晰可见
+    const baseA = c.kind === 'influence'
+      ? (0.32 + Math.random() * 0.12)   // 私人影响：0.32-0.44
+      : (0.18 + Math.random() * 0.08);  // 子群星链：0.18-0.26
+    const alpha = filt ? 0.04 : (hot ? 0.78 : baseA);
     const mx = (c.a.x + c.b.x)/2;
-    const my = (c.a.y + c.b.y)/2 - 6;
+    const my = (c.a.y + c.b.y)/2 - (c.kind === 'influence' ? 12 : 4);
+    const colorRef = c.a.parentRef ? c.a.parentRef.color : '#FFD37A';
+    // 主线
+    civCtx.beginPath();
     civCtx.moveTo(c.a.x, c.a.y);
     civCtx.quadraticCurveTo(mx, my, c.b.x, c.b.y);
-    const colorRef = c.a.parentRef ? c.a.parentRef.color : '#FFD37A';
-    civCtx.strokeStyle = hexToRgba(colorRef, baseAlpha);
-    civCtx.lineWidth = hot ? 1.0 : 0.45;
+    civCtx.strokeStyle = hexToRgba(colorRef, alpha);
+    civCtx.lineWidth = hot ? 1.6 : (c.kind === 'influence' ? 0.95 : 0.7);
     civCtx.stroke();
+    // 流动光斑：沿 quadratic 曲线滑动，给"神经网络"流动感
+    if (!filt && c.kind === 'influence') {
+      const phase = ((tNow * 0.45) + idx * 0.137) % 1;
+      const t = phase;
+      // 二次贝塞尔点
+      const it = 1 - t;
+      const px = it*it*c.a.x + 2*it*t*mx + t*t*c.b.x;
+      const py = it*it*c.a.y + 2*it*t*my + t*t*c.b.y;
+      const pulse = Math.sin(phase * Math.PI); // 中段最亮
+      civCtx.beginPath();
+      civCtx.arc(px, py, 1.6 + pulse*0.8, 0, Math.PI*2);
+      civCtx.fillStyle = hexToRgba(colorRef, 0.55 * pulse + 0.15);
+      civCtx.fill();
+      // 光晕
+      civCtx.beginPath();
+      civCtx.arc(px, py, 5 + pulse*3, 0, Math.PI*2);
+      civCtx.fillStyle = hexToRgba(colorRef, 0.10 * pulse);
+      civCtx.fill();
+    }
   });
 
   // ====== Layer 6：时代壳层标识星 ======
