@@ -6627,14 +6627,33 @@ function drawCivilizationWhispers() {
     civCtx.font = '10px sans-serif';
     civCtx.fillStyle = `rgba(240,244,248,${a*0.55})`;
     civCtx.fillText('— 一段没有作者的记忆', w.x, w.y + 18);
+    if (w.code) {
+      civCtx.font = '9px ui-monospace,Menlo,monospace';
+      civCtx.fillStyle = `rgba(255,210,122,${a*0.62})`;
+      civCtx.fillText('虚空坐标 · 23 位 · ' + w.code, w.x, w.y + 32);
+    }
   });
   civCtx.restore();
 }
 
+// 虚空坐标编号生成器（仿 shiyun engine.indexFromPoint 思想）：把屏幕点 hash 成稳定 23 位数字
+function _civVoidIndex(x, y) {
+  let h = 0x9e3779b9 ^ ((x * 73856093) | 0) ^ ((y * 19349663) | 0);
+  let s = '';
+  for (let i = 0; i < 23; i++) {
+    h = (h + 0x6d2b79f5) | 0;
+    let t = Math.imul(h ^ (h >>> 15), 1 | h);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    s += ((t ^ (t >>> 14)) >>> 0) % 10;
+  }
+  return s;
+}
+
 function summonCivilizationWhisper(screenX, screenY) {
   const text = civilizationWhispers[Math.floor(Math.random()*civilizationWhispers.length)];
+  const code = _civVoidIndex(screenX, screenY);
   civilizationWhispersAlive.push({
-    text, x: screenX, y: screenY, life: 1.0
+    text, code, x: screenX, y: screenY, life: 1.0
   });
   // 最多同时存活 5 条
   if (civilizationWhispersAlive.length > 5) civilizationWhispersAlive.shift();
