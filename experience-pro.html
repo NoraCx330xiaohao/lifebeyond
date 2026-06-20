@@ -686,7 +686,10 @@
     }
 
     /* ===== Monetization Modal fixes ===== */
-    .monetization-modal{z-index:100010!important;overflow-y:auto;}
+    .monetization-modal{z-index:100010!important;overflow-y:auto;
+      display:none;align-items:center;justify-content:center;}
+    .monetization-modal[style*="display:flex"],
+    .monetization-modal[style*="display: flex"]{display:flex!important;}
     .monetization-modal .modal-card{max-height:90vh;overflow-y:auto;position:relative;}
     .monetization-close{cursor:pointer!important;pointer-events:auto!important;
       z-index:100020;position:absolute;top:12px;right:14px;font-size:22px;
@@ -694,7 +697,9 @@
       display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);
       transition:all .2s;}
     .monetization-close:hover{background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);}
-    .monetization-backdrop{z-index:100009!important;cursor:pointer!important;pointer-events:auto!important;}
+    /* ⚠️ 关键修复：backdrop 必须低于 card，否则蒙板会盖住整个 modal 内容 */
+    .monetization-modal .monetization-backdrop{z-index:0!important;cursor:pointer!important;pointer-events:auto!important;}
+    .monetization-modal .monetization-card{z-index:10!important;}
     /* 防糊：确保 card 完全清晰、不透明 */
     .monetization-card,
     .monetization-modal .monetization-card{
