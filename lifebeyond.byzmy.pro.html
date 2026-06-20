@@ -10652,7 +10652,7 @@ setTimeout(()=>{ if(currentView==='universe'){ const p=personas[Math.floor(Math.
     isGuestMode = false;
     hideAuthModal();
     updateUserOrb();
-    setTimeout(showFirstMemoryGuide, 600);
+    setTimeout(showFirstMemoryGuide, 2800);
   };
   window.doOAuth = function(provider){
     // 预留接口：仅做演示态登录
@@ -10664,7 +10664,7 @@ setTimeout(()=>{ if(currentView==='universe'){ const p=personas[Math.floor(Math.
     currentUser = u; isGuestMode = false;
     hideAuthModal();
     updateUserOrb();
-    if (loadMemories().length === 0) setTimeout(showFirstMemoryGuide, 600);
+    if (loadMemories().length === 0) setTimeout(showFirstMemoryGuide, 2800);
   };
   window.enterGuestMode = function(){
     localStorage.setItem(SESSION_KEY, 'guest');
