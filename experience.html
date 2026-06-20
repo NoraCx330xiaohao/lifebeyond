@@ -6,6 +6,14 @@
   <meta name="description" content="LifeBeyond · 数字彼岸 — 与你所爱之人的数字人格再相见。">
   <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
   <title>LifeBeyond · 数字彼岸</title>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
   <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><radialGradient id='g' cx='50%25' cy='50%25' r='50%25'><stop offset='0' stop-color='%23FFD37A'/><stop offset='1' stop-color='%23A285FF'/></radialGradient></defs><circle cx='32' cy='32' r='24' fill='url(%23g)'/></svg>">
   <script>
     /* ===== LifeBeyond · 源码保护层 ===== */
@@ -487,6 +495,11 @@
     #civilization-webgl { position:absolute !important; inset:0 !important; width:100% !important; height:100% !important; z-index:1 !important; pointer-events:none; }
     #civilization-canvas { position:absolute !important; top:0; left:0; width:100% !important; height:100% !important; z-index:2 !important; cursor:grab; background:transparent; }
     .civilization-hud { position:absolute; top:96px; left:36px; z-index:25; max-width:248px; padding:12px 14px 10px; background:rgba(8,4,20,0.5); backdrop-filter:blur(20px); border:1px solid rgba(255,176,122,0.2); border-radius:14px; pointer-events:auto; }
+    .civ-loader { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:30; text-align:center; pointer-events:none; transition:opacity 0.6s ease; }
+    .civ-loader.hidden { opacity:0; pointer-events:none; visibility:hidden; }
+    .civ-loader-text { color:rgba(255,225,180,0.85); font-size:14px; letter-spacing:2px; margin-bottom:14px; text-shadow:0 0 12px rgba(255,180,120,0.4); }
+    .civ-loader-bar { width:240px; height:2px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden; margin:0 auto; }
+    .civ-loader-bar > span { display:block; height:100%; width:0%; background:linear-gradient(90deg,#ffd49a,#ff9b53); transition:width 0.4s ease; }
     .civilization-close { display:inline-block; margin-bottom:8px; padding:5px 11px; background:var(--glass); backdrop-filter:blur(16px); border:1px solid var(--border); border-radius:14px; font-size:10px; letter-spacing:0.08em; color:var(--text-dim); cursor:pointer; transition:all 0.3s ease; }
     .civilization-close:hover { color:var(--text); border-color:rgba(255,176,122,0.35); background:var(--glass-strong); transform:translateX(-2px); }
     .civilization-hud h2 { font-size:14px; font-weight:300; letter-spacing:0.12em; margin-bottom:2px; color:#fff; text-shadow:0 0 22px rgba(255,176,122,0.25); }
@@ -1244,8 +1257,12 @@
 
   <!-- ========== CIVILIZATION GALAXY VIEW ========== -->
   <div class="view" id="view-civilization">
-    <canvas id="civilization-webgl" style="position:absolute;inset:0;z-index:0;pointer-events:none;"></canvas>
-    <canvas id="civilization-canvas" style="position:relative;z-index:1;"></canvas>
+    <canvas id="civilization-webgl" style="position:absolute;inset:0;z-index:0;"></canvas>
+    <canvas id="civilization-canvas" style="position:absolute;inset:0;z-index:1;pointer-events:none;background:transparent;"></canvas>
+    <div class="civ-loader" id="civ-loader">
+      <div class="civ-loader-text">正在点亮文明记忆…</div>
+      <div class="civ-loader-bar"><span id="civ-loader-fill"></span></div>
+    </div>
 
     <div class="civilization-hud" id="civilization-hud">
       <div class="civilization-close" onclick="goBack()">← 返回</div>
@@ -5933,12 +5950,15 @@ function initCivilizationView() {
   if(!civCanvas) return;
   resizeCivCanvas();
   civCamera.reset(0, 0);
+  // 旧 2D Three (不再使用) — 仍 init 占位让其他兜底逻辑能跑
   if(!civGL) initCivThreeScene(); else resizeCivThree();
   initCivilizationStarfield();
   initCivilizationSystem();
   renderCivilizationToolbar();
   updateCivilizationStats();
   civilizationInited = true;
+  // —— 接入 WebGL 文明记忆 ——
+  initCivilizationWebGL();
   // 强制重启 RAF：每次进入文明记忆都确保动画循环在跑
   // 用 token 互斥，旧循环若因快速切换还在跑，会自动退出，避免并行 RAF
   const myToken = ++civAnimToken;
@@ -5953,6 +5973,77 @@ function initCivilizationView() {
   showCivOnboarding();
   tryRestoreCivilizationFromHash();
   bindCivilizationImmersiveKey();
+}
+
+// === Three.js WebGL 文明记忆宇宙：通过 globalThis.CivGalaxy 接入 ===
+let civWebglInitialized = false;
+function initCivilizationWebGL() {
+  if (civWebglInitialized) return;
+  // 等待 module 加载完成（importmap 解析需异步）
+  let attempts = 0;
+  const tryInit = () => {
+    if (typeof globalThis.CivGalaxy === 'undefined') {
+      attempts++;
+      if (attempts > 60) {
+        console.warn('[civ] CivGalaxy module not available, fallback to 2D');
+        const loader = document.getElementById('civ-loader');
+        if (loader) loader.classList.add('hidden');
+        return;
+      }
+      setTimeout(tryInit, 80);
+      return;
+    }
+    const canvas = document.getElementById('civilization-webgl');
+    if (!canvas) return;
+    civWebglInitialized = true;
+    // 把 figures 转成 module 需要的格式
+    const figureData = (typeof civilizationFigures !== 'undefined' ? civilizationFigures : []).map((f, i) => ({
+      ...f,
+      _idx: i,
+      dimIndex: civilizationDimensions ? civilizationDimensions.findIndex(d => d.id === f.dim) : -1
+    }));
+    try {
+      globalThis.CivGalaxy.init({
+        canvas,
+        figures: figureData,
+        onHover: (fig, screen) => {
+          if (fig && screen) {
+            try { showCivHoverLabel && showCivHoverLabel(fig, screen.x, screen.y); } catch(e) {}
+          } else {
+            try { hideCivHoverLabel && hideCivHoverLabel(); } catch(e) {}
+          }
+        },
+        onClick: (fig) => {
+          try { openCivilizationFigure && openCivilizationFigure(fig); } catch(e) { console.warn(e); }
+        },
+        onVoidClick: (sx, sy) => {
+          // 沿用从虚空捞记忆功能 — 不动
+          try { summonCivilizationWhisper && summonCivilizationWhisper(sx, sy); } catch(e) {}
+          try { spawnCivClickRipple && spawnCivClickRipple(sx, sy); } catch(e) {}
+        }
+      });
+      // loader fade out
+      const loader = document.getElementById('civ-loader');
+      const fill = document.getElementById('civ-loader-fill');
+      if (fill) {
+        let pct = 0;
+        const tick = () => {
+          pct = Math.min(100, pct + 8 + Math.random() * 12);
+          fill.style.width = pct + '%';
+          if (pct < 100) setTimeout(tick, 90);
+          else if (loader) setTimeout(() => loader.classList.add('hidden'), 220);
+        };
+        tick();
+      } else if (loader) {
+        loader.classList.add('hidden');
+      }
+    } catch(e) {
+      console.error('[civ] WebGL init failed:', e);
+      const loader = document.getElementById('civ-loader');
+      if (loader) loader.classList.add('hidden');
+    }
+  };
+  tryInit();
 }
 
 // H 键沉浸模式 — 借鉴 shiyun FRONTEND_GUIDE 的 toggleUI / uiHidden
@@ -6299,6 +6390,15 @@ function initCivilizationSystem() {
 
 function drawCivilizationView() {
   if(currentView !== 'civilization' || !civCtx) return;
+  // ★ 优先模式：WebGL 接管时，2D canvas 仅渲染叠加层（whispers + ripples）
+  if (typeof globalThis.CivGalaxy !== 'undefined' && globalThis.CivGalaxy.isReady && globalThis.CivGalaxy.isReady()) {
+    civCtx.setTransform(1,0,0,1,0,0);
+    civCtx.clearRect(0, 0, civCanvas.width, civCanvas.height);
+    civilizationFlowTime += 0.0085;
+    try { drawCivilizationWhispers && drawCivilizationWhispers(); } catch(_) {}
+    try { drawCivClickRipples && drawCivClickRipples(); } catch(_) {}
+    return;
+  }
   // 兜底：若 shellMeta / figure 数据丢失，按需重建一次（一帧内修复）
   if(!civilizationShellMeta || !civilizationFigureNodes || civilizationFigureNodes.length === 0) {
     try { initCivilizationSystem(); } catch(_) {}
@@ -7112,6 +7212,13 @@ function setCivDimFilter(id) {
   interruptCivCinema();
   civilizationActiveDim = (civilizationActiveDim === id) ? null : id;
   renderCivilizationToolbar(); updateCivilizationStats();
+  // 同步给 WebGL 模块
+  try {
+    if (globalThis.CivGalaxy && globalThis.CivGalaxy.isReady && globalThis.CivGalaxy.isReady()) {
+      const dimIdx = civilizationActiveDim ? civilizationDimensions.findIndex(d => d.id === civilizationActiveDim) : null;
+      globalThis.CivGalaxy.setDimFilter(dimIdx >= 0 ? dimIdx : null);
+    }
+  } catch(_) {}
   if(civilizationActiveDim) {
     const d = civilizationDimNodes.find(x => x.id === civilizationActiveDim);
     if(d) {
@@ -7126,6 +7233,17 @@ function setCivEraFilter(id) {
   interruptCivCinema();
   civilizationActiveEra = (civilizationActiveEra === id) ? null : id;
   renderCivilizationToolbar(); updateCivilizationStats();
+  // 同步给 WebGL 模块
+  try {
+    if (globalThis.CivGalaxy && globalThis.CivGalaxy.isReady && globalThis.CivGalaxy.isReady()) {
+      let eraName = null;
+      if (civilizationActiveEra) {
+        const e = civilizationEras.find(x => x.id === civilizationActiveEra);
+        eraName = e ? e.name : null;
+      }
+      globalThis.CivGalaxy.setEraFilter(eraName);
+    }
+  } catch(_) {}
   if(civilizationActiveEra) {
     const e = civilizationEraNodes.find(x => x.id === civilizationActiveEra);
     if(e) {
@@ -7139,6 +7257,11 @@ function setCivEraFilter(id) {
 function onCivSearch(value) {
   civilizationSearch = (value || '').trim();
   updateCivilizationStats();
+  try {
+    if (globalThis.CivGalaxy && globalThis.CivGalaxy.isReady && globalThis.CivGalaxy.isReady()) {
+      globalThis.CivGalaxy.setSearch(civilizationSearch);
+    }
+  } catch(_) {}
 }
 
 // ==================== Cinema 影院巡游（借鉴 shiyun Cinema.tsx）====================
@@ -7296,6 +7419,11 @@ function resetCivilizationView() {
   const input = document.getElementById('civ-search'); if(input) input.value = '';
   renderCivilizationToolbar(); updateCivilizationStats();
   civCamera.targetX = 0; civCamera.targetY = 0; civCamera.targetScale = 1;
+  try {
+    if (globalThis.CivGalaxy && globalThis.CivGalaxy.isReady && globalThis.CivGalaxy.isReady()) {
+      globalThis.CivGalaxy.resetFilters();
+    }
+  } catch(_) {}
 }
 
 function updateCivilizationStats() {
@@ -8714,5 +8842,6 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'){closeOverlay();closeO
 initUniverse();
 setTimeout(()=>{ if(currentView==='universe'){ const p=personas[Math.floor(Math.random()*2)]; console.log(`[${p.name}] 主动问候：${p.desc}`); } }, 10000);
 </script>
+<script type="module" src="./civilization-galaxy.js"></script>
 </body>
 </html>
