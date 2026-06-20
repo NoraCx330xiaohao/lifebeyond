@@ -668,6 +668,34 @@
     .soul-refresh { position:static; transform:none; padding:10px 24px; border-radius:20px; background:var(--glass); border:1px solid var(--border); color:var(--text-dim); font-size:13px; cursor:pointer; transition:all 0.3s ease; }
     .soul-refresh:hover { background:var(--glass-strong); color:var(--text); border-color:rgba(255,211,122,0.3); }
 
+    /* ===== Zone AI Creation Trigger ===== */
+    .zone-ai-row{display:flex;flex-wrap:wrap;gap:4px;padding:2px 4px 8px;}
+    .zone-ai-create{
+      display:inline-flex;align-items:center;gap:4px;
+      padding:5px 12px;border-radius:14px;
+      background:rgba(255,210,100,0.07);border:1px solid rgba(255,210,100,0.15);
+      color:rgba(255,220,130,0.85);font-size:10.5px;cursor:pointer;
+      transition:all .25s;user-select:none;white-space:nowrap;
+    }
+    .zone-ai-create:hover{background:rgba(255,210,100,0.18);border-color:rgba(255,210,100,0.35);}
+    .zone-ai-create .zai-cost{
+      background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:8px;font-size:9px;color:rgba(255,220,130,0.55);
+    }
+    .zone-ai-create .zai-free{
+      background:rgba(100,220,180,0.12);padding:1px 5px;border-radius:8px;font-size:9px;color:rgba(100,220,180,0.8);
+    }
+
+    /* ===== Monetization Modal fixes ===== */
+    .monetization-modal{z-index:100010!important;overflow-y:auto;}
+    .monetization-modal .modal-card{max-height:90vh;overflow-y:auto;position:relative;}
+    .monetization-close{cursor:pointer!important;pointer-events:auto!important;
+      z-index:100020;position:absolute;top:12px;right:14px;font-size:22px;
+      background:rgba(255,255,255,0.06);border-radius:50%;width:32px;height:32px;
+      display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);
+      transition:all .2s;}
+    .monetization-close:hover{background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);}
+    .monetization-backdrop{z-index:100009!important;cursor:pointer!important;pointer-events:auto!important;}
+
     /* ========================= 愿望星云 / 备忘录 ========================= */
     #wish-nebula-canvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
     .wish-nebula-hint { position:absolute; top:8px; left:50%; transform:translateX(-50%); font-size:12px; color:var(--text-dim); letter-spacing:0.12em; pointer-events:none; }
@@ -1369,6 +1397,7 @@
 .monetization-backdrop {
   position: absolute; inset: 0;
   background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+  cursor: pointer; z-index: 0;
 }
 .monetization-card {
   position: relative; z-index: 1;
@@ -1380,6 +1409,7 @@
   box-shadow: 0 0 60px rgba(100,140,255,0.12), 0 0 120px rgba(80,50,200,0.06);
   backdrop-filter: blur(20px);
   animation: monetizeIn 0.4s ease-out;
+  cursor: default;
 }
 @keyframes monetizeIn {
   from { opacity: 0; transform: translateY(20px) scale(0.96); }
@@ -1851,9 +1881,16 @@
 
     <!-- Zone panels -->
     <div class="beyond-panel" id="beyond-panel-life">
+      <div class="zone-ai-row">
+        <div class="zone-ai-create" onclick="triggerAICreation('moments')"><span>🌟 AI 朋友圈</span><span class="zai-cost">50🪙</span></div>
+        <div class="zone-ai-create" onclick="triggerAICreation('mood')"><span>💭 AI 心情</span><span class="zai-cost">50🪙</span></div>
+      </div>
       <div class="beyond-timeline" id="beyond-timeline"></div>
     </div>
     <div class="beyond-panel" id="beyond-panel-moments" style="display:none;">
+      <div class="zone-ai-row">
+        <div class="zone-ai-create" onclick="triggerAICreation('moments')"><span>🌟 AI 生成朋友圈</span><span class="zai-cost">50🪙</span></div>
+      </div>
       <div class="moments-view">
         <div class="moments-feed" id="beyond-moments-feed">
           <div class="moments-header">
@@ -1876,6 +1913,9 @@
       </div>
     </div>
     <div class="beyond-panel" id="beyond-panel-mailbox" style="display:none;">
+      <div class="zone-ai-row">
+        <div class="zone-ai-create" onclick="triggerAICreation('email')"><span>✉️ AI 写信</span><span class="zai-cost">80🪙</span></div>
+      </div>
       <canvas id="mailbox-panel-canvas"></canvas>
       <div class="mailbox-ui">
         <h2>彼岸信箱</h2>
@@ -1883,6 +1923,10 @@
       </div>
     </div>
     <div class="beyond-panel" id="beyond-panel-diary" style="display:none;">
+      <div class="zone-ai-row">
+        <div class="zone-ai-create" onclick="triggerAICreation('diary')"><span>📔 AI 日记</span><span class="zai-cost">50🪙</span></div>
+        <div class="zone-ai-create" onclick="triggerAICreation('memorySummary')"><span>📝 AI 记忆摘要</span><span class="zai-cost">80🪙</span></div>
+      </div>
       <div class="diary-view">
         <div class="diary-list">
           <div class="diary-list-header">
@@ -1896,14 +1940,25 @@
       </div>
     </div>
     <div class="beyond-panel" id="beyond-panel-memory" style="display:none;">
+      <div class="zone-ai-row">
+        <div class="zone-ai-create" onclick="triggerAICreation('memoryReconstruct')"><span>🧬 AI 记忆重构</span><span class="zai-cost">180🪙</span></div>
+        <div class="zone-ai-create" onclick="triggerAICreation('relationshipDecode')"><span>🔗 AI 关系解码</span><span class="zai-cost">120🪙</span></div>
+      </div>
       <div class="beyond-fragments-hint">流星划过，沉睡的记忆碎片浮现。点击碎片查看完整记忆。</div>
     </div>
     <div class="beyond-panel" id="beyond-panel-wish" style="display:none;">
+      <div class="zone-ai-row">
+        <div class="zone-ai-create" onclick="triggerAICreation('futurePrediction')"><span>🔮 AI 未来预测</span><span class="zai-cost">120🪙</span></div>
+      </div>
       <canvas id="wish-nebula-canvas"></canvas>
       <div class="wish-nebula-hint">星云之中漂浮着数字人格的祝福与期待，点击流光展开详情，收藏星愿。</div>
       <div class="wish-nebula-stage" id="wish-nebula-stage"></div>
     </div>
     <div class="beyond-panel" id="beyond-panel-notes" style="display:none;">
+      <div class="zone-ai-row">
+        <div class="zone-ai-create" onclick="triggerAICreation('readingNotes')"><span>📚 AI 阅读笔记</span><span class="zai-cost">80🪙</span></div>
+        <div class="zone-ai-create" onclick="triggerAICreation('emotionAnalysis')"><span>💫 AI 情绪分析</span><span class="zai-cost">120🪙</span></div>
+      </div>
       <div class="memory-notes-hint">小型卫星围绕主星运行——这是你与人格之间的纪念日、目标与约定。</div>
       <div class="memory-notes-orbit" id="memory-notes-orbit">
         <div class="mn-core" id="mn-core">✦</div>
@@ -1912,6 +1967,10 @@
       <div class="memory-notes-list" id="memory-notes-list"></div>
     </div>
     <div class="beyond-panel" id="beyond-panel-soul" style="display:none;">
+      <div class="zone-ai-row">
+        <div class="zone-ai-create" onclick="triggerAICreation('companionEvolution')"><span>🦋 AI 伴侣进化</span><span class="zai-cost">280🪙</span></div>
+        <div class="zone-ai-create" onclick="triggerAICreation('deepInteraction')"><span>🌀 AI 深度交互</span><span class="zai-cost">280🪙</span></div>
+      </div>
       <div class="soul-core">
         <div class="soul-planet" id="soul-planet"></div>
         <div class="soul-aura" id="soul-aura"></div>
@@ -3073,6 +3132,7 @@ function showView(viewName, persona = null, skipHistory = false) {
   currentView = viewName;
   views.forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + viewName).classList.add('active');
+  if (typeof updateZoneAIButtons === 'function') updateZoneAIButtons();
   dockNodes.forEach(n => n.classList.toggle('active', n.dataset.view === viewName));
   // galaxy / beyond / community each carry their own inline "← 返回" control;
   // back-hint only needs to appear for views without one (currently just chat),
@@ -10979,17 +11039,105 @@ function consumeFeature(featureId) {
   if (proState.isPro) return;
   const f = proState.features[featureId];
   if (!f) return;
-  if (f.used < f.limit) { f.used++; }
-  else if (proState.tokens >= f.cost) { proState.tokens -= f.cost; }
+  if (f.used < f.limit) { f.used++; f.paidStreak = (f.paidStreak || 0); }
+  else if (proState.tokens >= f.cost) {
+    proState.tokens -= f.cost;
+    f.paidStreak = (f.paidStreak || 0) + 1;
+    /* 每 10 次付费生成，奖励 1 次免费 */
+    if (f.paidStreak >= 10) {
+      f.limit += 1;
+      f.paidStreak = 0;
+      showCosmicReminder('✦ 你的坚持点亮了一颗新星 · 本功能获得 1 次免费生成', 'reward');
+    }
+  }
   saveProState(proState);
   renderTokenBadge();
+  updateZoneAIButtons();
 }
 function consumeFeatureWithToken(featureId) {
   const f = proState.features[featureId];
   if (!f) return false;
-  if (proState.tokens >= f.cost) { proState.tokens -= f.cost; saveProState(proState); renderTokenBadge(); return true; }
+  if (f.used < f.limit) { f.used++; f.paidStreak = (f.paidStreak || 0); saveProState(proState); renderTokenBadge(); updateZoneAIButtons(); return true; }
+  if (proState.tokens >= f.cost) {
+    proState.tokens -= f.cost;
+    f.paidStreak = (f.paidStreak || 0) + 1;
+    if (f.paidStreak >= 10) {
+      f.limit += 1;
+      f.paidStreak = 0;
+      showCosmicReminder('✦ 你的坚持点亮了一颗新星 · 本功能获得 1 次免费生成', 'reward');
+    }
+    saveProState(proState); renderTokenBadge(); updateZoneAIButtons(); return true;
+  }
   return false;
 }
+
+/* ---------- zone AI creation buttons ---------- */
+const ZONE_FEATURE_MAP = {
+  diary: { feature: 'diary', label: '📔 AI 日记', prompt: '根据用户的生活记忆，生成一篇星空日记' },
+  moments: { feature: 'moments', label: '🌟 AI 朋友圈', prompt: '为用户生成一条宇宙朋友圈动态' },
+  mood: { feature: 'mood', label: '💭 AI 心情', prompt: '解析用户的情绪状态，生成一段心情碎片' },
+  letter: { feature: 'letter', label: '✉️ AI 信件', prompt: '为用户写一封跨越时空的信' },
+  summary: { feature: 'memorySummary', label: '📝 AI 摘要', prompt: '提炼用户记忆精华，生成一段摘要' },
+  notes: { feature: 'readingNotes', label: '📚 AI 笔记', prompt: '帮助用户生成深度阅读笔记' },
+  relationship: { feature: 'relationshipDecode', label: '🔗 AI 关系', prompt: '解码用户与某人之间的深层关联' },
+  prediction: { feature: 'futurePrediction', label: '🔮 AI 预测', prompt: '根据用户轨迹推演未来可能' },
+  reconstruct: { feature: 'memoryReconstruct', label: '🧬 AI 重构', prompt: '重构散落的记忆碎片' },
+  evolution: { feature: 'companionEvolution', label: '💫 AI 进化', prompt: '伴侣人格深度升级交互' },
+  wish: { feature: 'mood', label: '🌟 AI 许愿', prompt: '根据用户心愿生成一段星空祝福' },
+  timeCapsule: { feature: 'futurePrediction', label: '🔮 AI 时空胶囊', prompt: '生成一段来自未来的时空胶囊信息' },
+  readingNote: { feature: 'readingNotes', label: '📚 AI 阅读笔记', prompt: '生成深度阅读感悟笔记' },
+  message: { feature: 'letter', label: '✉️ AI 留言', prompt: '为用户生成一段深情的留言' }
+};
+
+function updateZoneAIButtons() {
+  document.querySelectorAll('.zone-ai-btn').forEach(btn => {
+    const zone = btn.dataset.zone;
+    const map = ZONE_FEATURE_MAP[zone];
+    if (!map) return;
+    const check = canUseFeature(map.feature);
+    const f = proState.features[map.feature] || {};
+    const used = f.used || 0;
+    const limit = f.limit || 5;
+    const freeLeft = Math.max(0, limit - used);
+    const cost = f.cost || 50;
+    if (proState.isPro) {
+      btn.innerHTML = map.label + ' <span style="color:#6fb3b6;font-size:10px">∞ Pro</span>';
+    } else if (check.ok && freeLeft > 0) {
+      btn.innerHTML = map.label + ' <span style="color:#FFD37A;font-size:10px">免费 ' + freeLeft + '/' + limit + '</span>';
+    } else if (check.ok) {
+      btn.innerHTML = map.label + ' <span style="color:#c8a0ff;font-size:10px">🪙 ' + cost + '</span>';
+    } else {
+      btn.innerHTML = map.label + ' <span style="color:#ff6b6b;font-size:10px">Token 不足</span>';
+    }
+  });
+}
+
+function triggerZoneAICreation(zone) {
+  const map = ZONE_FEATURE_MAP[zone];
+  if (!map) return;
+  const check = canUseFeature(map.feature);
+  if (!check.ok) {
+    openTokenShopModal();
+    return;
+  }
+  consumeFeature(map.feature);
+  /* use AI engine to generate content */
+  const user = JSON.parse(localStorage.getItem('lifebeyond_user') || '{}');
+  const memories = JSON.parse(localStorage.getItem('lifebeyond_memories') || '[]');
+  const contextMemories = memories.slice(-5).map(m => m.text || m.content || '').join('\n');
+  const sysPrompt = '你是数字彼岸的AI伴侣，用温柔、诗意、有洞察力的方式生成内容。' + map.prompt;
+  const userPrompt = '用户昵称：' + (user.nickname || '旅人') + '\n最近记忆：\n' + (contextMemories || '暂无记忆') + '\n\n请生成：' + map.label.replace(/^[^\s]+\s/, '');
+  const messages = [
+    { role: 'system', content: sysPrompt },
+    { role: 'user', content: userPrompt }
+  ];
+  callLocalModel(messages, function(fallbackText) {
+    showAIGenResult(fallbackText, map.feature);
+    showCosmicReminder('✦ 生成完成 · ' + map.label, 'success');
+  }, { onDelta: function(chunk) { /* streaming handled by callLocalModel */ } });
+}
+window.triggerZoneAICreation = triggerZoneAICreation;
+window.updateZoneAIButtons = updateZoneAIButtons;
 
 /* ---------- ai gen result panel ---------- */
 let _lastGenContent = '';
@@ -11027,6 +11175,17 @@ function openUniverseProModal()  { document.getElementById('universe-pro-modal')
 function closeUniverseProModal() { document.getElementById('universe-pro-modal').style.display = 'none'; }
 function openTokenShopModal()    { document.getElementById('token-shop-modal').style.display = 'flex'; renderTokenBadge(); }
 function closeTokenShopModal()   { document.getElementById('token-shop-modal').style.display = 'none'; }
+
+// ── Escape key to close all monetization modals ──
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeTokenShopModal();
+    closeUniverseProModal();
+    closeAIGenResult();
+    var acm = document.getElementById('ai-creation-modal');
+    if (acm) acm.style.display = 'none';
+  }
+});
 function addManualTokens() {
   var inp = document.getElementById('manual-token-input');
   var n = parseInt(inp.value, 10);
