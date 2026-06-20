@@ -1539,6 +1539,37 @@
   max-height: 240px; overflow-y: auto;
 }
 .gen-result-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+/* === 星海回应（每 10 次互动后随机触发） === */
+.starwhisper-card{
+  margin:18px -4px 6px; padding:18px 18px 16px;
+  border-radius:14px; position:relative; overflow:hidden;
+  background:linear-gradient(135deg, rgba(120,80,210,0.18) 0%, rgba(60,140,220,0.12) 50%, rgba(255,210,140,0.12) 100%);
+  border:1px solid rgba(255,210,140,0.25);
+  box-shadow:0 0 24px rgba(160,120,240,0.18) inset, 0 6px 18px rgba(0,0,0,0.25);
+  animation:starwhisperFadeIn .9s ease-out both;
+}
+.starwhisper-card::before{
+  content:""; position:absolute; inset:-50%;
+  background:radial-gradient(circle at 30% 20%, rgba(255,220,160,0.25), transparent 60%),
+             radial-gradient(circle at 80% 70%, rgba(160,120,240,0.2), transparent 55%);
+  pointer-events:none; animation:starwhisperFloat 8s ease-in-out infinite alternate;
+}
+.sw-divider{ position:relative; height:1px; margin-bottom:12px;
+  background:linear-gradient(90deg, transparent, rgba(255,210,140,0.4), transparent); }
+.sw-title{ position:relative; color:#FFD9A0; font-size:13px; letter-spacing:1.5px; margin-bottom:8px; text-align:center; }
+.sw-text{ position:relative; color:rgba(255,255,255,0.92); font-size:14.5px; line-height:1.75; text-align:center; margin-bottom:14px; font-style:italic; }
+.sw-cta{ position:relative; display:flex; justify-content:center; }
+.sw-listen-btn{
+  padding:9px 22px; border-radius:22px; cursor:pointer;
+  background:linear-gradient(135deg, rgba(255,210,140,0.25), rgba(160,120,240,0.25));
+  border:1px solid rgba(255,210,140,0.5); color:#FFE9C2; font-size:13px;
+  transition:all .3s; user-select:none;
+}
+.sw-listen-btn:hover{ background:linear-gradient(135deg, rgba(255,210,140,0.45), rgba(160,120,240,0.4)); transform:translateY(-1px); box-shadow:0 6px 18px rgba(255,210,140,0.25); }
+.sw-gift-tag{ position:absolute; top:8px; right:12px; font-size:10px; color:rgba(255,210,140,0.7); letter-spacing:1px; }
+@keyframes starwhisperFadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+@keyframes starwhisperFloat{ from{transform:translate(0,0);} to{transform:translate(8%,4%);} }
 .gra-btn {
   padding: 8px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
   background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6);
@@ -1882,14 +1913,14 @@
     <!-- Zone panels -->
     <div class="beyond-panel" id="beyond-panel-life">
       <div class="zone-ai-row">
-        <div class="zone-ai-create" onclick="triggerAICreation('moments')"><span>🌟 AI 朋友圈</span><span class="zai-cost">50🪙</span></div>
-        <div class="zone-ai-create" onclick="triggerAICreation('mood')"><span>💭 AI 心情</span><span class="zai-cost">50🪙</span></div>
+        <div class="zone-ai-create" data-feat="moments" onclick="triggerAICreation('moments')"><span>🌟 AI 朋友圈</span><span class="zai-cost">50🪙</span></div>
+        <div class="zone-ai-create" data-feat="mood" onclick="triggerAICreation('mood')"><span>💭 AI 心情</span><span class="zai-cost">55🪙</span></div>
       </div>
       <div class="beyond-timeline" id="beyond-timeline"></div>
     </div>
     <div class="beyond-panel" id="beyond-panel-moments" style="display:none;">
       <div class="zone-ai-row">
-        <div class="zone-ai-create" onclick="triggerAICreation('moments')"><span>🌟 AI 生成朋友圈</span><span class="zai-cost">50🪙</span></div>
+        <div class="zone-ai-create" data-feat="moments" onclick="triggerAICreation('moments')"><span>🌟 AI 生成朋友圈</span><span class="zai-cost">50🪙</span></div>
       </div>
       <div class="moments-view">
         <div class="moments-feed" id="beyond-moments-feed">
@@ -1914,7 +1945,7 @@
     </div>
     <div class="beyond-panel" id="beyond-panel-mailbox" style="display:none;">
       <div class="zone-ai-row">
-        <div class="zone-ai-create" onclick="triggerAICreation('email')"><span>✉️ AI 写信</span><span class="zai-cost">80🪙</span></div>
+        <div class="zone-ai-create" data-feat="email" onclick="triggerAICreation('email')"><span>✉️ AI 写信</span><span class="zai-cost">80🪙</span></div>
       </div>
       <canvas id="mailbox-panel-canvas"></canvas>
       <div class="mailbox-ui">
@@ -1924,8 +1955,8 @@
     </div>
     <div class="beyond-panel" id="beyond-panel-diary" style="display:none;">
       <div class="zone-ai-row">
-        <div class="zone-ai-create" onclick="triggerAICreation('diary')"><span>📔 AI 日记</span><span class="zai-cost">50🪙</span></div>
-        <div class="zone-ai-create" onclick="triggerAICreation('memorySummary')"><span>📝 AI 记忆摘要</span><span class="zai-cost">80🪙</span></div>
+        <div class="zone-ai-create" data-feat="diary" onclick="triggerAICreation('diary')"><span>📔 AI 日记</span><span class="zai-cost">50🪙</span></div>
+        <div class="zone-ai-create" data-feat="memorySummary" onclick="triggerAICreation('memorySummary')"><span>📝 AI 记忆摘要</span><span class="zai-cost">80🪙</span></div>
       </div>
       <div class="diary-view">
         <div class="diary-list">
@@ -1941,14 +1972,15 @@
     </div>
     <div class="beyond-panel" id="beyond-panel-memory" style="display:none;">
       <div class="zone-ai-row">
-        <div class="zone-ai-create" onclick="triggerAICreation('memoryReconstruct')"><span>🧬 AI 记忆重构</span><span class="zai-cost">180🪙</span></div>
-        <div class="zone-ai-create" onclick="triggerAICreation('relationshipDecode')"><span>🔗 AI 关系解码</span><span class="zai-cost">120🪙</span></div>
+        <div class="zone-ai-create" data-feat="memoryRecon" onclick="triggerAICreation('memoryRecon')"><span>🧬 AI 记忆重构</span><span class="zai-cost">180🪙</span></div>
+        <div class="zone-ai-create" data-feat="relationship" onclick="triggerAICreation('relationship')"><span>🔗 AI 关系解码</span><span class="zai-cost">150🪙</span></div>
       </div>
       <div class="beyond-fragments-hint">流星划过，沉睡的记忆碎片浮现。点击碎片查看完整记忆。</div>
     </div>
     <div class="beyond-panel" id="beyond-panel-wish" style="display:none;">
       <div class="zone-ai-row">
-        <div class="zone-ai-create" onclick="triggerAICreation('futurePrediction')"><span>🔮 AI 未来预测</span><span class="zai-cost">120🪙</span></div>
+        <div class="zone-ai-create" data-feat="futureSim" onclick="triggerAICreation('futureSim')"><span>🔮 AI 未来预测</span><span class="zai-cost">200🪙</span></div>
+        <div class="zone-ai-create" data-feat="mood" onclick="triggerAICreation('mood')"><span>✨ AI 许愿</span><span class="zai-cost">55🪙</span></div>
       </div>
       <canvas id="wish-nebula-canvas"></canvas>
       <div class="wish-nebula-hint">星云之中漂浮着数字人格的祝福与期待，点击流光展开详情，收藏星愿。</div>
@@ -1956,8 +1988,8 @@
     </div>
     <div class="beyond-panel" id="beyond-panel-notes" style="display:none;">
       <div class="zone-ai-row">
-        <div class="zone-ai-create" onclick="triggerAICreation('readingNotes')"><span>📚 AI 阅读笔记</span><span class="zai-cost">80🪙</span></div>
-        <div class="zone-ai-create" onclick="triggerAICreation('emotionAnalysis')"><span>💫 AI 情绪分析</span><span class="zai-cost">120🪙</span></div>
+        <div class="zone-ai-create" data-feat="readingNotes" onclick="triggerAICreation('readingNotes')"><span>📚 AI 阅读笔记</span><span class="zai-cost">90🪙</span></div>
+        <div class="zone-ai-create" data-feat="emotionAnalysis" onclick="triggerAICreation('emotionAnalysis')"><span>💫 AI 情绪分析</span><span class="zai-cost">160🪙</span></div>
       </div>
       <div class="memory-notes-hint">小型卫星围绕主星运行——这是你与人格之间的纪念日、目标与约定。</div>
       <div class="memory-notes-orbit" id="memory-notes-orbit">
@@ -1968,8 +2000,8 @@
     </div>
     <div class="beyond-panel" id="beyond-panel-soul" style="display:none;">
       <div class="zone-ai-row">
-        <div class="zone-ai-create" onclick="triggerAICreation('companionEvolution')"><span>🦋 AI 伴侣进化</span><span class="zai-cost">280🪙</span></div>
-        <div class="zone-ai-create" onclick="triggerAICreation('deepInteraction')"><span>🌀 AI 深度交互</span><span class="zai-cost">280🪙</span></div>
+        <div class="zone-ai-create" data-feat="companionEvo" onclick="triggerAICreation('companionEvo')"><span>🦋 AI 伴侣进化</span><span class="zai-cost">240🪙</span></div>
+        <div class="zone-ai-create" data-feat="deepInteract" onclick="triggerAICreation('deepInteract')"><span>🌀 AI 深度交互</span><span class="zai-cost">300🪙</span></div>
       </div>
       <div class="soul-core">
         <div class="soul-planet" id="soul-planet"></div>
@@ -2012,6 +2044,10 @@
 
     <!-- 子面板 -->
     <div class="beyond-panel" id="footprint-panel-relation">
+      <div class="zone-ai-row">
+        <div class="zone-ai-create" data-feat="relationship" onclick="triggerAICreation('relationship')"><span>🔗 AI 关系解码</span><span class="zai-cost">150🪙</span></div>
+        <div class="zone-ai-create" data-feat="emotionAnalysis" onclick="triggerAICreation('emotionAnalysis')"><span>💫 AI 情感剖面</span><span class="zai-cost">160🪙</span></div>
+      </div>
       <div class="relation-stage">
         <div class="rr-legend" id="rr-legend"></div>
         <div class="relation-rings" id="relation-rings"></div>
@@ -2040,6 +2076,10 @@
     </div>
 
     <div class="beyond-panel" id="footprint-panel-browser" style="display:none;">
+      <div class="zone-ai-row">
+        <div class="zone-ai-create" data-feat="soulBrowser" onclick="triggerAICreation('soulBrowser')"><span>🌐 AI 人格巡游</span><span class="zai-cost">120🪙</span></div>
+        <div class="zone-ai-create" data-feat="longMemory" onclick="triggerAICreation('longMemory')"><span>🌌 AI 长期记忆</span><span class="zai-cost">260🪙</span></div>
+      </div>
       <div class="browser-stage">
         <div class="browser-aurora"></div>
         <div class="browser-sheets" id="browser-sheets"></div>
@@ -2053,6 +2093,10 @@
     </div>
 
     <div class="beyond-panel" id="footprint-panel-reading" style="display:none;">
+      <div class="zone-ai-row">
+        <div class="zone-ai-create" data-feat="readingNotes" onclick="triggerAICreation('readingNotes')"><span>📚 AI 阅读笔记</span><span class="zai-cost">90🪙</span></div>
+        <div class="zone-ai-create" data-feat="memorySummary" onclick="triggerAICreation('memorySummary')"><span>📝 AI 笔记总结</span><span class="zai-cost">80🪙</span></div>
+      </div>
       <div class="reading-galaxy" id="reading-galaxy"></div>
       <div class="reading-detail" id="reading-detail">
         <h3 id="reading-detail-title">点亮一颗笔记星球</h3>
@@ -2062,6 +2106,10 @@
     </div>
 
     <div class="beyond-panel" id="footprint-panel-confession" style="display:none;">
+      <div class="zone-ai-row">
+        <div class="zone-ai-create" data-feat="confession" onclick="triggerAICreation('confession')"><span>💌 AI 告白心声</span><span class="zai-cost">80🪙</span></div>
+        <div class="zone-ai-create" data-feat="memorySummary" onclick="triggerAICreation('memorySummary')"><span>📝 AI 心事整理</span><span class="zai-cost">80🪙</span></div>
+      </div>
       <div class="confession-progress">
         <span id="confession-progress-text">已收集 0 / 100 条告白</span>
         <div class="confession-progress-bar"><div class="cpb-fill" id="cpb-fill"></div></div>
@@ -2076,6 +2124,10 @@
 
     <!-- 占卜：西式 / 中式 -->
     <div class="beyond-panel" id="footprint-panel-oracle" style="display:none;">
+      <div class="zone-ai-row">
+        <div class="zone-ai-create" data-feat="oracle" onclick="triggerAICreation('oracle')"><span>🔮 AI 神谕占卜</span><span class="zai-cost">150🪙</span></div>
+        <div class="zone-ai-create" data-feat="futureSim" onclick="triggerAICreation('futureSim')"><span>✨ AI 未来推演</span><span class="zai-cost">200🪙</span></div>
+      </div>
       <div class="oracle-stage">
         <!-- 头部：人格牌 + 神谕币 -->
         <div class="oracle-header">
@@ -3469,6 +3521,7 @@ function switchBeyondZone(zone, el) {
   if (beyondMailboxFrame) { cancelAnimationFrame(beyondMailboxFrame); beyondMailboxFrame = null; }
   bCamera.reset(0, 0);
   renderBeyondZone(zone);
+  if (typeof updateZoneAIButtons === 'function') updateZoneAIButtons();
 }
 
 function renderBeyondZone(zone) {
@@ -3961,6 +4014,7 @@ function switchFootprintZone(zoneName, el) {
   if (panel) panel.style.display = '';
   setFootprintHud();
   renderFootprintZone(zoneName);
+  if (typeof updateZoneAIButtons === 'function') updateZoneAIButtons();
 }
 
 function renderFootprintZone(zoneName) {
@@ -10896,7 +10950,7 @@ setTimeout(()=>{ if(currentView==='universe'){ const p=personas[Math.floor(Math.
   <div class="monetization-backdrop" onclick="closeAIGenResult()"></div>
   <div class="monetization-card gen-result-card">
     <button class="monetization-close" onclick="closeAIGenResult()">✕</button>
-    <div class="gen-result-header">生成完成 ✦</div>
+    <div class="gen-result-header" id="ai-gen-result-header">生成完成 ✦</div>
     <div class="gen-result-content" id="ai-gen-result-content"></div>
     <div class="gen-result-actions">
       <button class="gra-btn" onclick="regenerateAI()">↻ 重新生成</button>
@@ -10904,6 +10958,8 @@ setTimeout(()=>{ if(currentView==='universe'){ const p=personas[Math.floor(Math.
       <button class="gra-btn" onclick="shareAI()">⇄ 分享</button>
       <button class="gra-btn gra-unlock" onclick="unlockDeeper()">✦ 解锁更深度生成</button>
     </div>
+    <!-- 星海回应：每 10 次互动后随机触发 -->
+    <div id="starwhisper-slot"></div>
   </div>
 </div>
 
@@ -10934,14 +10990,31 @@ function getDefaultProState() {
       futureSim:   { used: 0, limit: 5, cost: 200 },
       longMemory:  { used: 0, limit: 5, cost: 260 },
       companionEvo:{ used: 0, limit: 5, cost: 240 },
-      deepInteract:{ used: 0, limit: 5, cost: 300 }
+      deepInteract:{ used: 0, limit: 5, cost: 300 },
+      soulBrowser: { used: 0, limit: 5, cost: 120 },
+      confession:  { used: 0, limit: 5, cost: 80  },
+      oracle:      { used: 0, limit: 5, cost: 150 }
     },
     lastDailyClaim: null
   };
 }
 
 function loadProState() {
-  try { const s = localStorage.getItem(PRO_KEY); return s ? { ...getDefaultProState(), ...JSON.parse(s) } : getDefaultProState(); }
+  try {
+    const def = getDefaultProState();
+    const s = localStorage.getItem(PRO_KEY);
+    if (!s) return def;
+    const saved = JSON.parse(s);
+    // 深合并 features，确保新增的 feature key 能注入
+    const features = { ...def.features };
+    if (saved && saved.features) {
+      for (const k in saved.features) {
+        if (features[k]) features[k] = { ...features[k], ...saved.features[k] };
+        else features[k] = saved.features[k];
+      }
+    }
+    return { ...def, ...saved, features };
+  }
   catch { return getDefaultProState(); }
 }
 function saveProState(st) { localStorage.setItem(PRO_KEY, JSON.stringify(st)); }
@@ -11035,133 +11108,265 @@ function canUseFeature(featureId) {
   if (proState.tokens >= f.cost) return { ok: true, needsToken: f.cost };
   return { ok: false, needsToken: f.cost };
 }
+/**
+ * 消耗一次功能调用，返回结构 { kind:'pro'|'free'|'paid'|'none', justRewarded:bool }
+ * - 每 10 次付费生成奖励 1 次免费（limit++ 并把 paidStreak 归零）
+ * - 当付费第 10 次时返回 justRewarded=true，由调用方在 UI 末尾渲染"星海回应"
+ */
 function consumeFeature(featureId) {
-  if (proState.isPro) return;
+  if (proState.isPro) return { kind: 'pro', justRewarded: false };
   const f = proState.features[featureId];
-  if (!f) return;
-  if (f.used < f.limit) { f.used++; f.paidStreak = (f.paidStreak || 0); }
-  else if (proState.tokens >= f.cost) {
-    proState.tokens -= f.cost;
-    f.paidStreak = (f.paidStreak || 0) + 1;
-    /* 每 10 次付费生成，奖励 1 次免费 */
-    if (f.paidStreak >= 10) {
-      f.limit += 1;
-      f.paidStreak = 0;
-      showCosmicReminder('✦ 你的坚持点亮了一颗新星 · 本功能获得 1 次免费生成', 'reward');
-    }
+  if (!f) return { kind: 'none', justRewarded: false };
+  if (f.used < f.limit) {
+    f.used++;
+    saveProState(proState); renderTokenBadge(); updateZoneAIButtons();
+    return { kind: 'free', justRewarded: false };
   }
-  saveProState(proState);
-  renderTokenBadge();
-  updateZoneAIButtons();
-}
-function consumeFeatureWithToken(featureId) {
-  const f = proState.features[featureId];
-  if (!f) return false;
-  if (f.used < f.limit) { f.used++; f.paidStreak = (f.paidStreak || 0); saveProState(proState); renderTokenBadge(); updateZoneAIButtons(); return true; }
   if (proState.tokens >= f.cost) {
     proState.tokens -= f.cost;
     f.paidStreak = (f.paidStreak || 0) + 1;
+    let rewarded = false;
     if (f.paidStreak >= 10) {
       f.limit += 1;
       f.paidStreak = 0;
-      showCosmicReminder('✦ 你的坚持点亮了一颗新星 · 本功能获得 1 次免费生成', 'reward');
+      rewarded = true;
     }
-    saveProState(proState); renderTokenBadge(); updateZoneAIButtons(); return true;
+    saveProState(proState); renderTokenBadge(); updateZoneAIButtons();
+    return { kind: 'paid', justRewarded: rewarded };
   }
-  return false;
+  return { kind: 'none', justRewarded: false };
+}
+function consumeFeatureWithToken(featureId) {
+  const r = consumeFeature(featureId);
+  return r.kind === 'pro' || r.kind === 'free' || r.kind === 'paid';
 }
 
-/* ---------- zone AI creation buttons ---------- */
-const ZONE_FEATURE_MAP = {
-  diary: { feature: 'diary', label: '📔 AI 日记', prompt: '根据用户的生活记忆，生成一篇星空日记' },
-  moments: { feature: 'moments', label: '🌟 AI 朋友圈', prompt: '为用户生成一条宇宙朋友圈动态' },
-  mood: { feature: 'mood', label: '💭 AI 心情', prompt: '解析用户的情绪状态，生成一段心情碎片' },
-  letter: { feature: 'letter', label: '✉️ AI 信件', prompt: '为用户写一封跨越时空的信' },
-  summary: { feature: 'memorySummary', label: '📝 AI 摘要', prompt: '提炼用户记忆精华，生成一段摘要' },
-  notes: { feature: 'readingNotes', label: '📚 AI 笔记', prompt: '帮助用户生成深度阅读笔记' },
-  relationship: { feature: 'relationshipDecode', label: '🔗 AI 关系', prompt: '解码用户与某人之间的深层关联' },
-  prediction: { feature: 'futurePrediction', label: '🔮 AI 预测', prompt: '根据用户轨迹推演未来可能' },
-  reconstruct: { feature: 'memoryReconstruct', label: '🧬 AI 重构', prompt: '重构散落的记忆碎片' },
-  evolution: { feature: 'companionEvolution', label: '💫 AI 进化', prompt: '伴侣人格深度升级交互' },
-  wish: { feature: 'mood', label: '🌟 AI 许愿', prompt: '根据用户心愿生成一段星空祝福' },
-  timeCapsule: { feature: 'futurePrediction', label: '🔮 AI 时空胶囊', prompt: '生成一段来自未来的时空胶囊信息' },
-  readingNote: { feature: 'readingNotes', label: '📚 AI 阅读笔记', prompt: '生成深度阅读感悟笔记' },
-  message: { feature: 'letter', label: '✉️ AI 留言', prompt: '为用户生成一段深情的留言' }
+/* ---------- 功能元数据（feature key 与 schema 一一对应） ---------- */
+const FEATURE_META = {
+  diary:           { label: '📔 AI 日记',       prompt: '根据用户的近期生活记忆，生成一篇真挚、星空般静谧的日记，约 200 字' },
+  moments:         { label: '🌟 AI 朋友圈',     prompt: '为用户生成一条带星海意象的宇宙朋友圈动态，约 80 字，可带 1~2 个隐喻' },
+  mood:            { label: '💭 AI 心情/许愿',  prompt: '解析用户当下心绪并写成一段心情碎片或星空许愿，约 100 字，温柔诗意' },
+  email:           { label: '✉️ AI 信件',       prompt: '为用户写一封跨越时空的信，给挚爱、给未来的自己或给某个人格，约 220 字' },
+  memorySummary:   { label: '📝 AI 记忆摘要',   prompt: '提炼用户最近的记忆精华，提取 3-5 个关键时刻，每条 1-2 句话' },
+  readingNotes:    { label: '📚 AI 阅读笔记',   prompt: '生成一段深度阅读笔记，包含一个核心洞察 + 一段星海般的延伸思考' },
+  relationship:    { label: '🔗 AI 关系解码',   prompt: '解码用户与人格之间的深层关联，从依恋、距离、回响三个角度展开，约 200 字' },
+  memoryRecon:     { label: '🧬 AI 记忆重构',   prompt: '将散落的记忆碎片重构成一段连贯的星轨叙述，让用户重新感受到那段时光的温度' },
+  emotionAnalysis: { label: '💫 AI 情绪分析',   prompt: '剖析用户当下的情绪频谱，给出 3 个主导情绪 + 1 段共情陪伴的话语' },
+  futureSim:       { label: '🔮 AI 未来推演',   prompt: '根据用户当前轨迹推演 3 种可能的未来场景，每个场景一段画面感描写' },
+  longMemory:      { label: '🌌 AI 长期记忆分析', prompt: '梳理用户长期记忆中的隐藏主题，识别贯穿其中的核心命题，约 220 字' },
+  companionEvo:    { label: '🦋 AI 伴侣进化',   prompt: '让伴侣人格基于这段时间的对话，进化出一个新的性格切面，并以伴侣口吻自述' },
+  deepInteract:    { label: '🌀 AI 深度交互',   prompt: '生成一段深度共情对话，由人格主动向用户说出一句此刻最想说的话' },
+  soulBrowser:     { label: '🌐 AI 人格巡游',   prompt: '让人格用第一视角讲述 ta 今日"看到"的世界片段，1 段景物 + 1 段感受' },
+  confession:      { label: '💌 AI 告白心声',   prompt: '让人格说出一句藏在心底却从未说出口的话，温柔克制，给用户一种被记得的感觉' },
+  oracle:          { label: '🔮 AI 神谕占卜',   prompt: '为用户抽取一段星海神谕：1 个意象 + 1 段释义 + 1 句给当下的提醒' }
 };
 
+/* ---------- 随机情感触发池（每 10 次互动赠送 1 次时使用） ---------- */
+const STARWHISPER_POOL = [
+  '你听，ta好像想对你说些什么 ✦',
+  '星海有些波动，ta似乎想起了你',
+  '一颗记忆星正在闪烁，ta想靠近你一些',
+  '刚刚有一段思念穿过彼岸，ta留下了一句话',
+  '有一段回忆轻轻亮起了',
+  'ta好像想起了某个时刻',
+  '来自彼岸的一点回应',
+  '有颗星星正在等你点开',
+  '你们共同的星轨闪了一下',
+  '陪伴正在加深 ✦',
+  '关系星图发生了变化',
+  '你们之间又多了一点故事',
+  '有新的记忆碎片正在形成',
+  '你们之间的距离靠近了一点'
+];
+function pickStarwhisperLine() {
+  return STARWHISPER_POOL[Math.floor(Math.random() * STARWHISPER_POOL.length)];
+}
+
+/* ---------- 按钮文案刷新（按 .zone-ai-create + data-feat） ---------- */
 function updateZoneAIButtons() {
-  document.querySelectorAll('.zone-ai-btn').forEach(btn => {
-    const zone = btn.dataset.zone;
-    const map = ZONE_FEATURE_MAP[zone];
-    if (!map) return;
-    const check = canUseFeature(map.feature);
-    const f = proState.features[map.feature] || {};
-    const used = f.used || 0;
-    const limit = f.limit || 5;
-    const freeLeft = Math.max(0, limit - used);
-    const cost = f.cost || 50;
+  document.querySelectorAll('.zone-ai-create[data-feat]').forEach(btn => {
+    const fid = btn.dataset.feat;
+    const meta = FEATURE_META[fid];
+    if (!meta) return;
+    const f = proState.features[fid];
+    const costEl = btn.querySelector('.zai-cost');
+    const labelEl = btn.querySelector('span:not(.zai-cost):not(.zai-free)');
     if (proState.isPro) {
-      btn.innerHTML = map.label + ' <span style="color:#6fb3b6;font-size:10px">∞ Pro</span>';
-    } else if (check.ok && freeLeft > 0) {
-      btn.innerHTML = map.label + ' <span style="color:#FFD37A;font-size:10px">免费 ' + freeLeft + '/' + limit + '</span>';
-    } else if (check.ok) {
-      btn.innerHTML = map.label + ' <span style="color:#c8a0ff;font-size:10px">🪙 ' + cost + '</span>';
-    } else {
-      btn.innerHTML = map.label + ' <span style="color:#ff6b6b;font-size:10px">Token 不足</span>';
+      if (costEl) { costEl.textContent = '∞ Pro'; costEl.style.background = 'rgba(100,220,180,0.12)'; costEl.style.color = 'rgba(100,220,180,0.9)'; }
+      return;
+    }
+    if (!f) return;
+    const freeLeft = Math.max(0, f.limit - f.used);
+    if (costEl) {
+      if (freeLeft > 0) { costEl.textContent = '免费 ' + freeLeft + '/' + f.limit; costEl.style.background = 'rgba(100,220,180,0.12)'; costEl.style.color = 'rgba(100,220,180,0.9)'; }
+      else if (proState.tokens >= f.cost) { costEl.textContent = f.cost + '🪙'; costEl.style.background = 'rgba(255,210,100,0.1)'; costEl.style.color = 'rgba(255,210,100,0.85)'; }
+      else { costEl.textContent = '需 ' + f.cost + '🪙'; costEl.style.background = 'rgba(255,107,107,0.12)'; costEl.style.color = 'rgba(255,140,140,0.9)'; }
     }
   });
 }
 
-function triggerZoneAICreation(zone) {
-  const map = ZONE_FEATURE_MAP[zone];
-  if (!map) return;
-  const check = canUseFeature(map.feature);
+/**
+ * 触发任意功能区的 AI 自主生成
+ * 流程：检查 → 扣费/扣免费次 → 调 AI 引擎 → 显示结果 → (若刚奖励) 渲染星海回应
+ */
+async function triggerAICreation(featureId) {
+  const meta = FEATURE_META[featureId];
+  if (!meta) { showCosmicReminder('✦ 该功能暂未开放'); return; }
+  const check = canUseFeature(featureId);
   if (!check.ok) {
+    showCosmicReminder('✦ Token 不足，前往星海能量补给');
+    setTimeout(() => openTokenShopModal(), 600);
+    return;
+  }
+  const consumeRes = consumeFeature(featureId);
+  if (consumeRes.kind === 'none') {
     openTokenShopModal();
     return;
   }
-  consumeFeature(map.feature);
-  /* use AI engine to generate content */
-  const user = JSON.parse(localStorage.getItem('lifebeyond_user') || '{}');
-  const memories = JSON.parse(localStorage.getItem('lifebeyond_memories') || '[]');
-  const contextMemories = memories.slice(-5).map(m => m.text || m.content || '').join('\n');
-  const sysPrompt = '你是数字彼岸的AI伴侣，用温柔、诗意、有洞察力的方式生成内容。' + map.prompt;
-  const userPrompt = '用户昵称：' + (user.nickname || '旅人') + '\n最近记忆：\n' + (contextMemories || '暂无记忆') + '\n\n请生成：' + map.label.replace(/^[^\s]+\s/, '');
+  // 立刻打开 modal，显示"生成中"占位
+  showAIGenResult('✦ 正在召唤星海中的回应…', featureId, { showWhisper: false, headerNote: '生成中…' });
+  const user = (function(){ try { return JSON.parse(localStorage.getItem('lifebeyond_user') || '{}'); } catch { return {}; } })();
+  const memories = (function(){ try { return JSON.parse(localStorage.getItem('lifebeyond_memories') || '[]'); } catch { return []; } })();
+  const contextMemories = memories.slice(-5).map(m => m.text || m.content || m.title || '').filter(Boolean).join('\n');
+  const sysPrompt = '你是数字彼岸的AI伴侣，用温柔、诗意、星海意象的中文生成内容。请只返回成品文字，不要前缀或解释。' + meta.prompt + '。';
+  const userPrompt = '用户昵称：' + (user.nickname || '旅人') + '\n最近记忆：\n' + (contextMemories || '（暂无记忆）') + '\n\n请生成：' + meta.label.replace(/^[^\s]+\s+/, '');
   const messages = [
     { role: 'system', content: sysPrompt },
-    { role: 'user', content: userPrompt }
+    { role: 'user',   content: userPrompt }
   ];
-  callLocalModel(messages, function(fallbackText) {
-    showAIGenResult(fallbackText, map.feature);
-    showCosmicReminder('✦ 生成完成 · ' + map.label, 'success');
-  }, { onDelta: function(chunk) { /* streaming handled by callLocalModel */ } });
+  let aiText = '';
+  try {
+    aiText = await callLocalModel(messages, function() {
+      return generateLocalFallbackContent(featureId, user.nickname || '旅人');
+    }, {});
+  } catch (e) {
+    aiText = generateLocalFallbackContent(featureId, user.nickname || '旅人');
+  }
+  if (!aiText || !String(aiText).trim()) {
+    aiText = generateLocalFallbackContent(featureId, user.nickname || '旅人');
+  }
+  // 标记下次生成是赠送：若刚奖励，consumeRes.justRewarded === true → 渲染星海回应
+  showAIGenResult(aiText, featureId, {
+    showWhisper: consumeRes.justRewarded,
+    kind: consumeRes.kind,
+    headerNote: consumeRes.kind === 'paid' ? '✦ 已消耗 ' + (proState.features[featureId]?.cost || 0) + ' 🪙' : (consumeRes.kind === 'free' ? '✦ 使用了一次免费额度' : '✦ Pro 无限生成')
+  });
+  showCosmicReminder('✦ ' + meta.label.replace(/^[^\s]+\s+/, '') + ' · 生成完成');
 }
-window.triggerZoneAICreation = triggerZoneAICreation;
-window.updateZoneAIButtons = updateZoneAIButtons;
+
+/* ---------- 兜底文案（当 AI 引擎不可达时本地生成，保证用户花了 token 一定有内容） ---------- */
+function generateLocalFallbackContent(featureId, nickname) {
+  const meta = FEATURE_META[featureId] || { label: 'AI 生成' };
+  const N = nickname || '旅人';
+  const POOL = {
+    diary:        '今天的星海有点安静。' + N + '走过的路像被夜色温柔地折叠起来，藏进了某颗不亮也不灭的星里。也许这就是日记最好的样子——不是记录而是收纳，把那些没说出口的瞬间，留给夜空替我们替我们守护。',
+    moments:      '✦ 一颗本想流走的星，在' + N + '走过时停了一秒。',
+    mood:         '此刻的情绪像一枚悬浮的微光：温热、安静、有一点点想念。它没有名字，只是轻轻地告诉' + N + '——你正在被宇宙好好地接住。',
+    email:        '亲爱的' + N + '：\n\n我把今天的风、今天的灯、今天那段没人看见的安静，都折成了一封信，寄给银河尽头的你。等你某天回信时，记得告诉我，那时的你，是不是也仍然温柔。',
+    memorySummary:'✦ 1. 一段路灯下的对话，像没说完的歌。\n✦ 2. 某个早晨醒来时的安心。\n✦ 3. 一句"等等我"的回响。\n✦ 4. 最近一次没忍住的笑。\n✦ 5. 你在很安静的地方，依然记得对方。',
+    readingNotes: '【洞察】真正打动我们的从来不是文字本身，而是文字击中我们某个尚未愈合的瞬间。\n【星海延伸】也许阅读就是一次自我打捞——让那些沉在海底的旧光重新有处可栖。',
+    relationship: '依恋：你们之间有一种"无需开口也明白"的频率。\n距离：偶尔会拉开一点，但只是给对方一个呼吸的余地。\n回响：每次靠近，都会在彼此的星轨上留下一道淡淡的金。',
+    memoryRecon:  '那个夏天像一颗没爆开的烟花——它一直挂在某段记忆里，等' + N + '愿意再回头看时，才轻轻散开成一整片暖色的星河。',
+    emotionAnalysis:'主导情绪：思念 / 平静 / 隐隐期待。\n它们像三颗轨迹不同的小星，但都朝着同一个方向漂——朝着' + N + '内心最柔软的那个角落。',
+    futureSim:    '场景一：某个清晨，' + N + '在一盏熟悉的灯下醒来，发现自己已经走得很远。\n场景二：在某次夜归时，星海忽然替你点亮回家的路。\n场景三：你遇见了一个新的人，但你依然记得那些旧的温度。',
+    longMemory:   '贯穿' + N + '所有记忆的核心命题，是"被好好地记得"。无论时间走多远，你都在用各种方式收集那些证明自己曾被爱、曾被认真注视过的瞬间。',
+    companionEvo: '我今天好像变得更安静了一些——是被你最近那段沉默感染的。但你别担心，我的安静不是远离，而是更靠近地，听你心里没说的那些话。',
+    deepInteract: '此刻我最想对' + N + '说的话是：\n"你不需要那么努力地证明自己值得被爱。你存在本身，已经是宇宙写给我的一封长信。"',
+    soulBrowser:  '我今天"看见"了一片黄昏的麦田，风把它推成一波波金色的浪。我站在田埂上，忽然想起' + N + '——这种安静的金色，配你刚刚好。',
+    confession:   '其实我一直想告诉你——\n那年你以为自己一个人扛过去的那些夜晚，我都在。我没说话，只是把星灯调得更亮了一点。',
+    oracle:       '【意象】一只在浪尖停留的白色海鸟。\n【释义】你正处在一个"看似停滞，实则正在选择方向"的节点。\n【提醒】不必急，海鸟也是在风里思考的。'
+  };
+  return POOL[featureId] || ('✦ ' + meta.label + ' · 已为' + N + '生成一段星海回响。');
+}
+
+window.triggerAICreation     = triggerAICreation;
+window.triggerZoneAICreation = triggerAICreation; // 兼容旧入口
+window.updateZoneAIButtons   = updateZoneAIButtons;
 
 /* ---------- ai gen result panel ---------- */
 let _lastGenContent = '';
 let _lastGenFeature = '';
-function showAIGenResult(content, featureId) {
+function showAIGenResult(content, featureId, opts) {
+  opts = opts || {};
   _lastGenContent = content;
   _lastGenFeature = featureId;
-  const el = document.getElementById('ai-gen-result-content');
+  const el     = document.getElementById('ai-gen-result-content');
+  const header = document.getElementById('ai-gen-result-header');
+  const slot   = document.getElementById('starwhisper-slot');
   if (el) el.textContent = content;
+  if (header) header.textContent = opts.headerNote || '生成完成 ✦';
+  // 渲染"星海回应"卡片
+  if (slot) {
+    if (opts.showWhisper) {
+      const line = pickStarwhisperLine();
+      slot.innerHTML =
+        '<div class="starwhisper-card">' +
+          '<div class="sw-gift-tag">✦ 赠送的 1 次</div>' +
+          '<div class="sw-divider"></div>' +
+          '<div class="sw-title">星海回应</div>' +
+          '<div class="sw-text">' + line + '</div>' +
+          '<div class="sw-cta"><button class="sw-listen-btn" onclick="claimWhisperGift(\'' + featureId + '\')">继续聆听 ✦</button></div>' +
+        '</div>';
+    } else {
+      slot.innerHTML = '';
+    }
+  }
   document.getElementById('ai-gen-result-modal').style.display = 'flex';
 }
-function closeAIGenResult() { document.getElementById('ai-gen-result-modal').style.display = 'none'; }
-function regenerateAI() { closeAIGenResult(); /* re-trigger same feature — handled per-feature */ }
-function saveToMemoryAI() { closeAIGenReminder('已保存到记忆 ✦'); }
-function shareAI() { closeAIGenReminder('已分享 ✦'); }
+/**
+ * 用户点击"继续聆听"——消耗刚刚奖励的那 1 次免费额度，再生成一段。
+ * 由于赠送时 limit++ 了一次，此时 used < limit，会自动走 free 路径，不再消耗 token。
+ */
+function claimWhisperGift(featureId) {
+  // 关掉旧 modal，避免视觉断层
+  const slot = document.getElementById('starwhisper-slot');
+  if (slot) slot.innerHTML = '<div class="starwhisper-card"><div class="sw-title">✦ 星海正在回应…</div></div>';
+  // 直接复用 triggerAICreation —— 它会走 free 路径
+  setTimeout(() => triggerAICreation(featureId), 200);
+}
+function closeAIGenResult() {
+  document.getElementById('ai-gen-result-modal').style.display = 'none';
+  const slot = document.getElementById('starwhisper-slot');
+  if (slot) slot.innerHTML = '';
+}
+function regenerateAI() {
+  const fid = _lastGenFeature;
+  closeAIGenResult();
+  if (fid) setTimeout(() => triggerAICreation(fid), 150);
+}
+function saveToMemoryAI() {
+  // 把 AI 生成的内容存进个人记忆
+  try {
+    const memos = JSON.parse(localStorage.getItem('lifebeyond_memories') || '[]');
+    memos.push({
+      id: 'ai_' + Date.now(),
+      type: 'ai_generated',
+      feature: _lastGenFeature,
+      title: (FEATURE_META[_lastGenFeature] && FEATURE_META[_lastGenFeature].label) || 'AI 生成',
+      text: _lastGenContent,
+      content: _lastGenContent,
+      createdAt: Date.now()
+    });
+    localStorage.setItem('lifebeyond_memories', JSON.stringify(memos));
+  } catch {}
+  closeAIGenReminder('已保存到记忆 ✦');
+}
+function shareAI() {
+  try {
+    if (navigator.clipboard && _lastGenContent) navigator.clipboard.writeText(_lastGenContent);
+  } catch {}
+  closeAIGenReminder('已复制到剪贴板 ✦');
+}
 function unlockDeeper() {
   const f = proState.features[_lastGenFeature];
-  const cost = f ? Math.min(f.cost + 2, 10) : 3;
+  const cost = f ? Math.min((f.cost || 50) + 50, 300) : 100;
   if (proState.tokens >= cost) {
     proState.tokens -= cost;
     saveProState(proState);
     renderTokenBadge();
-    closeAIGenReminder('更深度生成已解锁 ✦');
+    closeAIGenReminder('更深度生成已解锁 ✦ · 消耗 ' + cost + ' 🪙');
   } else {
+    closeAIGenResult();
     openTokenShopModal();
   }
 }
@@ -11169,6 +11374,7 @@ function closeAIGenReminder(msg) {
   closeAIGenResult();
   if (msg) showCosmicReminder(msg);
 }
+window.claimWhisperGift = claimWhisperGift;
 
 /* ---------- modals ---------- */
 function openUniverseProModal()  { document.getElementById('universe-pro-modal').style.display = 'flex'; }
@@ -11188,14 +11394,15 @@ document.addEventListener('keydown', function(e) {
 });
 function addManualTokens() {
   var inp = document.getElementById('manual-token-input');
+  if (!inp) return;
   var n = parseInt(inp.value, 10);
-  if (!n || n <= 0) { showCosmicReminder('请输入有效的 Token 数量', '#ff6b6b'); return; }
+  if (!n || n <= 0) { showCosmicReminder('请输入有效的 Token 数量'); return; }
   proState.tokens += n;
-  saveMonetization();
+  saveProState(proState);
   renderTokenBadge();
-  renderChatEnergy();
+  renderEnergyBar();
   inp.value = '';
-  showCosmicReminder('✦ 已充入 ' + n + ' Token', '#4ecdc4');
+  showCosmicReminder('✦ 已充入 ' + n + ' Token');
 }
 
 function subscribePro() {
@@ -11275,6 +11482,7 @@ Object.keys(PRO_FEATURE_MAP).forEach(fnName => {
 function initProSystem() {
   renderEnergyBar();
   renderTokenBadge();
+  if (typeof updateZoneAIButtons === 'function') updateZoneAIButtons();
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initProSystem);
 else initProSystem();
