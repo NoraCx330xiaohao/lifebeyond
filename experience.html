@@ -6200,6 +6200,87 @@ function initCivilizationStarfield() {
 
 // 「记忆低语」浮窗：从虚空中召唤的匿名声音
 let civilizationWhispersAlive = []; // {text, x, y, alpha, life}
+let civClickRipples = []; // {x, y, t, life, sparks:[{a,r,vx,vy,size}]}
+
+function spawnCivClickRipple(x, y) {
+  if (!civClickRipples) civClickRipples = [];
+  // 6~8 颗金色小星撒开
+  const N = 7;
+  const sparks = [];
+  for (let i = 0; i < N; i++) {
+    const a = (i / N) * Math.PI * 2 + Math.random() * 0.4;
+    const speed = 90 + Math.random() * 60;
+    sparks.push({
+      a,
+      r: 0,
+      vx: Math.cos(a) * speed,
+      vy: Math.sin(a) * speed - 18,
+      size: 1.6 + Math.random() * 1.6,
+      hue: 38 + Math.random() * 14
+    });
+  }
+  civClickRipples.push({ x, y, t: 0, life: 1.4, sparks });
+  if (civClickRipples.length > 16) civClickRipples.shift();
+}
+
+function drawCivClickRipples() {
+  if (!civClickRipples || !civClickRipples.length || !civCtx) return;
+  const dt = 1 / 60;
+  civCtx.save();
+  civCtx.setTransform(1, 0, 0, 1, 0, 0);
+  for (let i = civClickRipples.length - 1; i >= 0; i--) {
+    const r = civClickRipples[i];
+    r.t += dt;
+    const age = r.t / r.life; // 0 → 1
+    if (age >= 1) { civClickRipples.splice(i, 1); continue; }
+    const fade = 1 - age;
+    // 金色环
+    const ringR = 8 + age * 95;
+    civCtx.beginPath();
+    civCtx.strokeStyle = `rgba(255, 213, 130, ${0.55 * fade})`;
+    civCtx.lineWidth = 1.6 * fade;
+    civCtx.arc(r.x, r.y, ringR, 0, Math.PI * 2);
+    civCtx.stroke();
+    // 第二层暖白环
+    civCtx.beginPath();
+    civCtx.strokeStyle = `rgba(255, 244, 200, ${0.32 * fade})`;
+    civCtx.lineWidth = 0.9 * fade;
+    civCtx.arc(r.x, r.y, ringR * 0.62, 0, Math.PI * 2);
+    civCtx.stroke();
+    // 金色小星撒开
+    for (const s of r.sparks) {
+      // 简单弹道，带轻微下坠
+      const sx = r.x + s.vx * r.t;
+      const sy = r.y + s.vy * r.t + 28 * r.t * r.t; // gravity
+      const sa = fade;
+      // 光晕
+      const grad = civCtx.createRadialGradient(sx, sy, 0, sx, sy, s.size * 5);
+      grad.addColorStop(0, `hsla(${s.hue}, 95%, 78%, ${sa})`);
+      grad.addColorStop(0.4, `hsla(${s.hue}, 90%, 60%, ${sa * 0.45})`);
+      grad.addColorStop(1, 'rgba(255,200,120,0)');
+      civCtx.fillStyle = grad;
+      civCtx.beginPath();
+      civCtx.arc(sx, sy, s.size * 5, 0, Math.PI * 2);
+      civCtx.fill();
+      // 中心十字闪
+      civCtx.strokeStyle = `rgba(255, 240, 200, ${sa * 0.9})`;
+      civCtx.lineWidth = 0.9;
+      civCtx.beginPath();
+      civCtx.moveTo(sx - s.size * 2.4, sy);
+      civCtx.lineTo(sx + s.size * 2.4, sy);
+      civCtx.moveTo(sx, sy - s.size * 2.4);
+      civCtx.lineTo(sx, sy + s.size * 2.4);
+      civCtx.stroke();
+      // 实心核
+      civCtx.fillStyle = `rgba(255, 250, 220, ${sa})`;
+      civCtx.beginPath();
+      civCtx.arc(sx, sy, s.size * 0.7, 0, Math.PI * 2);
+      civCtx.fill();
+    }
+  }
+  civCtx.restore();
+}
+
 
 function initCivilizationSystem() {
   const cx = civCanvas.width/2;
@@ -7232,6 +7313,7 @@ function setCivDimFilter(id) {
     if (globalThis.CivGalaxy && globalThis.CivGalaxy.isReady && globalThis.CivGalaxy.isReady()) {
       const dimIdx = civilizationActiveDim ? civilizationDimensions.findIndex(d => d.id === civilizationActiveDim) : null;
       globalThis.CivGalaxy.setDimFilter(dimIdx >= 0 ? dimIdx : null);
+      try { globalThis.CivGalaxy.setDimHighlight(dimIdx >= 0 ? dimIdx : null); } catch(_){}
     }
   } catch(_) {}
   if(civilizationActiveDim) {
@@ -7257,6 +7339,7 @@ function setCivEraFilter(id) {
         eraName = e ? e.name : null;
       }
       globalThis.CivGalaxy.setEraFilter(eraName);
+      try { globalThis.CivGalaxy.setEraHighlight(eraName); } catch(_){}
     }
   } catch(_) {}
   if(civilizationActiveEra) {
@@ -8575,7 +8658,7 @@ window.resetDrift=function(){selectedPersona.driftScore=0;updateIntegrityUI();cl
 function openMemoryOverlay(memory,isMeteor=false){const sourceBadge=memory.source?`<span class="source-badge ${memory.source}">${memory.source==='verified'?'✓ 已验证':'◈ 智能推测'}</span>`:'';const card=document.getElementById('memory-card');card.innerHTML=`<span class="tag">${memory.label||'记忆'}${isMeteor?' · 记忆流星':''}${sourceBadge}</span><h2>${memory.title}</h2><div class="date">${memory.date||''} · ${memory.persona||''}</div><div class="content">${(memory.content||'').replace(/\n/g,'<br>')}</div><div class="actions"><button class="primary" onclick="closeOverlay()">收藏记忆</button><button onclick="closeOverlay()">分享光点</button><button onclick="closeOverlay()">关闭</button></div>`;document.getElementById('memory-overlay').classList.add('active');}
 function openCapsuleOverlay(c){const typeMap={text:'文字',video:'视频',photo:'照片'};const card=document.getElementById('memory-card');card.innerHTML=`<span class="tag">时间胶囊 · ${typeMap[c.type]||c.type}</span><h2>${c.title}</h2><div class="date">开启时间：${c.openDate}</div><div class="content">${c.content}</div><div class="actions"><button class="primary" onclick="closeOverlay()">重新封存</button><button onclick="closeOverlay()">关闭</button></div>`;document.getElementById('memory-overlay').classList.add('active');}
 function openCapsuleLockedOverlay(c){const card=document.getElementById('memory-card');card.innerHTML=`<span class="tag">时间胶囊 · 锁定中</span><h2>${c.title}</h2><div class="date">预计开启：${c.openDate}</div><div class="content">这封信尚未到开启时间。时间胶囊会在约定时刻自动点亮，像一颗迟到的星光抵达彼岸。</div><div class="actions"><button onclick="closeOverlay()">关闭</button></div>`;document.getElementById('memory-overlay').classList.add('active');}
-window.closeOverlay=function(){document.getElementById('memory-overlay').classList.remove('active');};
+window.closeOverlay=function(){document.getElementById('memory-overlay').classList.remove('active');if(CivGalaxy&&CivGalaxy.isReady())CivGalaxy.resetCamera();};
 document.getElementById('close-overlay').addEventListener('click', closeOverlay);
 document.getElementById('memory-overlay').addEventListener('click', e=>{if(e.target===document.getElementById('memory-overlay'))closeOverlay();});
 
