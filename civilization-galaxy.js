@@ -68,17 +68,45 @@ class CivilizationGalaxy {
 
   /* ──── Background Star Dust ──── */
   _buildBgStars() {
-    const N = 5000;
+    // 远景深空 12000 颗：分两层 —— 立方均匀深空 + galaxy 外圈球壳，
+    // 让"外景"显得更厚重，与主旋臂的密集星轨形成层次
+    const N_FIELD = 8000;   // 立方均匀深空
+    const N_SHELL = 4000;   // galaxy 外圈球壳，做远景星海
+    const N = N_FIELD + N_SHELL;
     const pos = new Float32Array(N * 3);
     const sizes = new Float32Array(N);
     const cols = new Float32Array(N * 3);
-    for (let i = 0; i < N; i++) {
-      pos[i*3]   = (Math.random() - 0.5) * 1200;
-      pos[i*3+1] = (Math.random() - 0.5) * 1200;
-      pos[i*3+2] = (Math.random() - 0.5) * 1200;
+    let i = 0;
+    for (let k = 0; k < N_FIELD; k++, i++) {
+      // 在 ±900 立方里均匀撒，但排除 galaxy 主体（< 110 半径）以免和星轨重叠
+      let x, y, z, rr;
+      do {
+        x = (Math.random() - 0.5) * 1800;
+        y = (Math.random() - 0.5) * 1800;
+        z = (Math.random() - 0.5) * 1800;
+        rr = Math.sqrt(x*x + y*y + z*z);
+      } while (rr < 110);
+      pos[i*3] = x; pos[i*3+1] = y; pos[i*3+2] = z;
+      sizes[i] = 0.5 + Math.random() * 1.0;
+      const b = 0.45 + Math.random() * 0.55;
+      const tint = Math.random();
+      if (tint < 0.55) { cols[i*3] = b; cols[i*3+1] = b; cols[i*3+2] = b + Math.random() * 0.18; }       // 冷白
+      else if (tint < 0.80) { cols[i*3] = b; cols[i*3+1] = b * 0.92; cols[i*3+2] = b * 0.78; }            // 暖白
+      else { cols[i*3] = b * 0.85; cols[i*3+1] = b * 0.7; cols[i*3+2] = b * 0.55; }                       // 暗金
+    }
+    for (let k = 0; k < N_SHELL; k++, i++) {
+      // galaxy 外圈球壳：120-700 半径之间均匀撒到球面上
+      const u = Math.random(), v = Math.random();
+      const phi = u * Math.PI * 2;
+      const cosT = v * 2 - 1;
+      const sinT = Math.sqrt(1 - cosT * cosT);
+      const r = 120 + Math.pow(Math.random(), 0.6) * 580; // 偏内、外圈渐稀
+      pos[i*3]   = r * sinT * Math.cos(phi);
+      pos[i*3+1] = r * cosT * 0.8; // 微微压扁
+      pos[i*3+2] = r * sinT * Math.sin(phi);
       sizes[i] = 0.6 + Math.random() * 1.2;
-      const b = 0.5 + Math.random() * 0.5;
-      cols[i*3] = b; cols[i*3+1] = b; cols[i*3+2] = b + Math.random() * 0.15;
+      const b = 0.55 + Math.random() * 0.45;
+      cols[i*3] = b; cols[i*3+1] = b * 0.96; cols[i*3+2] = b + Math.random() * 0.12;
     }
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
@@ -86,7 +114,7 @@ class CivilizationGalaxy {
     geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
 
     const mat = new THREE.PointsMaterial({
-      size: 1.2, vertexColors: true, transparent: true, opacity: 0.55,
+      size: 1.2, vertexColors: true, transparent: true, opacity: 0.7,
       depthWrite: false, sizeAttenuation: true
     });
     this.bgPoints = new THREE.Points(geo, mat);
