@@ -14,10 +14,10 @@ const KEY = 'lifebeyond-2026-✦-stargate'; // 任意字符串作为 XOR 密钥
 
 // 多个待打包文件
 const TARGETS = [
-  { src: 'experience.html', out: 'experience-protected.html', title: '数字彼岸', mode: 'free' },
-  { src: 'experience-pro.html', out: 'experience-pro-protected.html', title: '数字彼岸 · Pro', mode: 'pro' },
-  { src: 'lifebeyond.byzmy.html', out: 'lifebeyond.byzmy.protected.html', title: '数字彼岸', mode: 'free' },
-  { src: 'lifebeyond.byzmy.pro.html', out: 'lifebeyond.byzmy.pro.protected.html', title: '数字彼岸 · Pro', mode: 'pro' },
+  { src: 'experience.html', out: 'experience-protected.html', title: '数字彼岸' },
+  { src: 'experience-pro.html', out: 'experience-pro-protected.html', title: '数字彼岸 · Pro' },
+  { src: 'lifebeyond.byzmy.html', out: 'lifebeyond.byzmy.protected.html', title: '数字彼岸' },
+  { src: 'lifebeyond.byzmy.pro.html', out: 'lifebeyond.byzmy.pro.protected.html', title: '数字彼岸 · Pro' },
 ];
 
 // ---------- XOR + Base64 混淆 ----------
@@ -44,7 +44,7 @@ function inlineExternalScripts(html, baseDir) {
 }
 
 // ---------- 模板 ----------
-function buildLoaderHtml({ title, payload, keyJsLiteral, mode }) {
+function buildLoaderHtml({ title, payload, keyJsLiteral }) {
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -110,16 +110,8 @@ function buildLoaderHtml({ title, payload, keyJsLiteral, mode }) {
     return new TextDecoder('utf-8').decode(out);
   }
   // 注入到解码后 HTML 中的「过渡保护层」—— 单层柔和遮罩，避免双 fade 叠加
-  // 免费版与 Pro 版在 Node 编译期就决定好用哪一份，浏览器端只看到一份
-  var TRANSITION_GUARD = ${JSON.stringify(mode === 'pro'
-    ? '\n<style id="__pb_style">html,body{background:#03060e!important;}#__post_boot{position:fixed;inset:0;background:#03060e;z-index:2147483647;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#bfe9ff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:6px;font-size:13px;pointer-events:none;opacity:1;transition:opacity .6s ease-out;}#__post_boot.__pb_fade{opacity:0;}#__post_boot .__pb_orb{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle,rgba(140,224,255,.28) 0%,rgba(58,120,200,.10) 60%,transparent 100%);animation:__pb_orb 3.2s ease-in-out infinite;}@keyframes __pb_orb{0%,100%{transform:scale(.96);opacity:.28;}50%{transform:scale(1.03);opacity:.5;}}</style>\n'
-    : '\n<style id="__pb_style">html,body{background:#03060e!important;}#__post_boot{position:fixed;inset:0;background:#03060e;z-index:2147483647;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#bfe9ff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:6px;font-size:13px;transition:opacity 1.2s ease;pointer-events:none;will-change:opacity;}#__post_boot .__pb_orb{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle,rgba(140,224,255,.3) 0%,rgba(58,120,200,.12) 60%,transparent 100%);animation:__pb_orb 3s ease-in-out infinite;}@keyframes __pb_orb{0%,100%{transform:scale(.96);opacity:.3;}50%{transform:scale(1.03);opacity:.55;}}#__post_boot.gone{opacity:0;}</style>\n'
-  )};
-  var TRANSITION_HTML = ${JSON.stringify(mode === 'pro'
-    ? '<div id="__post_boot"><div class="__pb_orb"></div><div>已抵达 · 数字彼岸</div></div><script data-pb="1">window.addEventListener(\'load\',function(){var WAIT=4000;function dropMask(){var pb=document.getElementById(\'__post_boot\');if(pb&&pb.parentNode)pb.parentNode.removeChild(pb);var st=document.getElementById(\'__pb_style\');if(st&&st.parentNode)st.parentNode.removeChild(st);}function startFade(){var pb=document.getElementById(\'__post_boot\');if(pb){pb.classList.add(\'__pb_fade\');setTimeout(dropMask,700);}else{dropMask();}}setTimeout(function(){if(window.requestAnimationFrame){requestAnimationFrame(function(){requestAnimationFrame(startFade);});}else{startFade();}},WAIT);});<\/script>'
-    : '<div id="__post_boot"><div class="__pb_orb"></div><div>已抵达 · 数字彼岸</div></div><script data-pb="1">window.addEventListener(\'load\',function(){setTimeout(function(){function safeFade(){var pb=document.getElementById(\'__post_boot\');if(!pb)return;pb.classList.add(\'gone\');setTimeout(function(){if(pb.parentNode)pb.parentNode.removeChild(pb);var st=document.getElementById(\'__pb_style\');if(st&&st.parentNode)st.parentNode.removeChild(st);},1400);}if(window.requestAnimationFrame){requestAnimationFrame(function(){requestAnimationFrame(safeFade);});}else{safeFade();}},900);});<\/script>'
-  )};
-
+  var TRANSITION_GUARD = '\\n<style id="__pb_style">html,body{background:#03060e!important;}#__post_boot{position:fixed;inset:0;background:#03060e;z-index:2147483647;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#bfe9ff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:6px;font-size:13px;transition:opacity 1.2s ease;pointer-events:none;will-change:opacity;}#__post_boot .__pb_orb{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle,rgba(140,224,255,.3) 0%,rgba(58,120,200,.12) 60%,transparent 100%);animation:__pb_orb 3s ease-in-out infinite;}@keyframes __pb_orb{0%,100%{transform:scale(.96);opacity:.3;}50%{transform:scale(1.03);opacity:.55;}}#__post_boot.gone{opacity:0;}</style>\\n';
+  var TRANSITION_HTML = '<div id="__post_boot"><div class="__pb_orb"></div><div>已抵达 · 数字彼岸</div></div><script data-pb="1">window.addEventListener(\\'load\\',function(){setTimeout(function(){function safeFade(){var pb=document.getElementById(\\'__post_boot\\');if(!pb)return;pb.classList.add(\\'gone\\');setTimeout(function(){if(pb.parentNode)pb.parentNode.removeChild(pb);var st=document.getElementById(\\'__pb_style\\');if(st&&st.parentNode)st.parentNode.removeChild(st);},1400);}if(window.requestAnimationFrame){requestAnimationFrame(function(){requestAnimationFrame(safeFade);});}else{safeFade();}},900);});<\\/script>';
 
   function injectGuard(html){
     // 在 </head> 前插入样式
@@ -176,7 +168,7 @@ TARGETS.forEach((t) => {
   // 把 KEY 也做轻度拆分混淆（不让 grep 直接拿到完整密钥）
   const keyChars = Array.from(KEY).map((c) => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0')).join('');
   const keyJsLiteral = '"' + keyChars + '"';
-  const out = buildLoaderHtml({ title: t.title, payload, keyJsLiteral, mode: t.mode });
+  const out = buildLoaderHtml({ title: t.title, payload, keyJsLiteral });
   fs.writeFileSync(outFull, out, 'utf-8');
   const srcKb = (Buffer.byteLength(html, 'utf-8') / 1024).toFixed(1);
   const outKb = (Buffer.byteLength(out, 'utf-8') / 1024).toFixed(1);
