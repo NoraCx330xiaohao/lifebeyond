@@ -1268,7 +1268,7 @@
     .ai-engine-row button { flex:1; padding:12px; border-radius:11px; border:1px solid rgba(180,200,255,0.22); background:linear-gradient(135deg, rgba(120,160,255,0.18) 0%, rgba(180,140,255,0.18) 100%); color:#f1f5ff; cursor:pointer; font-size:13px; transition:all 0.25s; letter-spacing:0.4px; }
     .ai-engine-row button.ghost { background:transparent; color:rgba(220,230,255,0.65); }
     .ai-engine-row button:hover { transform:translateY(-1px); border-color:rgba(180,200,255,0.4); }
-    .ai-engine-status { margin-top:14px; padding:12px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(180,200,255,0.12); border-radius:12px; font-size:12px; color:rgba(220,230,255,0.7); line-height:1.7; min-height:42px; }
+    .ai-engine-status { margin-top:14px; padding:12px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(180,200,255,0.12); border-radius:12px; font-size:12px; color:rgba(220,230,255,0.7); line-height:1.7; min-height:42px; white-space:pre-line; word-break:break-word; }
     .ai-engine-status.ok { border-color:rgba(120,220,160,0.34); background:rgba(60,180,120,0.08); color:#bff5d5; }
     .ai-engine-status.err { border-color:rgba(255,150,170,0.34); background:rgba(220,80,110,0.08); color:#ffb6c1; }
     .ai-engine-presets { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
@@ -9599,12 +9599,14 @@ window.addEventListener('touchmove', e => {
 const AI_ENGINE_KEY = 'lifebeyond_ai_engine_v1';
 const AI_PRESET_MODELS = {
   openrouter: [
-    { id:'deepseek/deepseek-chat', name:'DeepSeek Chat' },
-    { id:'deepseek/deepseek-chat-v3-0324:free', name:'DeepSeek V3 · Free' },
+    { id:'deepseek/deepseek-chat-v3-0324:free', name:'DeepSeek V3 · Free ★' },
     { id:'qwen/qwen-2.5-72b-instruct:free', name:'Qwen 2.5 72B · Free' },
     { id:'meta-llama/llama-3.3-70b-instruct:free', name:'Llama 3.3 70B · Free' },
     { id:'mistralai/mistral-7b-instruct:free', name:'Mistral 7B · Free' },
-    { id:'google/gemma-2-9b-it:free', name:'Gemma 2 9B · Free' }
+    { id:'google/gemma-2-9b-it:free', name:'Gemma 2 9B · Free' },
+    { id:'google/gemini-2.0-flash-exp:free', name:'Gemini 2.0 Flash · Free' },
+    { id:'nvidia/nemotron-nano-9b-v2:free', name:'Nemotron Nano · Free' },
+    { id:'deepseek/deepseek-chat', name:'DeepSeek Chat（付费）' }
   ],
   deepseek: [
     { id:'deepseek-chat', name:'DeepSeek Chat' },
@@ -9618,7 +9620,7 @@ const AI_PRESET_MODELS = {
   ]
 };
 const AI_PROVIDER_DEFAULTS = {
-  openrouter: { baseUrl:'https://openrouter.ai/api/v1', model:'deepseek/deepseek-chat' },
+  openrouter: { baseUrl:'https://openrouter.ai/api/v1', model:'deepseek/deepseek-chat-v3-0324:free' },
   deepseek:   { baseUrl:'https://api.deepseek.com/v1',  model:'deepseek-chat' },
   custom:     { baseUrl:'https://api.openai.com/v1',     model:'gpt-4o-mini' },
   local:      { baseUrl:'http://localhost:11434/v1',    model:'qwen2.5' }
@@ -9666,7 +9668,7 @@ function saveAIEngine() {
     provider: document.getElementById('ai-engine-provider').value,
     baseUrl: document.getElementById('ai-engine-baseurl').value.trim() || AI_PROVIDER_DEFAULTS[document.getElementById('ai-engine-provider').value].baseUrl,
     apiKey: document.getElementById('ai-engine-key').value.trim(),
-    model: document.getElementById('ai-engine-model').value.trim() || 'deepseek/deepseek-chat',
+    model: document.getElementById('ai-engine-model').value.trim() || 'deepseek/deepseek-chat-v3-0324:free',
     temperature: parseFloat(document.getElementById('ai-engine-temp').value) || 0.85
   };
   setAIEngineConfig(cfg);
@@ -9679,7 +9681,7 @@ async function testAIEngine() {
     provider: document.getElementById('ai-engine-provider').value,
     baseUrl: document.getElementById('ai-engine-baseurl').value.trim() || AI_PROVIDER_DEFAULTS[document.getElementById('ai-engine-provider').value].baseUrl,
     apiKey: document.getElementById('ai-engine-key').value.trim(),
-    model: document.getElementById('ai-engine-model').value.trim() || 'deepseek/deepseek-chat',
+    model: document.getElementById('ai-engine-model').value.trim() || 'deepseek/deepseek-chat-v3-0324:free',
     temperature: 0.7
   };
   const s = document.getElementById('ai-engine-status');
@@ -9692,7 +9694,20 @@ async function testAIEngine() {
     if (!reply) throw new Error('empty');
     s.className = 'ai-engine-status ok'; s.textContent = '✓ 连通成功 · 模型回复：' + reply.slice(0, 120);
   } catch (e) {
-    s.className = 'ai-engine-status err'; s.textContent = '✗ 连通失败：' + (e.message || e);
+    const msg = (e && e.message) ? e.message : String(e);
+    let hint = '';
+    if (/402/.test(msg) || /Insufficient credits/i.test(msg)) {
+      hint = '\n→ 该模型需要付费额度。请改用带 :free 后缀的免费模型，例如 deepseek/deepseek-chat-v3-0324:free 或 qwen/qwen-2.5-72b-instruct:free';
+    } else if (/401/.test(msg) || /Unauthorized/i.test(msg) || /Invalid.+key/i.test(msg)) {
+      hint = '\n→ Key 无效或未填。请到 openrouter.ai/keys 重新生成。';
+    } else if (/404/.test(msg) || /not.*found/i.test(msg)) {
+      hint = '\n→ 模型 ID 不存在。请从下方快捷模型 chip 中选一个免费模型。';
+    } else if (/429/.test(msg) || /rate.?limit/i.test(msg)) {
+      hint = '\n→ 触发限流，稍等几秒重试，或换一个模型。';
+    } else if (/Failed to fetch/i.test(msg) || /NetworkError/i.test(msg)) {
+      hint = '\n→ 网络不通。检查能否访问 openrouter.ai；本地 Ollama 需先 ollama serve。';
+    }
+    s.className = 'ai-engine-status err'; s.textContent = '✗ 连通失败：' + msg + hint;
   }
 }
 async function callAIEngineWithConfig(cfg, messages, opts) {
