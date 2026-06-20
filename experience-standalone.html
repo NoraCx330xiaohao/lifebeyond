@@ -10913,7 +10913,7 @@ class CivilizationGalaxy {
       const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
       this._mouseNDC.set(x, y);
-      const hit = this._pickFigure();
+      const hit = this._pickFigure({ click: true });
       if (hit && hit.fid >= 0 && this.figures[hit.fid]) {
         // 飞到「被点击的那颗实际粒子」（不是固定主星），点击与飞行视觉一致
         this.flyToFigure(hit.fid, { x: hit.x, y: hit.y, z: hit.z, particleIdx: hit.particleIdx });
@@ -10953,7 +10953,7 @@ class CivilizationGalaxy {
     window.addEventListener('keyup', this._onKeyUp);
   }
 
-  _pickFigure() {
+  _pickFigure(opts) {
     if (!this.galaxy) return null;
     this.raycaster.setFromCamera(this._mouseNDC, this.camera);
     const intersects = this.raycaster.intersectObject(this.galaxy);
@@ -10966,6 +10966,7 @@ class CivilizationGalaxy {
     const projVec = new THREE.Vector3();
     let best = null;
     let bestScore = Infinity;
+    let bestNdcDist2 = Infinity;
     for (const it of intersects) {
       const pi = it.index;
       const fid = idArr[pi];
@@ -10975,10 +10976,12 @@ class CivilizationGalaxy {
       projVec.project(this.camera);                // → NDC 空间
       const dx = projVec.x - this._mouseNDC.x;
       const dy = projVec.y - this._mouseNDC.y;
+      const ndcDist2 = dx*dx + dy*dy;              // 屏幕距离（NDC 平方）
       // 综合屏幕距离 + 相机远近（更近的优先）
-      const score = (dx*dx + dy*dy) * 1000 + it.distance * 0.001;
+      const score = ndcDist2 * 1000 + it.distance * 0.001;
       if (score < bestScore) {
         bestScore = score;
+        bestNdcDist2 = ndcDist2;
         best = {
           fid: fid,
           particleIdx: pi,
@@ -10987,6 +10990,14 @@ class CivilizationGalaxy {
           z: posArr[pi*3+2]
         };
       }
+    }
+    // 再叠一层「屏幕距离阈值」——避免靠近相机的远处粒子因 threshold 透视放大
+    // 而在视觉虚空也命中。NDC 范围 [-1,1]：宽度 2，所以 0.024 ≈ 屏幕宽度的 1.2%。
+    // hover 用更严格的 0.024（约 1080p 下 23px），click 略宽松 0.045（约 43px）
+    if (best) {
+      const isClick = opts && opts.click;
+      const limitNdc = isClick ? 0.045 : 0.024;
+      if (bestNdcDist2 > limitNdc * limitNdc) return null;
     }
     return best;
   }
