@@ -3010,7 +3010,12 @@ async function sendChatMessage() {
     streamBubble.innerHTML = (full || '').replace(/\n/g,'<br>') + '<span class="stream-caret">▍</span>';
     const c = document.getElementById('chat-messages'); c.scrollTop = c.scrollHeight;
   } : null;
-  const reply = await callLocalModel(messages, fallback, { onDelta, maxTokens:500 });
+  const onFallback = cfgPresent ? (next, info) => {
+    // 限流时上方 typing 文字提示
+    const t = document.getElementById('chat-typing-text');
+    if (t) t.textContent = '主模型限流，已切到 ' + (next.split('/').pop().split(':')[0]) + '…';
+  } : null;
+  const reply = await callLocalModel(messages, fallback, { onDelta, onFallback, maxTokens:500 });
   if (streamBubble) {
     // 流式完成，记录到历史并去掉光标
     chatHistory[chatPersona.id].push({ role:'ai', content:reply });
@@ -9686,17 +9691,30 @@ async function testAIEngine() {
   };
   const s = document.getElementById('ai-engine-status');
   s.className = 'ai-engine-status'; s.textContent = '正在请求 ' + cfg.model + ' …';
+  let switched = null;
   try {
     const reply = await callAIEngineWithConfig(cfg, [
       { role:'system', content:'You are a poetic companion in a digital cosmos.' },
       { role:'user', content:'用一句温柔的话向我打个招呼。' }
-    ], { stream:false, maxTokens:120 });
+    ], {
+      stream:false,
+      maxTokens:120,
+      onFallback: (next, info) => {
+        switched = { next, from: info.from, reason: info.reason };
+        s.textContent = '主模型 ' + info.from + ' ' + info.reason + '，正在切到 ' + next + ' 重试…';
+      }
+    });
     if (!reply) throw new Error('empty');
-    s.className = 'ai-engine-status ok'; s.textContent = '✓ 连通成功 · 模型回复：' + reply.slice(0, 120);
+    if (switched) {
+      s.className = 'ai-engine-status ok';
+      s.textContent = '✓ 主模型限流，已自动切到 ' + switched.next + ' 测试通过\n模型回复：' + reply.slice(0, 120) + '\n\n建议：把模型改为 ' + switched.next + '，或保持当前主模型（限流时会自动切换）。';
+    } else {
+      s.className = 'ai-engine-status ok';
+      s.textContent = '✓ 连通成功 · 模型回复：' + reply.slice(0, 120);
+    }
   } catch (e) {
     const msg = (e && e.message) ? e.message : String(e);
     let hint = '';
-    // OpenRouter 经常下架免费 slug，错误里常带 "use this slug instead"
     const slugMatch = msg.match(/use this slug instead:\s*([\w\-./:]+)/i);
     if (/unavailable for free/i.test(msg) || /Free version.*unavailable/i.test(msg)) {
       hint = '\n→ 该免费模型已被 OpenRouter 下架。建议改用以下长期稳定的免费模型之一：\n   • meta-llama/llama-3.3-70b-instruct:free（推荐 ★）\n   • qwen/qwen-2.5-72b-instruct:free\n   • google/gemini-2.0-flash-exp:free\n   • mistralai/mistral-7b-instruct:free';
@@ -9707,15 +9725,65 @@ async function testAIEngine() {
       hint = '\n→ Key 无效或未填。请到 openrouter.ai/keys 重新生成。';
     } else if (/404/.test(msg) || /not.*found/i.test(msg) || /No endpoints/i.test(msg)) {
       hint = '\n→ 模型 ID 不存在或已下线。从下方快捷 chip 选一个，或试 meta-llama/llama-3.3-70b-instruct:free。';
-    } else if (/429/.test(msg) || /rate.?limit/i.test(msg)) {
-      hint = '\n→ 触发限流，稍等几秒重试，或换一个模型。';
+    } else if (/429/.test(msg) || /rate.?limit/i.test(msg) || /upstream/i.test(msg)) {
+      hint = '\n→ 所有备选免费模型同时被限流（很罕见）。建议：\n   • 等 30-60 秒后再点测试\n   • 到 openrouter.ai/credits 充 $10 一次性扩大免费额度\n   • 或切到 DeepSeek 官方 / Ollama 本地引擎';
     } else if (/Failed to fetch/i.test(msg) || /NetworkError/i.test(msg)) {
       hint = '\n→ 网络不通。检查能否访问 openrouter.ai；本地 Ollama 需先 ollama serve。';
     }
     s.className = 'ai-engine-status err'; s.textContent = '✗ 连通失败：' + msg + hint;
   }
 }
+// OpenRouter 限流时自动切换的备选免费模型链（按稳定性排序）
+const OPENROUTER_FALLBACK_CHAIN = [
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'qwen/qwen-2.5-72b-instruct:free',
+  'google/gemini-2.0-flash-exp:free',
+  'mistralai/mistral-7b-instruct:free',
+  'google/gemma-2-9b-it:free',
+  'meta-llama/llama-3.2-3b-instruct:free'
+];
+
 async function callAIEngineWithConfig(cfg, messages, opts) {
+  opts = opts || {};
+  const isOR = cfg.provider === 'openrouter';
+  const tried = new Set();
+  // 主模型 + 自动 fallback（仅 OpenRouter 启用，且原模型必须是免费/未付费）
+  let attempts = [cfg.model];
+  if (isOR) {
+    for (const m of OPENROUTER_FALLBACK_CHAIN) if (m !== cfg.model) attempts.push(m);
+  }
+  let lastErr = null;
+  let lastStatus = 0;
+  for (let i = 0; i < attempts.length; i++) {
+    const m = attempts[i];
+    if (tried.has(m)) continue;
+    tried.add(m);
+    try {
+      const r = await callAIEngineOnce({ ...cfg, model: m }, messages, opts, m !== cfg.model && opts.onFallback ? opts.onFallback : null);
+      return r;
+    } catch (e) {
+      lastErr = e;
+      const msg = (e && e.message) ? e.message : String(e);
+      const status = parseInt((msg.match(/^(\d{3})/) || [])[1]) || 0;
+      lastStatus = status;
+      // 仅对 429（限流）/ 502 / 503 / 524（上游故障） 自动切换；401/402/404 是配置问题，不切
+      const transient = status === 429 || status === 502 || status === 503 || status === 524 ||
+                        /rate.?limit/i.test(msg) || /upstream/i.test(msg) || /timeout/i.test(msg);
+      if (!isOR || !transient) throw e;
+      // 切换前给一点重试间隔（指数退避）
+      if (i < attempts.length - 1) {
+        await new Promise(r => setTimeout(r, 400 + i * 250));
+        if (opts.onFallback) {
+          try { opts.onFallback(attempts[i + 1], { from: m, reason: '上游限流，自动换模型' }); } catch(_){}
+        }
+        continue;
+      }
+    }
+  }
+  // 全链路都败：抛出最后一个错误
+  throw lastErr || new Error('所有备选模型均请求失败');
+}
+async function callAIEngineOnce(cfg, messages, opts, onSwitched) {
   opts = opts || {};
   const headers = { 'Content-Type':'application/json' };
   if (cfg.apiKey) headers['Authorization'] = 'Bearer ' + cfg.apiKey;
@@ -9735,7 +9803,7 @@ async function callAIEngineWithConfig(cfg, messages, opts) {
     const res = await fetch(url, { method:'POST', headers, body:JSON.stringify(body) });
     if (!res.ok) {
       const t = await res.text().catch(()=>'');
-      throw new Error(res.status + ' ' + t.slice(0, 160));
+      throw new Error(res.status + ' ' + t.slice(0, 220));
     }
     const data = await res.json();
     return data.choices?.[0]?.message?.content?.trim() || '';
@@ -9781,6 +9849,7 @@ async function callLocalModel(messages, fallbackFn, options) {
       const reply = await callAIEngineWithConfig(cfg, messages, {
         stream: !!options.onDelta,
         onDelta: options.onDelta,
+        onFallback: options.onFallback,
         maxTokens: options.maxTokens || 500,
         temperature: options.temperature
       });
