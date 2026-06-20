@@ -548,62 +548,6 @@ footer a:hover { color: var(--gold); }
   .craft-stats { gap: 32px; flex-wrap: wrap; }
   footer { flex-direction: column; align-items: start; padding: 32px 24px; }
 }
-  /* ========== 星海漫游过渡（柔光淡入） ========== */
-  .portal-overlay{position:fixed;inset:0;z-index:2147483647;pointer-events:none;overflow:hidden;background:transparent;contain:strict;will-change:opacity;}
-  /* 柔雾层：青蓝色径向渐变，从中心轻轻向外溢出 */
-  .portal-mist{position:absolute;inset:-10%;opacity:0;pointer-events:none;
-    background:
-      radial-gradient(ellipse 60% 60% at 50% 50%, rgba(160,220,255,0.55) 0%, rgba(80,160,220,0.32) 22%, rgba(20,60,100,0.18) 48%, rgba(2,8,18,0) 75%),
-      radial-gradient(ellipse 30% 28% at 50% 50%, rgba(255,255,255,0.7) 0%, rgba(200,235,255,0.25) 30%, transparent 60%);
-    will-change:opacity, transform; transform:scale(0.85) translate3d(0,0,0);}
-  .portal-mist.go{animation:mistBloom 1.6s cubic-bezier(.16,.84,.32,1) forwards;}
-  /* 星辰汇聚层：背景星轨呼吸 + 慢转 */
-  .portal-stars{position:absolute;inset:-30%;opacity:0;will-change:opacity, transform;transform:translate3d(-50%,-50%,0) scale(1);left:50%;top:50%;width:200vmax;height:200vmax;
-    background:
-      radial-gradient(1px 1px at 12% 18%, #e6f4ff 50%, transparent 51%),
-      radial-gradient(1px 1px at 28% 64%, #b8d8ff 50%, transparent 51%),
-      radial-gradient(1px 1px at 41% 8%,  #fff 50%, transparent 51%),
-      radial-gradient(1px 1px at 56% 78%, #c8e4ff 50%, transparent 51%),
-      radial-gradient(1px 1px at 70% 32%, #e6f4ff 50%, transparent 51%),
-      radial-gradient(1px 1px at 84% 56%, #fff8e0 50%, transparent 51%),
-      radial-gradient(1px 1px at 92% 22%, #b8d8ff 50%, transparent 51%),
-      radial-gradient(1px 1px at 8% 44%,  #fff 50%, transparent 51%),
-      radial-gradient(1px 1px at 36% 88%, #c8e4ff 50%, transparent 51%),
-      radial-gradient(1px 1px at 64% 12%, #e6f4ff 50%, transparent 51%);
-    background-size: 220px 220px, 280px 280px, 320px 320px, 200px 200px, 260px 260px, 240px 240px, 300px 300px, 280px 280px, 220px 220px, 260px 260px;}
-  .portal-stars.go{animation:starsRoam 1.6s ease-out forwards;}
-  /* 中心星海开口（漂浮的星雾内核，无 box-shadow，纯 gradient） */
-  .portal-core{position:absolute;left:50%;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;
-    background:radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(180,225,255,0.6) 35%, rgba(80,150,210,0.3) 65%, rgba(20,60,100,0) 100%);
-    opacity:0;will-change:transform, opacity;transform:translate3d(0,0,0) scale(0.4);filter:blur(0.5px);}
-  .portal-core.go{animation:coreBloom 1.6s cubic-bezier(.2,.8,.25,1) forwards;}
-  /* 内容容器淡入 */
-  body.portal-leaving > *:not(.portal-overlay){
-    will-change:filter, opacity, transform;
-    animation:pageLeave 1.4s cubic-bezier(.4,0,.6,1) forwards;
-  }
-  @keyframes mistBloom{
-    0%  {opacity:0; transform:scale(0.85) translate3d(0,0,0);}
-    35% {opacity:0.85;}
-    70% {opacity:1; transform:scale(1.15) translate3d(0,0,0);}
-    100%{opacity:1; transform:scale(1.4) translate3d(0,0,0);}
-  }
-  @keyframes starsRoam{
-    0%  {opacity:0; transform:translate3d(-50%,-50%,0) scale(1);}
-    25% {opacity:0.9;}
-    100%{opacity:0; transform:translate3d(-50%,-50%,0) scale(1.6);}
-  }
-  @keyframes coreBloom{
-    0%  {opacity:0; transform:translate3d(0,0,0) scale(0.4);}
-    20% {opacity:1;}
-    55% {opacity:1; transform:translate3d(0,0,0) scale(35);}
-    100%{opacity:1; transform:translate3d(0,0,0) scale(140);}
-  }
-  @keyframes pageLeave{
-    0%  {opacity:1; filter:blur(0px) brightness(1);     transform:scale(1)    translate3d(0,0,0);}
-    50% {opacity:0.65; filter:blur(2px) brightness(1.05); transform:scale(0.985) translate3d(0,0,0);}
-    100%{opacity:0;   filter:blur(8px) brightness(0.9); transform:scale(0.96)  translate3d(0,0,0);}
-  }
 </style>
 </head>
 <body>
@@ -1224,36 +1168,8 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   requestAnimationFrame(frame);
 })();
 
-/* ========== 星球跳跃过渡 ========== */
+/* ========== 跳转预取（让点击进入秒开，不再卡顿） ========== */
 (function(){
-  function launchPortal(url){
-    // 若已有 overlay，直接跳
-    if(document.getElementById('portal-overlay')){location.href=url;return;}
-    var ov=document.createElement('div');ov.id='portal-overlay';ov.className='portal-overlay';
-
-    // 三层柔光：星辰漫游层 → 柔雾层 → 中心星海开口
-    var stars=document.createElement('div');stars.className='portal-stars';ov.appendChild(stars);
-    var mist =document.createElement('div');mist .className='portal-mist'; ov.appendChild(mist);
-    var core =document.createElement('div');core .className='portal-core'; ov.appendChild(core);
-
-    document.body.appendChild(ov);
-
-    // 冻结滚动 + 当前页柔淡出
-    document.body.style.overflow='hidden';
-    document.body.classList.add('portal-leaving');
-
-    // 动画时间线（柔光淡入式，无突兀闪光）
-    requestAnimationFrame(function(){
-      stars.classList.add('go');
-      mist .classList.add('go');
-      core .classList.add('go');
-    });
-
-    // 1.55s 后跳转（动画 1.6s，提前 50ms 让网络与 onload 衔接更顺）
-    setTimeout(function(){location.href=url;},1550);
-  }
-
-  // 预取防窥版，跳转时秒开，消除接入卡顿
   function prefetch(href){
     if(!href)return;
     var l=document.createElement('link');l.rel='prefetch';l.as='document';l.href=href;
@@ -1265,23 +1181,11 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       prefetch('lifebeyond.byzmy.pro.protected.html');
     },800);
   });
-  // 鼠标 hover 主 CTA 时再次预热
+  // 鼠标 hover 任意 CTA 时再次预热
   document.addEventListener('mouseover',function(e){
     var a=e.target.closest('a[href]');if(!a)return;
     var h=a.getAttribute('href')||'';
     if(h.indexOf('lifebeyond.byzmy')!==-1){prefetch(h);}
-  },true);
-
-  // 拦截所有跳转到功能页的链接
-  document.addEventListener('click',function(e){
-    var a=e.target.closest('a[href]');
-    if(!a)return;
-    var h=a.getAttribute('href')||'';
-    if(h.indexOf('lifebeyond.byzmy')!==-1 || h.indexOf('experience')!== -1){
-      e.preventDefault();
-      e.stopPropagation();
-      launchPortal(h);
-    }
   },true);
 })();
 </script>
