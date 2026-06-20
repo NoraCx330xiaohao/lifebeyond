@@ -217,14 +217,28 @@ class CivilizationGalaxy {
       const fig = figures[fi];
       const eraIdx = eraList.indexOf(fig.era);
       const dimIdx = fig.dimIndex !== undefined ? fig.dimIndex : 0;
-      const arm = fi % totalArms;
-      const armBase = (arm / totalArms) * Math.PI * 2;
-      const eraDist = eraIdx >= 0 ? 25 + eraIdx * 12 : 50;
-      // log-spiral placement matching background stars
-      const r = eraDist + (Math.random() - 0.5) * 8;
+      // 随机分布到 8 条旋臂的不同位置：
+      //   · 维度 dim 决定主要旋臂（6 维 → 6 条主臂），但允许 25% 概率落到相邻臂，避免同维聚团
+      //   · era 给出半径"档位"提示，但叠加大幅随机让人物在臂上各处都能出现
+      //   · 角度沿对数螺旋走，并叠加抖动让人物错落，不再按 fi % 8 排列
+      let armPick = dimIdx % totalArms;
+      const stray = Math.random();
+      if (stray < 0.18) armPick = (armPick + 1) % totalArms;
+      else if (stray < 0.30) armPick = (armPick + totalArms - 1) % totalArms;
+      else if (stray < 0.36) armPick = Math.floor(Math.random() * totalArms); // 6% 完全随机
+      const armBase = (armPick / totalArms) * Math.PI * 2;
+      // 半径：以 era 为提示，但叠加 ±18 的大幅随机，让同时代人也散落在不同半径
+      const eraDistHint = eraIdx >= 0 ? 22 + eraIdx * 11 : 28 + Math.random() * 50;
+      const r = Math.max(14, Math.min(GALAXY_R - 2,
+        eraDistHint + (Math.random() - 0.5) * 36
+      ));
       const spiralAngle = armBase + Math.log(Math.max(r, 1)) * ARM_B * 1.5;
-      const baseTheta = spiralAngle + (dimIdx / 6) * 0.4 + (Math.random() - 0.5) * 0.15;
-      const baseY = (Math.random() - 0.5) * GALAXY_H * 0.3;
+      // 角度抖动加大到 ±0.55 弧度（约 ±31°），让人物在旋臂宽度内自然散开
+      const baseTheta = spiralAngle + (Math.random() - 0.5) * 1.1;
+      // 高度允许小概率冒出盘面上下（1.5× 厚度），形成立体星海
+      const yJitter = Math.random() < 0.22 ? (Math.random() - 0.5) * GALAXY_H * 1.5
+                                            : (Math.random() - 0.5) * GALAXY_H * 0.45;
+      const baseY = yJitter;
       const baseX = r * Math.cos(baseTheta);
       const baseZ = r * Math.sin(baseTheta);
 
