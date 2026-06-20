@@ -1479,6 +1479,26 @@
 .token-manual .tm-btn { background: linear-gradient(135deg, rgba(99,230,255,0.2), rgba(162,133,255,0.2)); border: 1px solid rgba(99,230,255,0.3); border-radius: 8px; padding: 8px 18px; color: #63E6FF; font-size: 13px; cursor: pointer; white-space: nowrap; transition: all 0.3s; }
 .token-manual .tm-btn:hover { background: linear-gradient(135deg, rgba(99,230,255,0.35), rgba(162,133,255,0.35)); transform: scale(1.04); }
 .token-manual .tm-hint { color: rgba(255,255,255,0.3); font-size: 11px; margin: 6px 0 0; }
+.ai-create-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.ai-create-btn { background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.08)); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 6px; color: rgba(255,255,255,0.75); font-size: 12px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.ai-create-btn:hover { background: linear-gradient(135deg, rgba(99,230,255,0.12), rgba(162,133,255,0.12)); border-color: rgba(99,230,255,0.3); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(99,230,255,0.15); }
+.ai-create-btn .cost { font-size: 10px; color: rgba(255,215,122,0.6); }
+#aicreate-modal { display: none; position: fixed; inset: 0; z-index: 10010; }
+#aicreate-modal .acm-bg { position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+#aicreate-modal .acm-card { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 420px; max-width: 92vw; max-height: 80vh; overflow-y: auto; background: linear-gradient(135deg, rgba(12,31,58,0.92), rgba(7,20,38,0.95)); border: 1px solid rgba(99,230,255,0.15); border-radius: 16px; padding: 28px; box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 60px rgba(99,230,255,0.08); }
+#aicreate-modal .acm-close { position: absolute; top: 14px; right: 14px; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 18px; cursor: pointer; }
+#aicreate-modal .acm-title { font-size: 16px; color: #fff; margin-bottom: 6px; }
+#aicreate-modal .acm-cost { font-size: 13px; color: rgba(255,215,122,0.7); margin-bottom: 16px; }
+#aicreate-modal .acm-balance { font-size: 12px; color: rgba(255,255,255,0.35); margin-bottom: 16px; }
+#aicreate-modal textarea { width: 100%; min-height: 100px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; color: #fff; font-size: 14px; resize: vertical; outline: none; margin-bottom: 16px; }
+#aicreate-modal textarea:focus { border-color: rgba(99,230,255,0.4); }
+#aicreate-modal .acm-generate { width: 100%; padding: 12px; background: linear-gradient(135deg, rgba(99,230,255,0.2), rgba(162,133,255,0.2)); border: 1px solid rgba(99,230,255,0.3); border-radius: 10px; color: #63E6FF; font-size: 14px; cursor: pointer; transition: all 0.3s; }
+#aicreate-modal .acm-generate:hover { background: linear-gradient(135deg, rgba(99,230,255,0.35), rgba(162,133,255,0.35)); }
+#aicreate-modal .acm-generate:disabled { opacity: 0.4; cursor: not-allowed; }
+#aicreate-modal .acm-result { margin-top: 16px; padding: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: rgba(255,255,255,0.8); font-size: 13px; line-height: 1.7; white-space: pre-wrap; display: none; }
+#aicreate-modal .acm-actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; display: none; }
+#aicreate-modal .acm-action { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px 14px; color: rgba(255,255,255,0.55); font-size: 12px; cursor: pointer; transition: all 0.2s; }
+#aicreate-modal .acm-action:hover { background: rgba(99,230,255,0.1); color: #63E6FF; border-color: rgba(99,230,255,0.3); }
 
 /* ai gen result */
 .gen-result-header { text-align: center; color: #FFD37A; font-size: 15px; margin-bottom: 16px; }
@@ -2349,6 +2369,36 @@
   </div>
 </div>
 
+<!-- AI Creation Modal -->
+<div id="ai-creation-modal" class="modal-overlay" style="display:none;pointer-events:auto;">
+  <div class="modal-card" style="max-width:580px;">
+    <div class="modal-close" onclick="document.getElementById('ai-creation-modal').style.display='none'">&times;</div>
+    <div style="text-align:center;margin-bottom:18px;">
+      <div style="font-size:28px;">✦</div>
+      <div style="font-size:18px;font-weight:700;color:#fff;">AI 创作</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.5);margin-top:4px;">消耗 Token，让 AI 为你生成内容</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:2px;">当前余额：<span id="ac-balance" style="color:#FFD700;">0</span> 🪙</div>
+    </div>
+    <div id="ac-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;"></div>
+    <div id="ac-result" style="display:none;margin-top:14px;padding:14px 16px;background:rgba(255,255,255,.06);border-radius:10px;border:1px solid rgba(255,255,255,.1);">
+      <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:6px;" id="ac-result-label">生成结果</div>
+      <div id="ac-result-text" style="font-size:14px;color:rgba(255,255,255,.85);line-height:1.7;white-space:pre-wrap;"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button class="gra-btn" onclick="acRegenerate()" style="font-size:12px;">↻ 重新生成</button>
+        <button class="gra-btn" onclick="acSaveToMemory()" style="font-size:12px;">☆ 保存到记忆</button>
+        <button class="gra-btn gra-unlock" onclick="acUnlockDeeper()" style="font-size:12px;">✦ 解锁更深层</button>
+      </div>
+    </div>
+    <div id="ac-confirm" style="display:none;margin-top:14px;padding:12px 16px;background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.2);border-radius:10px;text-align:center;">
+      <div style="font-size:14px;color:#FFD700;margin-bottom:8px;" id="ac-confirm-text">确认消耗 50 Token 生成日记？</div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button onclick="acCancelConfirm()" style="padding:6px 18px;border-radius:8px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);border:none;cursor:pointer;font-size:13px;">取消</button>
+        <button onclick="acDoConfirm()" style="padding:6px 18px;border-radius:8px;background:linear-gradient(135deg,#FFD700,#FFA500);color:#000;border:none;cursor:pointer;font-weight:600;font-size:13px;">确认生成</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ==================== DATA ====================
 const personas = [
@@ -3031,6 +3081,7 @@ function showView(viewName, persona = null, skipHistory = false) {
   const weatherWidget = document.getElementById('weather-widget');
   if (weatherWidget) weatherWidget.style.display = viewName === 'chat' ? 'none' : '';
 
+  if (viewName !== 'civilization') { hideCivHoverLabel(); try { CivGalaxy.setHover(null); } catch(_){} }
   if (viewName === 'galaxy') { if (persona) selectedPersona = persona; initGalaxy(); }
   else if (viewName === 'community') initCommunity();
   else if (viewName === 'beyond') initBeyondView();
@@ -8565,13 +8616,14 @@ function showCivHoverLabel(figure, sx, sy) {
     civHoverLabelEl.innerHTML = `${figure.avatar||''} ${figure.name||''}<span class="civ-hover-label-sub">${figure.year||''}</span>`;
     civHoverLabelEl.style.left = sx + 'px';
     civHoverLabelEl.style.top = sy + 'px';
+    civHoverLabelEl.style.display = 'block';
     civHoverLabelEl.classList.add('show');
   } catch(_) {}
 }
 function hideCivHoverLabel() {
   try {
     if(!civHoverLabelEl) civHoverLabelEl = document.getElementById('civ-hover-label');
-    if(civHoverLabelEl) civHoverLabelEl.classList.remove('show');
+    if(civHoverLabelEl) { civHoverLabelEl.classList.remove('show'); civHoverLabelEl.style.display = 'none'; }
   } catch(_) {}
 }
 
@@ -10752,12 +10804,22 @@ setTimeout(()=>{ if(currentView==='universe'){ const p=personas[Math.floor(Math.
       </div>
     </div>
     <div class="token-manual">
-      <h3>手动充值</h3>
-      <div class="tm-row">
-        <input type="number" id="manual-token-input" min="1" max="10000" value="100" placeholder="输入数量" />
-        <button class="tm-btn" onclick="addManualTokens()">✦ 充入</button>
+      <h3>🪙 AI 创作</h3>
+      <p class="tm-hint">花费 Token 让智能体为你生成内容</p>
+      <div class="ai-create-grid">
+        <button class="ai-create-btn" onclick="openAICreate('diary')">📔 日记</button>
+        <button class="ai-create-btn" onclick="openAICreate('moments')">🌟 朋友圈</button>
+        <button class="ai-create-btn" onclick="openAICreate('mood')">💫 心情</button>
+        <button class="ai-create-btn" onclick="openAICreate('email')">✉️ 邮件</button>
+        <button class="ai-create-btn" onclick="openAICreate('memorySummary')">🔮 记忆摘要</button>
+        <button class="ai-create-btn" onclick="openAICreate('readingNotes')">📖 阅读笔记</button>
+        <button class="ai-create-btn" onclick="openAICreate('relationshipDecode')">💞 关系解码</button>
+        <button class="ai-create-btn" onclick="openAICreate('emotionAnalysis')">🌊 情绪分析</button>
+        <button class="ai-create-btn" onclick="openAICreate('futurePrediction')">🚀 未来预测</button>
+        <button class="ai-create-btn" onclick="openAICreate('memoryReconstruct')">🧩 记忆重构</button>
+        <button class="ai-create-btn" onclick="openAICreate('companionEvolution')">🦋 伴侣进化</button>
+        <button class="ai-create-btn" onclick="openAICreate('deepInteraction')">🌌 深度交互</button>
       </div>
-      <p class="tm-hint">输入 Token 数量直接充入账户（演示模式）</p>
     </div>
     <div class="token-spend">
       <h3>Token 消耗参考</h3>
