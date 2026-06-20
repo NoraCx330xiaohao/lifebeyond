@@ -206,7 +206,7 @@ class CivilizationGalaxy {
       const eraDist = eraIdx >= 0 ? 25 + eraIdx * 12 : 50;
       // log-spiral placement matching background stars
       const r = eraDist + (Math.random() - 0.5) * 8;
-      const spiralAngle = armBase + Math.log(Math.max(r, 1)) * SPIRAL_B;
+      const spiralAngle = armBase + Math.log(Math.max(r, 1)) * ARM_B * 1.5;
       const theta = spiralAngle + (dimIdx / 6) * 0.4 + (Math.random() - 0.5) * 0.15;
       const y = (Math.random() - 0.5) * GALAXY_H * 0.3;
 
@@ -244,6 +244,7 @@ class CivilizationGalaxy {
 
     // Custom shaders
     const vertShader = `
+      attribute vec3 color;
       attribute float aSize;
       attribute float aId;
       attribute float aFilter;
@@ -333,7 +334,6 @@ class CivilizationGalaxy {
       transparent: true,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
-      vertexColors: true,
     });
 
     this.galaxy = new THREE.Points(geo, mat);
