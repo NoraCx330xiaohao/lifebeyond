@@ -1043,25 +1043,9 @@
     /* ========================= COSMIC CURSOR ========================= */
     @media (pointer: fine) {
       body.cosmic-cursor-active, body.cosmic-cursor-active * { cursor: none !important; }
-      /* 模态框内部恢复原生鼠标，避免"看不到鼠标无法点" */
-      body.cosmic-cursor-active .monetization-modal,
-      body.cosmic-cursor-active .monetization-modal *,
-      body.cosmic-cursor-active .modal-overlay,
-      body.cosmic-cursor-active .modal-overlay * { cursor: auto !important; }
-      body.cosmic-cursor-active .monetization-modal button,
-      body.cosmic-cursor-active .monetization-modal .monetization-close,
-      body.cosmic-cursor-active .monetization-modal .monetization-backdrop,
-      body.cosmic-cursor-active .monetization-modal a,
-      body.cosmic-cursor-active .monetization-modal [onclick],
-      body.cosmic-cursor-active .modal-overlay button,
-      body.cosmic-cursor-active .modal-overlay .modal-close,
-      body.cosmic-cursor-active .modal-overlay [onclick] { cursor: pointer !important; }
-      body.cosmic-cursor-active .monetization-modal input,
-      body.cosmic-cursor-active .monetization-modal textarea,
-      body.cosmic-cursor-active .modal-overlay input,
-      body.cosmic-cursor-active .modal-overlay textarea { cursor: text !important; }
     }
-    .cosmic-cursor { position: fixed; inset: 0; width: 0; height: 0; pointer-events: none; z-index: 9999; opacity: 1; transition: opacity 0.3s ease; }
+    /* 自定义光点 cursor 必须高于所有模态框，否则 modal 打开就看不到指针 */
+    .cosmic-cursor { position: fixed; inset: 0; width: 0; height: 0; pointer-events: none; z-index: 2147483646; opacity: 1; transition: opacity 0.3s ease; }
     .cc-core {
       position: fixed; top: 0; left: 0; width: 7px; height: 7px; border-radius: 50%;
       background: radial-gradient(circle, #fff 0%, var(--gold) 55%, transparent 78%);
@@ -1094,7 +1078,7 @@
     }
     .cc-ripple {
       position: fixed; width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--cyan);
-      transform: translate(-50%, -50%) scale(1); pointer-events: none; z-index: 9996;
+      transform: translate(-50%, -50%) scale(1); pointer-events: none; z-index: 2147483645;
       opacity: 0.85; animation: ccRippleExpand 0.6s ease-out forwards;
     }
     @keyframes ccRippleExpand {
