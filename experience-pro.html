@@ -1440,8 +1440,8 @@
 .token-header h2 { color: #63E6FF; font-size: 20px; margin: 0 0 4px; }
 .token-header p { color: rgba(255,255,255,0.5); font-size: 13px; margin: 0; }
 .token-header strong { color: #63E6FF; }
-.token-earn, .token-buy, .token-spend { margin-bottom: 20px; }
-.token-earn h3, .token-buy h3, .token-spend h3 { color: rgba(255,255,255,0.6); font-size: 12px; margin: 0 0 10px; }
+.token-earn, .token-buy, .token-manual, .token-spend { margin-bottom: 20px; }
+.token-earn h3, .token-buy h3, .token-manual h3, .token-spend h3 { color: rgba(255,255,255,0.6); font-size: 12px; margin: 0 0 10px; }
 .token-earn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .te-item {
   display: flex; align-items: center; gap: 6px; padding: 10px 12px;
@@ -1473,6 +1473,12 @@
   font-size: 12px; color: rgba(255,255,255,0.5);
 }
 .ts-cost { color: #63E6FF; font-weight: 600; }
+.token-manual .tm-row { display: flex; gap: 10px; margin: 8px 0; }
+.token-manual input { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 14px; outline: none; }
+.token-manual input:focus { border-color: #63E6FF; box-shadow: 0 0 8px rgba(99,230,255,0.2); }
+.token-manual .tm-btn { background: linear-gradient(135deg, rgba(99,230,255,0.2), rgba(162,133,255,0.2)); border: 1px solid rgba(99,230,255,0.3); border-radius: 8px; padding: 8px 18px; color: #63E6FF; font-size: 13px; cursor: pointer; white-space: nowrap; transition: all 0.3s; }
+.token-manual .tm-btn:hover { background: linear-gradient(135deg, rgba(99,230,255,0.35), rgba(162,133,255,0.35)); transform: scale(1.04); }
+.token-manual .tm-hint { color: rgba(255,255,255,0.3); font-size: 11px; margin: 6px 0 0; }
 
 /* ai gen result */
 .gen-result-header { text-align: center; color: #FFD37A; font-size: 15px; margin-bottom: 16px; }
@@ -10729,28 +10735,37 @@ setTimeout(()=>{ if(currentView==='universe'){ const p=personas[Math.floor(Math.
     <div class="token-earn">
       <h3>赚取 Token</h3>
       <div class="token-earn-grid">
-        <div class="te-item" onclick="earnTokenDaily()"><span class="te-icon">🌅</span>每日签到<span class="te-amt">+5</span></div>
-        <div class="te-item" onclick="earnTokenCompanion()"><span class="te-icon">💫</span>持续陪伴<span class="te-amt">+3</span></div>
-        <div class="te-item" onclick="earnTokenShare()"><span class="te-icon">🌍</span>公开记忆<span class="te-amt">+2</span></div>
-        <div class="te-item" onclick="earnTokenCommunity()"><span class="te-icon">🤝</span>社区互动<span class="te-amt">+2</span></div>
-        <div class="te-item" onclick="earnTokenInvite()"><span class="te-icon">📨</span>邀请好友<span class="te-amt">+10</span></div>
+        <div class="te-item" onclick="earnTokenDaily()"><span class="te-icon">🌅</span>每日签到<span class="te-amt">+20</span></div>
+        <div class="te-item" onclick="earnTokenCompanion()"><span class="te-icon">💫</span>持续陪伴<span class="te-amt">+15</span></div>
+        <div class="te-item" onclick="earnTokenShare()"><span class="te-icon">🌍</span>公开记忆<span class="te-amt">+10</span></div>
+        <div class="te-item" onclick="earnTokenCommunity()"><span class="te-icon">🤝</span>社区互动<span class="te-amt">+10</span></div>
+        <div class="te-item" onclick="earnTokenInvite()"><span class="te-icon">📨</span>邀请好友<span class="te-amt">+30</span></div>
       </div>
     </div>
     <div class="token-buy">
       <h3>购买 Token</h3>
       <div class="token-buy-grid">
-        <div class="tb-item" onclick="buyTokens(10)"><div class="tb-amt">10 ✦</div><div class="tb-price">¥6</div></div>
-        <div class="tb-item" onclick="buyTokens(30)"><div class="tb-amt">30 ✦</div><div class="tb-price">¥16</div><div class="tb-badge">热门</div></div>
-        <div class="tb-item" onclick="buyTokens(100)"><div class="tb-amt">100 ✦</div><div class="tb-price">¥48</div><div class="tb-badge">超值</div></div>
-        <div class="tb-item" onclick="buyTokens(300)"><div class="tb-amt">300 ✦</div><div class="tb-price">¥128</div></div>
+        <div class="tb-item" onclick="buyTokens(50)"><div class="tb-amt">50 ✦</div><div class="tb-price">¥18</div></div>
+        <div class="tb-item" onclick="buyTokens(100)"><div class="tb-amt">100 ✦</div><div class="tb-price">¥32</div><div class="tb-badge">热门</div></div>
+        <div class="tb-item" onclick="buyTokens(300)"><div class="tb-amt">300 ✦</div><div class="tb-price">¥78</div><div class="tb-badge">超值</div></div>
+        <div class="tb-item" onclick="buyTokens(1000)"><div class="tb-amt">1000 ✦</div><div class="tb-price">¥198</div></div>
       </div>
+    </div>
+    <div class="token-manual">
+      <h3>手动充值</h3>
+      <div class="tm-row">
+        <input type="number" id="manual-token-input" min="1" max="10000" value="100" placeholder="输入数量" />
+        <button class="tm-btn" onclick="addManualTokens()">✦ 充入</button>
+      </div>
+      <p class="tm-hint">输入 Token 数量直接充入账户（演示模式）</p>
     </div>
     <div class="token-spend">
       <h3>Token 消耗参考</h3>
-      <div class="ts-row"><span>日记 / 动态 / 心情</span><span class="ts-cost">1 ✦</span></div>
-      <div class="ts-row"><span>邮件 / 记忆摘要 / 阅读笔记</span><span class="ts-cost">2 ✦</span></div>
-      <div class="ts-row"><span>关系解码 / 记忆重构 / 情绪分析</span><span class="ts-cost">3–5 ✦</span></div>
-      <div class="ts-row"><span>长期记忆 / 伴侣进化 / AI 深度交互</span><span class="ts-cost">5–10 ✦</span></div>
+      <div class="ts-row"><span>日记 / 动态 / 心情</span><span class="ts-cost">50 ✦</span></div>
+      <div class="ts-row"><span>邮件 / 记忆摘要 / 阅读笔记</span><span class="ts-cost">80 ✦</span></div>
+      <div class="ts-row"><span>关系解码 / 记忆重构 / 情绪分析</span><span class="ts-cost">120–180 ✦</span></div>
+      <div class="ts-row"><span>未来预测 / AI 深度交互</span><span class="ts-cost">200 ✦</span></div>
+      <div class="ts-row"><span>长期记忆 / 伴侣进化 / 深度重建</span><span class="ts-cost">250–300 ✦</span></div>
     </div>
   </div>
 </div>
@@ -10781,23 +10796,23 @@ function getDefaultProState() {
   return {
     chatUsed: 0,
     chatLimit: 300,
-    tokens: 15,            // starting gift
+    tokens: 200,           // starting gift
     isPro: false,
     proExpiry: null,
     features: {
-      diary:       { used: 0, limit: 5, cost: 1 },
-      moments:     { used: 0, limit: 5, cost: 1 },
-      mood:        { used: 0, limit: 5, cost: 1 },
-      email:       { used: 0, limit: 5, cost: 2 },
-      memorySummary:{ used: 0, limit: 5, cost: 2 },
-      readingNotes:{ used: 0, limit: 5, cost: 2 },
-      relationship:{ used: 0, limit: 5, cost: 4 },
-      memoryRecon: { used: 0, limit: 5, cost: 5 },
-      emotionAnalysis:{ used: 0, limit: 5, cost: 3 },
-      futureSim:   { used: 0, limit: 5, cost: 5 },
-      longMemory:  { used: 0, limit: 5, cost: 8 },
-      companionEvo:{ used: 0, limit: 5, cost: 7 },
-      deepInteract:{ used: 0, limit: 5, cost: 10 }
+      diary:       { used: 0, limit: 5, cost: 50 },
+      moments:     { used: 0, limit: 5, cost: 50 },
+      mood:        { used: 0, limit: 5, cost: 55 },
+      email:       { used: 0, limit: 5, cost: 80 },
+      memorySummary:{ used: 0, limit: 5, cost: 80 },
+      readingNotes:{ used: 0, limit: 5, cost: 90 },
+      relationship:{ used: 0, limit: 5, cost: 150 },
+      memoryRecon: { used: 0, limit: 5, cost: 180 },
+      emotionAnalysis:{ used: 0, limit: 5, cost: 160 },
+      futureSim:   { used: 0, limit: 5, cost: 200 },
+      longMemory:  { used: 0, limit: 5, cost: 260 },
+      companionEvo:{ used: 0, limit: 5, cost: 240 },
+      deepInteract:{ used: 0, limit: 5, cost: 300 }
     },
     lastDailyClaim: null
   };
@@ -10950,6 +10965,17 @@ function openUniverseProModal()  { document.getElementById('universe-pro-modal')
 function closeUniverseProModal() { document.getElementById('universe-pro-modal').style.display = 'none'; }
 function openTokenShopModal()    { document.getElementById('token-shop-modal').style.display = 'flex'; renderTokenBadge(); }
 function closeTokenShopModal()   { document.getElementById('token-shop-modal').style.display = 'none'; }
+function addManualTokens() {
+  var inp = document.getElementById('manual-token-input');
+  var n = parseInt(inp.value, 10);
+  if (!n || n <= 0) { showCosmicReminder('请输入有效的 Token 数量', '#ff6b6b'); return; }
+  proState.tokens += n;
+  saveMonetization();
+  renderTokenBadge();
+  renderChatEnergy();
+  inp.value = '';
+  showCosmicReminder('✦ 已充入 ' + n + ' Token', '#4ecdc4');
+}
 
 function subscribePro() {
   proState.isPro = true;
@@ -10965,15 +10991,15 @@ function subscribePro() {
 function earnTokenDaily() {
   const today = new Date().toISOString().slice(0,10);
   if (proState.lastDailyClaim === today) { showCosmicReminder('今日已签到 ✦'); return; }
-  proState.tokens += 5;
+  proState.tokens += 10;
   proState.lastDailyClaim = today;
   saveProState(proState);
   renderTokenBadge();
-  showCosmicReminder('签到成功 +5 ✦');
+  showCosmicReminder('签到成功 +10 ✦');
 }
-function earnTokenCompanion() { proState.tokens += 3; saveProState(proState); renderTokenBadge(); showCosmicReminder('持续陪伴 +3 ✦'); }
-function earnTokenShare()     { proState.tokens += 2; saveProState(proState); renderTokenBadge(); showCosmicReminder('公开记忆 +2 ✦'); }
-function earnTokenCommunity() { proState.tokens += 2; saveProState(proState); renderTokenBadge(); showCosmicReminder('社区互动 +2 ✦'); }
+function earnTokenCompanion() { proState.tokens += 12; saveProState(proState); renderTokenBadge(); showCosmicReminder('持续陪伴 +12 ✦'); }
+function earnTokenShare()     { proState.tokens += 8; saveProState(proState); renderTokenBadge(); showCosmicReminder('公开记忆 +8 ✦'); }
+function earnTokenCommunity() { proState.tokens += 10; saveProState(proState); renderTokenBadge(); showCosmicReminder('社区互动 +10 ✦'); }
 function earnTokenInvite()    { proState.tokens += 10; saveProState(proState); renderTokenBadge(); showCosmicReminder('邀请成功 +10 ✦'); }
 function buyTokens(n)         { proState.tokens += n; saveProState(proState); renderTokenBadge(); showCosmicReminder(n + ' Token 已到账 ✦'); }
 
