@@ -10,7 +10,7 @@ class CivilizationGalaxy {
     this.uniforms = null;
     this.figures = []; this.figureIndex = new Map();
     this.raycaster = new THREE.Raycaster();
-    this.raycaster.params.Points.threshold = 4.5;
+    this.raycaster.params.Points.threshold = 2.2;
     this._mouseNDC = new THREE.Vector2(-9, -9);
     this._mouseScreen = { x: 0, y: 0 };
     this._hoveredId = -1; this._hoverFrame = 0;
@@ -250,11 +250,12 @@ class CivilizationGalaxy {
 
       // 伴星（共享 fid，点击任一颗都展开同一位人物）
       for (let s = 0; s < SAT_PER_FIG; s++) {
-        const orbit = 1.4 + Math.random() * 3.2;          // 与主星的距离
+        // 收紧轨道半径（0.8 ~ 2.2），避免与相邻人物星簇互相穿插，确保点中即对位
+        const orbit = 0.8 + Math.random() * 1.4;
         const phi = Math.random() * Math.PI * 2;          // 球面角
         const elev = (Math.random() - 0.5) * 0.55;        // 抬升角（控制 y）
         const ox = orbit * Math.cos(phi) * Math.cos(elev);
-        const oy = orbit * Math.sin(elev) * 0.6;          // 压扁
+        const oy = orbit * Math.sin(elev) * 0.5;          // 压扁
         const oz = orbit * Math.sin(phi) * Math.cos(elev);
         positions[idx*3]   = baseX + ox;
         positions[idx*3+1] = baseY + oy;
@@ -501,20 +502,35 @@ class CivilizationGalaxy {
     if (!intersects.length) return null;
     const idArr = this.galaxy.geometry.attributes.aId.array;
     const posArr = this.galaxy.geometry.attributes.position.array;
+    const filtArr = this.galaxy.geometry.attributes.aFilter.array;
+    // 在所有命中的 figure 粒子里，选「屏幕投影距离鼠标最近」的那颗
+    // 这样保证用户点哪颗 → 命中哪颗 → 飞过去也是哪颗 → 弹卡是同一位人物
+    const projVec = new THREE.Vector3();
+    let best = null;
+    let bestScore = Infinity;
     for (const it of intersects) {
-      const id = idArr[it.index];
-      if (id >= 0) {
-        const pi = it.index;
-        return {
-          fid: id,
+      const pi = it.index;
+      const fid = idArr[pi];
+      if (fid < 0) continue;                       // 跳过背景星
+      if (filtArr[pi] < 0.5) continue;             // 跳过被筛掉的（透明）粒子
+      projVec.set(posArr[pi*3], posArr[pi*3+1], posArr[pi*3+2]);
+      projVec.project(this.camera);                // → NDC 空间
+      const dx = projVec.x - this._mouseNDC.x;
+      const dy = projVec.y - this._mouseNDC.y;
+      // 综合屏幕距离 + 相机远近（更近的优先）
+      const score = (dx*dx + dy*dy) * 1000 + it.distance * 0.001;
+      if (score < bestScore) {
+        bestScore = score;
+        best = {
+          fid: fid,
           particleIdx: pi,
-          x: posArr[pi * 3],
-          y: posArr[pi * 3 + 1],
-          z: posArr[pi * 3 + 2]
+          x: posArr[pi*3],
+          y: posArr[pi*3+1],
+          z: posArr[pi*3+2]
         };
       }
     }
-    return null;
+    return best;
   }
 
   /* ──── Fly camera to figure ──── */
