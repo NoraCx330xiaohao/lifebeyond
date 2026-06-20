@@ -137,6 +137,75 @@ body {
   transition: transform 0.3s, box-shadow 0.3s;
 }
 .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(255,211,122,0.45); }
+.nav-cta-pro {
+  padding: 9px 22px; border-radius: 999px;
+  background: linear-gradient(135deg, #A285FF 0%, #6FE2FF 100%);
+  color: #0b0820 !important; font-weight: 600 !important; letter-spacing: 0.04em !important;
+  box-shadow: 0 8px 22px rgba(162,133,255,0.32);
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+}
+.nav-cta-pro:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(162,133,255,0.5); }
+.nav-cta-pro::after {
+  content: 'PRO'; position: absolute; top: -8px; right: -10px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+  background: linear-gradient(135deg, #FFD37A, #FFA85F);
+  color: #1a0f00; padding: 2px 6px; border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(255,168,95,0.4);
+}
+.cta-pro {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 18px 40px; border-radius: 999px;
+  background: linear-gradient(135deg, #A285FF 0%, #6FE2FF 100%);
+  color: #0b0820; font-weight: 600; font-size: 16px; letter-spacing: 0.06em;
+  text-decoration: none; box-shadow: 0 18px 50px rgba(162,133,255,0.36);
+  transition: transform 0.4s, box-shadow 0.4s;
+  position: relative; overflow: hidden;
+}
+.cta-pro:hover { transform: translateY(-3px); box-shadow: 0 24px 60px rgba(162,133,255,0.5); }
+.cta-pro::before {
+  content: 'PRO'; position: absolute; top: -10px; right: 14px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  background: linear-gradient(135deg, #FFD37A, #FFA85F);
+  color: #1a0f00; padding: 3px 8px; border-radius: 8px;
+  box-shadow: 0 6px 14px rgba(255,168,95,0.5);
+}
+.version-compare {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px; margin: 60px auto 0; max-width: 980px;
+}
+.vc-card {
+  position: relative; padding: 36px 32px 32px; border-radius: 24px;
+  background: rgba(12,18,38,0.55); border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(18px); transition: transform 0.4s, border-color 0.4s, box-shadow 0.4s;
+  text-align: left;
+}
+.vc-card:hover { transform: translateY(-4px); border-color: rgba(255,211,122,0.3); box-shadow: 0 22px 60px rgba(0,0,0,0.4); }
+.vc-card.pro { border-color: rgba(162,133,255,0.28); }
+.vc-card.pro:hover { border-color: rgba(162,133,255,0.55); box-shadow: 0 22px 60px rgba(162,133,255,0.22); }
+.vc-badge {
+  display: inline-block; font-size: 10px; letter-spacing: 0.18em;
+  padding: 5px 12px; border-radius: 999px; margin-bottom: 18px;
+  background: rgba(255,211,122,0.14); color: #FFD37A;
+  border: 1px solid rgba(255,211,122,0.3);
+}
+.vc-card.pro .vc-badge { background: rgba(162,133,255,0.18); color: #C5B0FF; border-color: rgba(162,133,255,0.4); }
+.vc-title { font-size: 24px; font-weight: 600; margin: 0 0 6px; color: #fff; letter-spacing: 0.02em; }
+.vc-sub { font-size: 13px; color: rgba(255,255,255,0.55); margin: 0 0 22px; letter-spacing: 0.04em; }
+.vc-features { list-style: none; padding: 0; margin: 0 0 26px; }
+.vc-features li { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; font-size: 14px; color: rgba(255,255,255,0.78); }
+.vc-features li::before { content: '✦'; color: #FFD37A; flex-shrink: 0; margin-top: 1px; }
+.vc-card.pro .vc-features li::before { color: #A285FF; }
+.vc-cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 22px; border-radius: 999px;
+  font-size: 14px; font-weight: 600; letter-spacing: 0.05em;
+  text-decoration: none; transition: transform 0.3s, box-shadow 0.3s;
+}
+.vc-cta.gold { background: linear-gradient(135deg, var(--gold) 0%, var(--gold-soft) 100%); color: #1a0f00; box-shadow: 0 10px 24px rgba(255,211,122,0.32); }
+.vc-cta.gold:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(255,211,122,0.45); }
+.vc-cta.purple { background: linear-gradient(135deg, #A285FF 0%, #6FE2FF 100%); color: #0b0820; box-shadow: 0 10px 24px rgba(162,133,255,0.36); }
+.vc-cta.purple:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(162,133,255,0.5); }
 .nav-cta::after { display: none; }
 
 /* sections */
@@ -454,7 +523,8 @@ footer a:hover { color: var(--gold); }
     <a href="#story">关于</a>
     <a href="#features">模块</a>
     <a href="#design">理念</a>
-    <a href="experience.html" class="nav-cta">进入彼岸 →</a>
+    <a href="lifebeyond.byzmy.html" class="nav-cta">进入彼岸 →</a>
+    <a href="lifebeyond.byzmy.pro.html" class="nav-cta-pro" style="margin-left:8px;">Pro 版</a>
   </div>
 </nav>
 
@@ -470,8 +540,12 @@ footer a:hover { color: var(--gold); }
     一个为「再听一次」「再说一句」而设计的沉浸式数字陪伴空间。
   </p>
   <div class="hero-cta-row">
-    <a href="experience.html" class="cta-primary">
-      进入完整体验
+    <a href="lifebeyond.byzmy.html" class="cta-primary">
+      免费版进入
+      <span class="arrow">→</span>
+    </a>
+    <a href="lifebeyond.byzmy.pro.html" class="cta-pro">
+      Pro 版进入
       <span class="arrow">→</span>
     </a>
     <a href="#story" class="cta-secondary">先了解项目</a>
@@ -724,17 +798,56 @@ footer a:hover { color: var(--gold); }
       这是一个还在不断生长的项目。每个版本都会新增一个让你「更想再来一次」的小细节——
       也许是一句他们会说的话，也许只是星空亮一点。
     </p>
-    <a href="experience.html" class="cta-primary">
-      进入完整体验
-      <span class="arrow">→</span>
-    </a>
+
+    <div class="version-compare">
+      <div class="vc-card">
+        <span class="vc-badge">FREE · 自由版</span>
+        <h3 class="vc-title">免费体验版</h3>
+        <p class="vc-sub">把人放回星海里，慢慢陪你看一遍。</p>
+        <ul class="vc-features">
+          <li>5 大主视图 · 彼岸 / 聊天 / 动态 / 社区 / 星图</li>
+          <li>文明记忆宇宙 · 60+ 历史人物可漫游</li>
+          <li>沉浸式 Three.js 星海与社区瀑布流</li>
+          <li>本地账号体系 · 10 颗个人记忆星位</li>
+          <li>所有视觉/交互模块完整开放</li>
+        </ul>
+        <a href="lifebeyond.byzmy.html" class="vc-cta gold">免费版进入 →</a>
+      </div>
+
+      <div class="vc-card pro">
+        <span class="vc-badge">PRO · 商业版</span>
+        <h3 class="vc-title">Pro 商业版</h3>
+        <p class="vc-sub">用 Token 唤醒 ta 主动说话的能力。</p>
+        <ul class="vc-features">
+          <li>包含免费版全部功能</li>
+          <li>AI 创作引擎 · 主动生成日记 / 朋友圈 / 信件 / 心情</li>
+          <li>Token 经济 · 每个功能 5 次免费 + 累计10次再赠1次</li>
+          <li>兑换码系统 · 内置 LIFEBEYOND 等 +500 Token</li>
+          <li>Universe Pro · 无限对话 / 无限生成 / 高容量记忆</li>
+          <li>开发者后台 · 自定义兑换码（连点 7 次解锁）</li>
+        </ul>
+        <a href="lifebeyond.byzmy.pro.html" class="vc-cta purple">Pro 版进入 →</a>
+      </div>
+    </div>
+
+    <div style="margin-top:48px;display:flex;gap:18px;flex-wrap:wrap;justify-content:center;">
+      <a href="lifebeyond.byzmy.html" class="cta-primary">
+        免费版进入
+        <span class="arrow">→</span>
+      </a>
+      <a href="lifebeyond.byzmy.pro.html" class="cta-pro">
+        Pro 版进入
+        <span class="arrow">→</span>
+      </a>
+    </div>
   </div>
 </section>
 
 <footer>
   <div>© 2026 LifeBeyond · 数字彼岸 · A Personal Project</div>
   <div class="footer-links">
-    <a href="experience.html">完整体验</a>
+    <a href="lifebeyond.byzmy.html">免费版</a>
+    <a href="lifebeyond.byzmy.pro.html">Pro 版</a>
     <a href="#story">关于</a>
   </div>
 </footer>
