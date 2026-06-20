@@ -1187,6 +1187,29 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     var h=a.getAttribute('href')||'';
     if(h.indexOf('lifebeyond.byzmy')!==-1){prefetch(h);}
   },true);
+
+  /* ========== 防白闪：点击 CTA 时立即铺一层深色全屏遮罩 ========== */
+  /* 浏览器跳转瞬间 BFCache / 网络层 / 渲染层之间有一两帧空白，会显示底色（默认白底），
+     此时铺一个深色 overlay 顶住白光，让从落地页到 protected 启动器之间无缝过渡 */
+  var blackOut = null;
+  function showBlackOut(){
+    if(blackOut) return;
+    blackOut = document.createElement('div');
+    blackOut.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#03060e;pointer-events:none;opacity:1;transition:none;';
+    document.documentElement.appendChild(blackOut);
+    // 同时把整个页面 root 变深，跨页跳转的"过渡截图"不再显示白
+    document.documentElement.style.background = '#03060e';
+    if(document.body) document.body.style.background = '#03060e';
+  }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a[href]');if(!a)return;
+    var h=a.getAttribute('href')||'';
+    if(h.indexOf('lifebeyond.byzmy')!==-1){
+      showBlackOut();
+    }
+  },true);
+  // 也在 pagehide 时触发（用户用快捷键打开 / 中键 / 程序化跳转兜底）
+  window.addEventListener('beforeunload', showBlackOut);
 })();
 </script>
 </body>
