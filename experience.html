@@ -5984,23 +5984,21 @@ function initCivilizationStarfield() {
   const cx = w/2, cy = h/2;
   const minDim = Math.min(w, h);
   const palette = ['#FFB07A','#A285FF','#63E6FF','#FF8FB3','#FFD37A','#f0f4f8','#9DD6FF','#FFCBA4'];
-  // 仿星系结构：4 条对数螺旋臂 + 银晕 + 5 个密集星团口袋 + 虚空空洞
+  // 仿真实银河：bulge（银心）+ disk（盘面）+ 10 条紧致对数螺旋臂
   const arms = 10;
-  const armTurn = 1.65;   // 螺旋紧密度
-  const armR0 = minDim * 0.06;
-  const armRMax = minDim * 0.72;
-  const voids = []; // 虚空中心 — 这些区域附近粒子会被排斥
-  for (let i = 0; i < 4; i++) {
-    voids.push({ vx: cx + (Math.random()-0.5)*minDim*0.85, vy: cy + (Math.random()-0.5)*minDim*0.55, vr: minDim * (0.06 + Math.random()*0.08) });
-  }
+  const armTurn = 2.4;            // 螺旋紧密度（更紧 → 臂线更连续，不"散"）
+  const armR0 = minDim * 0.07;
+  const armRMax = minDim * 0.52;  // 收紧整体半径，避免外圈飘散成烟花
+  const diskFlatten = 0.42;       // 赤道盘压扁系数（更小 = 更像盘）
+  const voids = []; // 不再生成虚空空洞，避免"破洞"破坏银河完整性
   const clusters = []; // 密集团，沿臂线随机选
   for (let i = 0; i < 6; i++) {
     const armIdx = i % arms;
-    const t = 0.2 + Math.random()*0.7;
+    const t = 0.18 + Math.random()*0.55;
     const armOffset = (armIdx / arms) * Math.PI*2;
     const r = armR0 + t * armRMax;
     const angle = armOffset + t * armTurn * Math.PI*2;
-    clusters.push({ cx: cx + Math.cos(angle)*r, cy: cy + Math.sin(angle)*r*0.62, cr: minDim*(0.04+Math.random()*0.05) });
+    clusters.push({ cx: cx + Math.cos(angle)*r, cy: cy + Math.sin(angle)*r*diskFlatten, cr: minDim*(0.025+Math.random()*0.03) });
   }
   function inVoid(x, y) {
     for (let i = 0; i < voids.length; i++) {
@@ -6012,16 +6010,32 @@ function initCivilizationStarfield() {
   }
   function spiralPos() {
     const armIdx = Math.floor(Math.random() * arms);
-    const t = Math.pow(Math.random(), 0.55); // 偏向远端
+    // 均匀分布 + 偏中心：让臂线在内/中段最密，远端稀疏（避免"烟花散开"）
+    const t = Math.pow(Math.random(), 1.05);
     const armOffset = (armIdx / arms) * Math.PI*2;
     const r = armR0 + t * armRMax;
     const angle = armOffset + t * armTurn * Math.PI*2;
-    // 紧致的"羽毛"扰动 — 让旋臂线在视觉上清晰可见
-    const jitter = (Math.random() - 0.5) * minDim * 0.035 * (0.3 + t);
-    const aJitter = (Math.random() - 0.5) * 0.18;
+    // 极窄的"羽毛"扰动 —— 让臂线连续可辨
+    const jitter = (Math.random() - 0.5) * minDim * 0.012 * (0.3 + t*0.7);
+    const aJitter = (Math.random() - 0.5) * 0.06;
     const x = cx + Math.cos(angle + aJitter) * r + jitter;
-    const y = cy + Math.sin(angle + aJitter) * r * 0.62 + jitter * 0.6;
+    const y = cy + Math.sin(angle + aJitter) * r * diskFlatten + jitter * 0.6;
     return { x, y };
+  }
+  // 银心（bulge）：高斯分布的密集核球，让"中心明亮"成立
+  function bulgePos() {
+    // Box-Muller 高斯
+    const u1 = Math.max(1e-6, Math.random()), u2 = Math.random();
+    const g = Math.sqrt(-2*Math.log(u1)) * Math.cos(2*Math.PI*u2);
+    const r = Math.abs(g) * minDim * 0.085; // sigma ~ 8.5%
+    const a = Math.random() * Math.PI*2;
+    return { x: cx + Math.cos(a)*r, y: cy + Math.sin(a)*r*0.78 };
+  }
+  // 薄盘 disk：沿赤道盘随机分布，给"星河带"补一层底色
+  function diskPos() {
+    const r = Math.sqrt(Math.random()) * armRMax;
+    const a = Math.random() * Math.PI*2;
+    return { x: cx + Math.cos(a)*r, y: cy + Math.sin(a)*r*diskFlatten };
   }
   function clusterPos() {
     const c = clusters[Math.floor(Math.random()*clusters.length)];
@@ -6059,23 +6073,28 @@ function initCivilizationStarfield() {
       };
     });
   }
-  // === 五层星海，总数 ~9000（80% 沿旋臂，15% 团簇，5% halo —— 让"银河"形状清晰）===
-  const deep = makeStar(0, 3200, [0.3, 1.0], [0.28, 0.55], 0.01, spiralPos)
-    .concat(makeStar(0, 600, [0.3, 1.0], [0.28, 0.55], 0.01, clusterPos))
-    .concat(makeStar(0, 200, [0.3, 1.0], [0.28, 0.55], 0.01, haloPos));
-  const mid = makeStar(1, 2400, [0.55, 1.5], [0.42, 0.7], 0.02, spiralPos)
-    .concat(makeStar(1, 320, [0.55, 1.5], [0.42, 0.7], 0.02, clusterPos))
-    .concat(makeStar(1, 100, [0.55, 1.5], [0.42, 0.7], 0.02, haloPos));
-  const near = makeStar(2, 1100, [0.9, 2.0], [0.55, 0.85], 0.04, spiralPos)
-    .concat(makeStar(2, 200, [0.9, 2.0], [0.55, 0.85], 0.04, clusterPos))
-    .concat(makeStar(2, 60, [0.9, 2.0], [0.55, 0.85], 0.04, haloPos));
+  // === 五层星海（仿真实银河：bulge 银心 + 旋臂 + 盘面，让"银河"形状一眼可辨）===
+  // 50% 沿旋臂 + 30% bulge 银心高斯密集 + 15% 薄盘 disk + 5% halo
+  const deep = makeStar(0, 2000, [0.3, 1.0], [0.28, 0.55], 0.01, spiralPos)
+    .concat(makeStar(0, 1200, [0.35, 1.1], [0.4, 0.7],   0.01, bulgePos))   // bulge 偏亮
+    .concat(makeStar(0, 600,  [0.3, 1.0], [0.25, 0.5],   0.01, diskPos))
+    .concat(makeStar(0, 200,  [0.3, 1.0], [0.18, 0.38],  0.01, haloPos));
+  const mid = makeStar(1, 1500, [0.55, 1.5], [0.42, 0.7], 0.02, spiralPos)
+    .concat(makeStar(1, 900,  [0.6, 1.6],  [0.55, 0.85], 0.02, bulgePos))   // 银心更亮
+    .concat(makeStar(1, 400,  [0.55, 1.5], [0.4, 0.65],  0.02, diskPos))
+    .concat(makeStar(1, 100,  [0.55, 1.5], [0.3, 0.55],  0.02, haloPos));
+  const near = makeStar(2, 700, [0.9, 2.0], [0.55, 0.85], 0.04, spiralPos)
+    .concat(makeStar(2, 400, [0.95, 2.1], [0.7, 0.95],   0.04, bulgePos))   // 银心最亮
+    .concat(makeStar(2, 200, [0.9, 2.0], [0.5, 0.8],     0.04, diskPos))
+    .concat(makeStar(2, 60,  [0.9, 2.0], [0.45, 0.7],    0.04, haloPos));
   // Layer 3 用 depth=1.25 让视差更夸张
-  const fore = makeStar(2, 360, [1.5, 3.0], [0.7, 0.95], 0.06, spiralPos)
-    .concat(makeStar(2, 60, [1.5, 3.0], [0.7, 0.95], 0.06, clusterPos))
-    .concat(makeStar(2, 20, [1.5, 3.0], [0.7, 0.95], 0.06, haloPos));
+  const fore = makeStar(2, 240, [1.5, 3.0], [0.7, 0.95], 0.06, spiralPos)
+    .concat(makeStar(2, 140, [1.6, 3.2], [0.85, 1.0],     0.06, bulgePos))
+    .concat(makeStar(2, 50,  [1.5, 3.0], [0.65, 0.9],    0.06, diskPos))
+    .concat(makeStar(2, 20,  [1.5, 3.0], [0.6, 0.85],    0.06, haloPos));
   fore.forEach(s => { s.depth = 1.25; s.layer = 3; });
-  // Layer 4 焦点超亮（不形成大气泡）
-  const anchor = makeStar(2, 70, [2.8, 4.8], [0.88, 1.0], 0.08, haloPos);
+  // Layer 4 焦点超亮（不形成大气泡，集中在 bulge 区域作为"银心明珠"）
+  const anchor = makeStar(2, 70, [2.8, 4.8], [0.88, 1.0], 0.08, bulgePos);
   anchor.forEach(s => { s.depth = 1.45; s.layer = 4; s.glow = true; });
   civilizationStarfield = deep.concat(mid).concat(near).concat(fore).concat(anchor);
 }
