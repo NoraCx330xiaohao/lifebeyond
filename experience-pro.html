@@ -695,6 +695,16 @@
       transition:all .2s;}
     .monetization-close:hover{background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);}
     .monetization-backdrop{z-index:100009!important;cursor:pointer!important;pointer-events:auto!important;}
+    /* 防糊：确保 card 完全清晰、不透明 */
+    .monetization-card,
+    .monetization-modal .monetization-card{
+      background:linear-gradient(180deg, #0f1c3c 0%, #0a1428 100%) !important;
+      backdrop-filter:none !important;
+      -webkit-backdrop-filter:none !important;
+      filter:none !important;
+      opacity:1 !important;
+    }
+    .monetization-card *{filter:none !important;}
 
     /* ========================= 愿望星云 / 备忘录 ========================= */
     #wish-nebula-canvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
@@ -1396,21 +1406,27 @@
 }
 .monetization-backdrop {
   position: absolute; inset: 0;
-  background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.72); backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   cursor: pointer; z-index: 0;
 }
 .monetization-card {
   position: relative; z-index: 1;
-  background: rgba(10,18,40,0.92);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, #0f1c3c 0%, #0a1428 100%);
+  border: 1px solid rgba(140,170,255,0.18);
   border-radius: 24px; padding: 32px;
   max-width: 480px; width: 90%;
   max-height: 85vh; overflow-y: auto;
-  box-shadow: 0 0 60px rgba(100,140,255,0.12), 0 0 120px rgba(80,50,200,0.06);
-  backdrop-filter: blur(20px);
+  box-shadow:
+    0 0 0 1px rgba(120,160,255,0.08),
+    0 30px 80px rgba(0,0,0,0.6),
+    0 0 60px rgba(100,140,255,0.12),
+    0 0 120px rgba(80,50,200,0.06);
   animation: monetizeIn 0.4s ease-out;
   cursor: default;
+  /* 关键：card 不要 backdrop-filter，否则与 backdrop 叠加会让内容显糊 */
 }
+.monetization-card * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 @keyframes monetizeIn {
   from { opacity: 0; transform: translateY(20px) scale(0.96); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -1510,6 +1526,58 @@
 .token-manual .tm-btn:hover { background: linear-gradient(135deg, rgba(99,230,255,0.35), rgba(162,133,255,0.35)); transform: scale(1.04); }
 .token-manual .tm-hint { color: rgba(255,255,255,0.3); font-size: 11px; margin: 6px 0 0; }
 .ai-create-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+
+/* === 兑换码区 === */
+.token-redeem { margin: 10px 0 22px; padding: 14px 16px 16px;
+  background: linear-gradient(135deg, rgba(255,210,140,0.08), rgba(160,120,240,0.07));
+  border: 1px solid rgba(255,210,140,0.22); border-radius: 14px; }
+.token-redeem h3 { color: #FFD9A0; font-size: 13px; margin: 0 0 6px; letter-spacing: 0.6px; }
+.token-redeem .tr-hint { color: rgba(255,255,255,0.5); font-size: 11.5px; margin: 0 0 10px; }
+.token-redeem .tr-row { display: flex; gap: 8px; align-items: center; }
+.token-redeem input { flex: 1; min-width: 0; background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,210,140,0.2); border-radius: 10px;
+  padding: 10px 12px; color: #fff; font-size: 13px; letter-spacing: 1px;
+  outline: none; transition: all .2s; text-transform: uppercase; }
+.token-redeem input::placeholder { color: rgba(255,255,255,0.3); letter-spacing: 0.5px; text-transform: none; }
+.token-redeem input:focus { border-color: rgba(255,210,140,0.5); box-shadow: 0 0 10px rgba(255,210,140,0.18); }
+.token-redeem .tr-btn { background: linear-gradient(135deg, rgba(255,210,140,0.3), rgba(255,180,120,0.25));
+  border: 1px solid rgba(255,210,140,0.45); border-radius: 10px;
+  padding: 10px 18px; color: #FFE9C2; font-size: 13px; cursor: pointer;
+  white-space: nowrap; transition: all .25s; }
+.token-redeem .tr-btn:hover { background: linear-gradient(135deg, rgba(255,210,140,0.5), rgba(255,180,120,0.4));
+  transform: translateY(-1px); box-shadow: 0 4px 14px rgba(255,210,140,0.25); }
+.token-redeem .tr-tip { font-size: 11.5px; margin-top: 8px; min-height: 16px; transition: color .25s; }
+.token-redeem .tr-tip.success { color: #6FE0B0; }
+.token-redeem .tr-tip.error   { color: #FF8A8A; }
+
+/* === 开发者面板 === */
+.dev-redeem-panel { margin: 0 0 22px; padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(255,140,80,0.08), rgba(120,80,200,0.06));
+  border: 1px dashed rgba(255,180,120,0.3); border-radius: 14px; }
+.dev-redeem-panel h3 { color: #FFB070; font-size: 13px; margin: 0 0 6px; }
+.dev-add-row { display: grid; grid-template-columns: 1.4fr 0.7fr auto; gap: 6px; margin: 8px 0 12px; }
+.dev-add-row input { background: rgba(0,0,0,0.35); border: 1px solid rgba(255,180,120,0.2);
+  border-radius: 8px; padding: 8px 10px; color: #fff; font-size: 12.5px; outline: none; min-width: 0; }
+.dev-add-row input:focus { border-color: rgba(255,180,120,0.5); }
+.dev-add-btn { background: rgba(255,180,120,0.18); border: 1px solid rgba(255,180,120,0.4);
+  border-radius: 8px; padding: 8px 14px; color: #FFB070; font-size: 12.5px; cursor: pointer; transition: all .2s; white-space: nowrap; }
+.dev-add-btn:hover { background: rgba(255,180,120,0.32); }
+.dev-code-list { max-height: 180px; overflow-y: auto; padding: 4px 2px; }
+.dev-code-row { display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 10px; margin-bottom: 6px; border-radius: 8px;
+  background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06); }
+.dev-code-row .dcr-code { color: #FFD9A0; font-size: 12.5px; letter-spacing: 1px; font-family: monospace; }
+.dev-code-row .dcr-amt  { color: rgba(255,255,255,0.55); font-size: 11.5px; margin: 0 8px; }
+.dev-code-row .dcr-uses { color: rgba(255,255,255,0.4); font-size: 11px; }
+.dev-code-row .dcr-del  { background: none; border: none; color: rgba(255,140,140,0.7);
+  cursor: pointer; font-size: 14px; padding: 2px 6px; transition: color .2s; }
+.dev-code-row .dcr-del:hover { color: #ff6b6b; }
+.dev-code-empty { color: rgba(255,255,255,0.35); font-size: 12px; text-align: center; padding: 14px 0; }
+.dev-actions { display: flex; gap: 8px; margin-top: 10px; }
+.dev-mini-btn { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; padding: 6px 10px; color: rgba(255,255,255,0.5);
+  font-size: 11.5px; cursor: pointer; transition: all .2s; }
+.dev-mini-btn:hover { background: rgba(255,140,140,0.1); color: rgba(255,140,140,0.9); border-color: rgba(255,140,140,0.3); }
 .ai-create-btn { background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.08)); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 6px; color: rgba(255,255,255,0.75); font-size: 12px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .ai-create-btn:hover { background: linear-gradient(135deg, rgba(99,230,255,0.12), rgba(162,133,255,0.12)); border-color: rgba(99,230,255,0.3); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(99,230,255,0.15); }
 .ai-create-btn .cost { font-size: 10px; color: rgba(255,215,122,0.6); }
@@ -10283,11 +10351,15 @@ async function callLocalModel(messages, fallbackFn, options) {
   }
   // Legacy fallback to local Ollama (kept for backwards compat with old setups)
   try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 4000);
     const res = await fetch('http://localhost:11434/v1/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'Qwen2.5', messages, temperature: 0.8, max_tokens: 400 })
+      body: JSON.stringify({ model: 'Qwen2.5', messages, temperature: 0.8, max_tokens: 400 }),
+      signal: ctrl.signal
     });
+    clearTimeout(t);
     if (!res.ok) throw new Error('engine ' + res.status);
     const data = await res.json();
     return data.choices?.[0]?.message?.content || fallbackFn();
@@ -10895,9 +10967,38 @@ setTimeout(()=>{ if(currentView==='universe'){ const p=personas[Math.floor(Math.
   <div class="monetization-card token-card">
     <button class="monetization-close" onclick="closeTokenShopModal()">✕</button>
     <div class="token-header">
-      <h2>✦ Token</h2>
+      <h2 onclick="devTitleClick()" style="cursor:pointer;user-select:none;">✦ Token</h2>
       <p>宇宙通行能量 · 当前余额: <strong id="token-shop-balance">0</strong></p>
     </div>
+
+    <!-- 🎁 兑换码 -->
+    <div class="token-redeem">
+      <h3>🎁 兑换码</h3>
+      <p class="tr-hint">输入兑换码即可领取 Token，体验星海更多可能</p>
+      <div class="tr-row">
+        <input id="redeem-code-input" type="text" maxlength="32" placeholder="输入兑换码（不区分大小写）" autocomplete="off"
+               onkeydown="if(event.key==='Enter')redeemCode()">
+        <button class="tr-btn" onclick="redeemCode()">兑换</button>
+      </div>
+      <div class="tr-tip" id="redeem-tip"></div>
+    </div>
+
+    <!-- ⚙️ 开发者：自定义兑换码（仅 dev 可见） -->
+    <div class="dev-redeem-panel" id="dev-redeem-panel" style="display:none">
+      <h3>⚙️ 开发者 · 兑换码管理</h3>
+      <p class="tr-hint" style="color:rgba(255,180,120,0.7)">仅你可见 · 自定义码默认每次兑换 500 Token，每个用户限 1 次</p>
+      <div class="dev-add-row">
+        <input id="dev-new-code" type="text" maxlength="32" placeholder="新兑换码（如 STARGIFT2026）" autocomplete="off">
+        <input id="dev-new-amount" type="number" min="1" max="100000" value="500" placeholder="Token 数量">
+        <button class="dev-add-btn" onclick="devAddCode()">添加</button>
+      </div>
+      <div class="dev-code-list" id="dev-code-list"></div>
+      <div class="dev-actions">
+        <button class="dev-mini-btn" onclick="devLogout()">退出开发者模式</button>
+        <button class="dev-mini-btn" onclick="devResetMyUsed()">清空我的兑换记录</button>
+      </div>
+    </div>
+
     <div class="token-earn">
       <h3>赚取 Token</h3>
       <div class="token-earn-grid">
@@ -10921,18 +11022,18 @@ setTimeout(()=>{ if(currentView==='universe'){ const p=personas[Math.floor(Math.
       <h3>🪙 AI 创作</h3>
       <p class="tm-hint">花费 Token 让智能体为你生成内容</p>
       <div class="ai-create-grid">
-        <button class="ai-create-btn" onclick="openAICreate('diary')">📔 日记</button>
-        <button class="ai-create-btn" onclick="openAICreate('moments')">🌟 朋友圈</button>
-        <button class="ai-create-btn" onclick="openAICreate('mood')">💫 心情</button>
-        <button class="ai-create-btn" onclick="openAICreate('email')">✉️ 邮件</button>
-        <button class="ai-create-btn" onclick="openAICreate('memorySummary')">🔮 记忆摘要</button>
-        <button class="ai-create-btn" onclick="openAICreate('readingNotes')">📖 阅读笔记</button>
-        <button class="ai-create-btn" onclick="openAICreate('relationshipDecode')">💞 关系解码</button>
-        <button class="ai-create-btn" onclick="openAICreate('emotionAnalysis')">🌊 情绪分析</button>
-        <button class="ai-create-btn" onclick="openAICreate('futurePrediction')">🚀 未来预测</button>
-        <button class="ai-create-btn" onclick="openAICreate('memoryReconstruct')">🧩 记忆重构</button>
-        <button class="ai-create-btn" onclick="openAICreate('companionEvolution')">🦋 伴侣进化</button>
-        <button class="ai-create-btn" onclick="openAICreate('deepInteraction')">🌌 深度交互</button>
+        <button class="ai-create-btn" onclick="aiCreateFromShop('diary')">📔 日记</button>
+        <button class="ai-create-btn" onclick="aiCreateFromShop('moments')">🌟 朋友圈</button>
+        <button class="ai-create-btn" onclick="aiCreateFromShop('mood')">💫 心情</button>
+        <button class="ai-create-btn" onclick="aiCreateFromShop('email')">✉️ 邮件</button>
+        <button class="ai-create-btn" onclick="aiCreateFromShop('memorySummary')">🔮 记忆摘要</button>
+        <button class="ai-create-btn" onclick="aiCreateFromShop('readingNotes')">📖 阅读笔记</button>
+        <button class="ai-create-btn" onclick="aiCreateFromShop('relationship')">💞 关系解码</button>
+        <button class="ai-create-btn" onclick="aiCreateFromShop('emotionAnalysis')">🌊 情绪分析</button>
+        <button class="ai-create-btn" onclick="aiCreateFromShop('futureSim')">🚀 未来预测</button>
+        <button class="ai-create-btn" onclick="aiCreateFromShop('memoryRecon')">🧩 记忆重构</button>
+        <button class="ai-create-btn" onclick="aiCreateFromShop('companionEvo')">🦋 伴侣进化</button>
+        <button class="ai-create-btn" onclick="aiCreateFromShop('deepInteract')">🌌 深度交互</button>
       </div>
     </div>
     <div class="token-spend">
@@ -11283,6 +11384,20 @@ window.triggerAICreation     = triggerAICreation;
 window.triggerZoneAICreation = triggerAICreation; // 兼容旧入口
 window.updateZoneAIButtons   = updateZoneAIButtons;
 
+/**
+ * 从 token 商店触发 AI 生成：
+ *   1. 关闭 token 商店 modal（避免遮盖结果）
+ *   2. 复用 triggerAICreation 走标准额度+生成路径
+ */
+function aiCreateFromShop(featureId) {
+  closeTokenShopModal();
+  // 等关闭动画结束后再触发，确保结果 modal 出现在最上层
+  setTimeout(() => triggerAICreation(featureId), 220);
+}
+// 兼容历史 onclick 名（避免缓存版本里残留的 openAICreate 报错）
+window.openAICreate     = aiCreateFromShop;
+window.aiCreateFromShop = aiCreateFromShop;
+
 /* ---------- ai gen result panel ---------- */
 let _lastGenContent = '';
 let _lastGenFeature = '';
@@ -11379,8 +11494,179 @@ window.claimWhisperGift = claimWhisperGift;
 /* ---------- modals ---------- */
 function openUniverseProModal()  { document.getElementById('universe-pro-modal').style.display = 'flex'; }
 function closeUniverseProModal() { document.getElementById('universe-pro-modal').style.display = 'none'; }
-function openTokenShopModal()    { document.getElementById('token-shop-modal').style.display = 'flex'; renderTokenBadge(); }
+function openTokenShopModal()    {
+  document.getElementById('token-shop-modal').style.display = 'flex';
+  renderTokenBadge();
+  renderDevPanel();
+  renderRedeemTip();
+}
 function closeTokenShopModal()   { document.getElementById('token-shop-modal').style.display = 'none'; }
+
+/* ============================================================
+   兑换码系统
+   ============================================================ */
+const REDEEM_PRESET = {
+  // 公共预设码：所有用户每个限领 1 次
+  'STARGIFT500':  { tokens: 500, maxPerUser: 1, label: '✦ 星海问候' },
+  'LIFEBEYOND':   { tokens: 500, maxPerUser: 1, label: '✦ 彼岸初见' },
+  'COSMICDREAM':  { tokens: 500, maxPerUser: 1, label: '✦ 宇宙之梦' }
+};
+const REDEEM_CUSTOM_KEY = 'lifebeyond_redeem_codes';
+const REDEEM_USED_KEY   = 'lifebeyond_redeem_used';
+const DEV_ROLE_KEY      = 'lifebeyond_role';
+const DEV_PASSPHRASE    = 'STARGOD'; // 开发者口令
+
+function getCustomCodes() { try { return JSON.parse(localStorage.getItem(REDEEM_CUSTOM_KEY) || '{}'); } catch { return {}; } }
+function saveCustomCodes(o){ localStorage.setItem(REDEEM_CUSTOM_KEY, JSON.stringify(o)); }
+function getUsedCodes()   { try { return JSON.parse(localStorage.getItem(REDEEM_USED_KEY) || '{}'); } catch { return {}; } }
+function saveUsedCodes(o) { localStorage.setItem(REDEEM_USED_KEY, JSON.stringify(o)); }
+function isDeveloper()    { return localStorage.getItem(DEV_ROLE_KEY) === 'dev'; }
+
+/* 用户兑换 */
+function redeemCode() {
+  const inp = document.getElementById('redeem-code-input');
+  const tip = document.getElementById('redeem-tip');
+  if (!inp) return;
+  const raw = (inp.value || '').trim();
+  if (!raw) { setRedeemTip('请输入兑换码', 'error'); return; }
+  const code = raw.toUpperCase();
+  const presets = REDEEM_PRESET;
+  const customs = getCustomCodes();
+  const def = presets[code] || customs[code];
+  if (!def) { setRedeemTip('兑换码无效或已过期', 'error'); return; }
+  const used = getUsedCodes();
+  const usedTimes = used[code] || 0;
+  const maxPerUser = def.maxPerUser ?? 1;
+  if (usedTimes >= maxPerUser) {
+    setRedeemTip('该兑换码你已经兑换过了 · 每个码每用户限 ' + maxPerUser + ' 次', 'error');
+    return;
+  }
+  proState.tokens += def.tokens;
+  saveProState(proState);
+  used[code] = usedTimes + 1;
+  saveUsedCodes(used);
+  if (def.from === 'custom') {
+    customs[code].uses = (customs[code].uses || 0) + 1;
+    saveCustomCodes(customs);
+  }
+  renderTokenBadge();
+  renderEnergyBar();
+  renderDevPanel();
+  inp.value = '';
+  setRedeemTip('✦ 兑换成功 · 已发放 ' + def.tokens + ' Token' + (def.label ? ' · ' + def.label : ''), 'success');
+  showCosmicReminder('✦ 兑换成功 · +' + def.tokens + ' Token');
+}
+function setRedeemTip(msg, kind) {
+  const tip = document.getElementById('redeem-tip');
+  if (!tip) return;
+  tip.textContent = msg;
+  tip.className = 'tr-tip ' + (kind || '');
+  if (kind === 'success') setTimeout(() => { if (tip.textContent === msg) { tip.textContent = ''; tip.className = 'tr-tip'; } }, 5000);
+}
+function renderRedeemTip() {
+  // 默认提示：暗示一些可用预设码（小字 + 模糊字符）让用户尝试
+  const tip = document.getElementById('redeem-tip');
+  if (!tip || tip.textContent) return;
+  tip.className = 'tr-tip';
+  tip.style.color = 'rgba(255,255,255,0.35)';
+  tip.textContent = '提示：尝试输入 LIFEBEYOND 试试看 ✦';
+}
+
+/* === 开发者：连续点击 ✦ Token 标题 7 次解锁 === */
+let _devClickCount = 0; let _devClickTimer = null;
+function devTitleClick() {
+  if (isDeveloper()) {
+    // 已是开发者：再点 7 次反向退出
+    _devClickCount++;
+    if (_devClickTimer) clearTimeout(_devClickTimer);
+    _devClickTimer = setTimeout(() => _devClickCount = 0, 2000);
+    if (_devClickCount >= 7) { _devClickCount = 0; devLogout(); }
+    return;
+  }
+  _devClickCount++;
+  if (_devClickTimer) clearTimeout(_devClickTimer);
+  _devClickTimer = setTimeout(() => _devClickCount = 0, 2000);
+  if (_devClickCount >= 7) {
+    _devClickCount = 0;
+    const pwd = prompt('请输入开发者口令以解锁兑换码管理');
+    if (pwd && pwd.trim().toUpperCase() === DEV_PASSPHRASE) {
+      localStorage.setItem(DEV_ROLE_KEY, 'dev');
+      showCosmicReminder('✦ 已解锁开发者模式');
+      renderDevPanel();
+    } else if (pwd !== null) {
+      showCosmicReminder('✕ 口令错误');
+    }
+  }
+}
+function devLogout() {
+  localStorage.removeItem(DEV_ROLE_KEY);
+  showCosmicReminder('已退出开发者模式');
+  renderDevPanel();
+}
+function devResetMyUsed() {
+  if (!confirm('确认清空当前账号的兑换记录？所有兑换码将可重新使用')) return;
+  localStorage.removeItem(REDEEM_USED_KEY);
+  showCosmicReminder('✦ 兑换记录已重置');
+}
+
+/* === 开发者：自定义兑换码（默认 500 token / 限领 1 次） === */
+function devAddCode() {
+  if (!isDeveloper()) return;
+  const codeIn   = document.getElementById('dev-new-code');
+  const amountIn = document.getElementById('dev-new-amount');
+  const code = (codeIn.value || '').trim().toUpperCase().replace(/\s+/g, '');
+  const amount = parseInt(amountIn.value, 10) || 500;
+  if (!code) { showCosmicReminder('请输入兑换码'); return; }
+  if (!/^[A-Z0-9_-]{3,32}$/.test(code)) { showCosmicReminder('兑换码仅支持 A-Z 0-9 _ - 共 3~32 位'); return; }
+  if (REDEEM_PRESET[code]) { showCosmicReminder('该码与预设码冲突'); return; }
+  const customs = getCustomCodes();
+  customs[code] = { tokens: amount, maxPerUser: 1, from: 'custom', label: '开发者码', uses: customs[code]?.uses || 0, createdAt: Date.now() };
+  saveCustomCodes(customs);
+  codeIn.value = '';
+  amountIn.value = '500';
+  renderDevPanel();
+  showCosmicReminder('✦ 已添加兑换码 ' + code + ' · ' + amount + ' Token');
+}
+function devDeleteCode(code) {
+  const customs = getCustomCodes();
+  if (!customs[code]) return;
+  if (!confirm('确认删除兑换码 ' + code + '？')) return;
+  delete customs[code];
+  saveCustomCodes(customs);
+  renderDevPanel();
+  showCosmicReminder('已删除兑换码 ' + code);
+}
+function renderDevPanel() {
+  const panel = document.getElementById('dev-redeem-panel');
+  const list  = document.getElementById('dev-code-list');
+  if (!panel) return;
+  panel.style.display = isDeveloper() ? '' : 'none';
+  if (!isDeveloper() || !list) return;
+  const customs = getCustomCodes();
+  const used = getUsedCodes();
+  const codes = Object.keys(customs);
+  if (!codes.length) {
+    list.innerHTML = '<div class="dev-code-empty">还没有自定义兑换码 · 在上方添加一个吧</div>';
+    return;
+  }
+  list.innerHTML = codes.map(code => {
+    const def = customs[code];
+    const uses = def.uses || 0;
+    const myUses = used[code] || 0;
+    return '<div class="dev-code-row">' +
+      '<span class="dcr-code">' + code + '</span>' +
+      '<span class="dcr-amt">+' + def.tokens + ' Token / 人</span>' +
+      '<span class="dcr-uses">本机已用 ' + myUses + ' · 累计 ' + uses + '</span>' +
+      '<button class="dcr-del" onclick="devDeleteCode(\'' + code + '\')" title="删除">✕</button>' +
+    '</div>';
+  }).join('');
+}
+window.redeemCode    = redeemCode;
+window.devTitleClick = devTitleClick;
+window.devAddCode    = devAddCode;
+window.devDeleteCode = devDeleteCode;
+window.devLogout     = devLogout;
+window.devResetMyUsed= devResetMyUsed;
 
 // ── Escape key to close all monetization modals ──
 document.addEventListener('keydown', function(e) {
