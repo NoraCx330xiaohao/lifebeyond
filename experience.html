@@ -6612,30 +6612,20 @@ function drawCivilizationView() {
   civilizationEraNodes.forEach(era => {
     const dimByFilter = civilizationActiveEra && civilizationActiveEra !== era.id;
     const a = dimByFilter ? 0.25 : 1;
-    drawNebulaCloud2(civCtx, era.x, era.y, 70, era.color, 0.05 * a);
-    era.ringStars.forEach(rs => {
-      rs.a += rs.sp;
-      const rx = era.x + Math.cos(rs.a)*rs.r;
-      const ry = era.y + Math.sin(rs.a)*rs.r*0.65;
-      civCtx.fillStyle = `rgba(255,255,255,${(0.3 + Math.random()*0.2) * a})`;
-      civCtx.beginPath(); civCtx.arc(rx, ry, rs.sz, 0, Math.PI*2); civCtx.fill();
-    });
-    const grad = civCtx.createRadialGradient(era.x-3, era.y-3, 0, era.x, era.y, era.radius);
-    grad.addColorStop(0, `rgba(255,255,255,${0.95*a})`);
-    grad.addColorStop(0.5, hexToRgba(era.color, 0.85 * a));
-    grad.addColorStop(1, hexToRgba(era.color, 0.25 * a));
-    civCtx.fillStyle = grad;
-    civCtx.beginPath(); civCtx.arc(era.x, era.y, era.radius, 0, Math.PI*2); civCtx.fill();
-    // 中心 starburst 闪光
-    drawCivStarburst(civCtx, era.x, era.y, era.radius*0.5, era.color, 0.9 * a, -civilizationOrbitTime*0.4 + era.id.charCodeAt(0), 6.5);
+    // era 标识星：小圆 + 白心，无大光晕
+    const er = 3.5 + (era.hover?1.2:0);
+    civCtx.fillStyle = hexToRgba(era.color, 0.85 * a);
+    civCtx.beginPath(); civCtx.arc(era.x, era.y, er, 0, Math.PI*2); civCtx.fill();
+    civCtx.fillStyle = `rgba(255,255,255,${0.85 * a})`;
+    civCtx.beginPath(); civCtx.arc(era.x, era.y, er*0.4, 0, Math.PI*2); civCtx.fill();
     if(era.hover) {
-      civCtx.strokeStyle = 'rgba(255,255,255,0.55)'; civCtx.lineWidth=1.4;
-      civCtx.beginPath(); civCtx.arc(era.x, era.y, era.radius+10, 0, Math.PI*2); civCtx.stroke();
+      civCtx.strokeStyle = 'rgba(255,255,255,0.45)'; civCtx.lineWidth=1;
+      civCtx.beginPath(); civCtx.arc(era.x, era.y, er+5, 0, Math.PI*2); civCtx.stroke();
     }
-    civCtx.fillStyle = `rgba(240,244,248,${(0.72 + (era.hover?0.25:0)) * a})`;
-    civCtx.font = '10.5px sans-serif'; civCtx.textAlign='center';
-    civCtx.shadowColor = era.color; civCtx.shadowBlur = 10;
-    civCtx.fillText(era.name, era.x, era.y+era.radius+14);
+    civCtx.fillStyle = `rgba(220,228,236,${(0.6 + (era.hover?0.25:0)) * a})`;
+    civCtx.font = '10px sans-serif'; civCtx.textAlign='center';
+    civCtx.shadowColor = era.color; civCtx.shadowBlur = 6;
+    civCtx.fillText(era.name, era.x, era.y+er+11);
     civCtx.shadowBlur = 0;
   });
 
@@ -6644,37 +6634,23 @@ function drawCivilizationView() {
     const dimByFilter = civilizationActiveDim && civilizationActiveDim !== dim.id;
     const a = dimByFilter ? 0.25 : 1;
 
-    // 外层星云光晕
-    drawNebulaCloud2(civCtx, dim.x, dim.y, 130, dim.color, (0.08 + (dim.hover?0.06:0)) * a);
-    // 旋转光环（每帧转 ~0.3°）
+    // 柔和扇区染色（极淡，不形成第二个亮核）
+    drawNebulaCloud2(civCtx, dim.x, dim.y, 70, dim.color, (0.025 + (dim.hover?0.025:0)) * a);
+    // 极细旋转光环
     civCtx.save();
     civCtx.translate(dim.x, dim.y);
-    civCtx.rotate(civilizationOrbitTime * 0.18 + dim.id.charCodeAt(0)*0.5);
-    civCtx.strokeStyle = hexToRgba(dim.color, 0.12 * a);
-    civCtx.lineWidth = 0.8;
-    civCtx.beginPath(); civCtx.ellipse(0, 0, dim.radius*1.8, dim.radius*1.3, 0, 0, Math.PI*2); civCtx.stroke();
-    civCtx.strokeStyle = hexToRgba(dim.color, 0.07 * a);
-    civCtx.lineWidth = 0.5;
-    civCtx.beginPath(); civCtx.ellipse(0, 0, dim.radius*2.5, dim.radius*1.8, 0.3, 0, Math.PI*2); civCtx.stroke();
+    civCtx.rotate(civilizationOrbitTime * 0.06 + dim.id.charCodeAt(0)*0.5);
+    civCtx.strokeStyle = hexToRgba(dim.color, 0.16 * a);
+    civCtx.lineWidth = 0.7;
+    civCtx.beginPath(); civCtx.ellipse(0, 0, 16, 12, 0, 0, Math.PI*2); civCtx.stroke();
     civCtx.restore();
-    // 卫星粉尘
-    dim.satellites.forEach(st => {
-      st.a += st.sp;
-      const px = dim.x + Math.cos(st.a)*st.r;
-      const py = dim.y + Math.sin(st.a)*st.r*0.7;
-      civCtx.fillStyle = `rgba(255,255,255,${(0.18 + Math.random()*0.18) * a})`;
-      civCtx.beginPath(); civCtx.arc(px, py, st.sz, 0, Math.PI*2); civCtx.fill();
-    });
 
-    const coreG = civCtx.createRadialGradient(dim.x-5, dim.y-5, 0, dim.x, dim.y, dim.radius);
-    coreG.addColorStop(0, `rgba(255,255,255,${0.95 * a})`);
-    coreG.addColorStop(0.5, hexToRgba(dim.color, 0.95 * a));
-    coreG.addColorStop(1, hexToRgba(dim.color, 0.3 * a));
-    civCtx.fillStyle = coreG;
-    civCtx.beginPath(); civCtx.arc(dim.x, dim.y, dim.radius*(dim.hover?1.08:1), 0, Math.PI*2); civCtx.fill();
-
-    // 中心叠加 starburst 闪光，强化"亮点"感
-    drawCivStarburst(civCtx, dim.x, dim.y, dim.radius*0.55, dim.color, 0.95 * a, civilizationOrbitTime*0.7 + dim.id.charCodeAt(0), 7.0);
+    // dim 标识星：小色核 + 白心
+    const r0 = dim.hover ? 5.5 : 4.5;
+    civCtx.fillStyle = hexToRgba(dim.color, 0.92 * a);
+    civCtx.beginPath(); civCtx.arc(dim.x, dim.y, r0, 0, Math.PI*2); civCtx.fill();
+    civCtx.fillStyle = `rgba(255,255,255,${0.9 * a})`;
+    civCtx.beginPath(); civCtx.arc(dim.x, dim.y, r0*0.45, 0, Math.PI*2); civCtx.fill();
 
     if(dim.hover || civilizationFocusedDim === dim.id) {
       civCtx.strokeStyle = 'rgba(255,255,255,0.5)'; civCtx.lineWidth = 1.5;
