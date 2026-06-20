@@ -6014,16 +6014,9 @@ function initCivilizationWebGL() {
           }
         },
         onClick: (fig) => {
-          // 先飞向星球，完成后弹出详情卡
-          if (typeof CivGalaxy !== 'undefined' && CivGalaxy.isReady()) {
-            CivGalaxy.flyToFigure(fig);
-            const checkDone = setInterval(() => {
-              if (!CivGalaxy._focusTarget) {
-                clearInterval(checkDone);
-                try { openCivilizationFigure && openCivilizationFigure(fig); } catch(e) { console.warn(e); }
-              }
-            }, 80);
-          } else {
+          // 这个回调由 flyToFigure 飞行完成后触发；这里直接弹详情卡
+          try { openCivilizationFigure && openCivilizationFigure(fig); } catch(e) { console.warn(e); }
+          if (false) {
             try { openCivilizationFigure && openCivilizationFigure(fig); } catch(e) { console.warn(e); }
           }
         },

@@ -10,7 +10,7 @@ class CivilizationGalaxy {
     this.uniforms = null;
     this.figures = []; this.figureIndex = new Map();
     this.raycaster = new THREE.Raycaster();
-    this.raycaster.params.Points.threshold = 2.2;
+    this.raycaster.params.Points.threshold = 4.5;
     this._mouseNDC = new THREE.Vector2(-9, -9);
     this._mouseScreen = { x: 0, y: 0 };
     this._hoveredId = -1; this._hoverFrame = 0;
@@ -37,7 +37,7 @@ class CivilizationGalaxy {
     const w = this.canvas.clientWidth || window.innerWidth;
     const h = this.canvas.clientHeight || window.innerHeight;
     this.camera = new THREE.PerspectiveCamera(55, w / h, 0.5, 2000);
-    this.camera.position.set(0, 80, 140);
+    this.camera.position.set(0, 55, 150);
 
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: false });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -145,13 +145,13 @@ class CivilizationGalaxy {
     for (let i = 0; i < armCount; i++) {
       const arm = i % totalArms;
       const armAngle = (arm / totalArms) * Math.PI * 2;
-      const t = 0.15 + Math.random() * 0.85; // position along arm
-      const r = ARM_A * Math.exp(ARM_B * (armAngle + t * 8));
+      const t = 0.05 + Math.random() * 0.95; // position along arm (full range)
+      const r = 12 + t * 80; // linear radius 12→92
       const clampedR = Math.min(r, GALAXY_R);
-      const jitter = (Math.random() - 0.5) * 6;
-      const aJitter = (Math.random() - 0.5) * 0.25;
-      const theta = armAngle + t * 8 + aJitter;
-      const y = (Math.random() - 0.5) * GALAXY_H * (1 - t * 0.5);
+      const jitter = (Math.random() - 0.5) * 2.5; // tight arm width
+      const aJitter = (Math.random() - 0.5) * 0.15; // narrow angular spread
+      const theta = armAngle + t * 6.5 + aJitter; // 6.5 radians ≈ 1 full turn
+      const y = (Math.random() - 0.5) * GALAXY_H * (1 - t * 0.6);
       positions[idx*3]   = clampedR * Math.cos(theta) + jitter * 0.3;
       positions[idx*3+1] = y;
       positions[idx*3+2] = clampedR * Math.sin(theta) + jitter * 0.3;
@@ -202,13 +202,13 @@ class CivilizationGalaxy {
       const eraIdx = eraList.indexOf(fig.era);
       const dimIdx = fig.dimIndex !== undefined ? fig.dimIndex : 0;
       const arm = fi % totalArms;
-      const armAngle = (arm / totalArms) * Math.PI * 2;
-      // distance from center based on era (older = further)
+      const armBase = (arm / totalArms) * Math.PI * 2;
       const eraDist = eraIdx >= 0 ? 25 + eraIdx * 12 : 50;
-      const t = 0.3 + (eraIdx >= 0 ? eraIdx * 0.08 : 0.4);
-      const r = eraDist + (Math.random() - 0.5) * 15;
-      const theta = armAngle + t * 5 + (dimIdx / 6) * 0.8;
-      const y = (Math.random() - 0.5) * GALAXY_H * 0.6;
+      // log-spiral placement matching background stars
+      const r = eraDist + (Math.random() - 0.5) * 8;
+      const spiralAngle = armBase + Math.log(Math.max(r, 1)) * SPIRAL_B;
+      const theta = spiralAngle + (dimIdx / 6) * 0.4 + (Math.random() - 0.5) * 0.15;
+      const y = (Math.random() - 0.5) * GALAXY_H * 0.3;
 
       positions[idx*3]   = r * Math.cos(theta);
       positions[idx*3+1] = y;
@@ -467,7 +467,7 @@ class CivilizationGalaxy {
     this._flyCallback = null;
     this.controls.autoRotate = true;
     this.controls.target.set(0, 0, 0);
-    this.camera.position.set(0, 80, 140);
+    this.camera.position.set(0, 55, 150);
     if (this.uniforms) {
       this.uniforms.uPickedId.value = -1;
     }
