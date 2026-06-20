@@ -447,7 +447,9 @@
     .diary-article-author-info { font-size:12px; }
     .diary-article-author-name { color:var(--text); margin-bottom:2px; }
     .diary-article-author-desc { color:var(--text-dim); font-size:11px; }
-    .diary-article-body { font-size:15px; line-height:2; color:rgba(240,244,248,0.85); white-space:pre-line; }
+    .diary-article-body { font-size:15px; line-height:1.85; color:rgba(240,244,248,0.85); }
+    .diary-article-body p { margin:0 0 12px 0; }
+    .diary-article-body p:last-child { margin-bottom:0; }
     .diary-new-btn { margin:20px; padding:12px; border-radius:14px; background:var(--glass); border:1px solid var(--border); color:var(--text-dim); font-size:12px; cursor:pointer; text-align:center; transition:all 0.3s ease; display:block; }
     .diary-new-btn:hover { background:var(--glass-strong); color:var(--text); }
 
@@ -4585,7 +4587,7 @@ function showBeyondDiaryEntry(entry) {
           <div class="diary-article-author-desc">AI人格日记 · 数字彼岸</div>
         </div>
       </div>
-      <div class="diary-article-body">${entry.content}</div>
+      <div class="diary-article-body">${entry.content.split(/\n\s*\n/).filter(s => s.trim()).map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('')}</div>
     </div>`;
   renderBeyondDiaryList();
 }
