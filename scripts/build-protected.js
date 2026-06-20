@@ -16,6 +16,8 @@ const KEY = 'lifebeyond-2026-✦-stargate'; // 任意字符串作为 XOR 密钥
 const TARGETS = [
   { src: 'experience.html', out: 'experience-protected.html', title: '数字彼岸' },
   { src: 'experience-pro.html', out: 'experience-pro-protected.html', title: '数字彼岸 · Pro' },
+  { src: 'lifebeyond.byzmy.html', out: 'lifebeyond.byzmy.protected.html', title: '数字彼岸' },
+  { src: 'lifebeyond.byzmy.pro.html', out: 'lifebeyond.byzmy.pro.protected.html', title: '数字彼岸 · Pro' },
 ];
 
 // ---------- XOR + Base64 混淆 ----------
