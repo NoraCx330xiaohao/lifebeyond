@@ -1282,7 +1282,35 @@
   </style>
 </head>
 <body>
-<div id="three-bg"></div>
+<script>
+// ===== Lightweight Anti-Snoop (best-effort, browsers can still inspect) =====
+(function(){
+  try {
+    document.addEventListener('contextmenu', function(e){ e.preventDefault(); }, { capture:true });
+    document.addEventListener('keydown', function(e){
+      var k = (e.key||'').toLowerCase();
+      var c = e.ctrlKey || e.metaKey;
+      var s = e.shiftKey;
+      if (k === 'f12') { e.preventDefault(); return false; }
+      if (c && (k === 'u' || k === 's')) { e.preventDefault(); return false; }
+      if (c && s && (k === 'i' || k === 'j' || k === 'c' || k === 'k')) { e.preventDefault(); return false; }
+    }, { capture:true });
+    var devOpen = false, _last = 0;
+    setInterval(function(){
+      var t = Date.now();
+      var dh = (window.outerHeight - window.innerHeight) > 200;
+      var dw = (window.outerWidth - window.innerWidth) > 200;
+      if ((dh || dw) && !devOpen) {
+        devOpen = true;
+        try { document.body.style.filter = 'blur(18px)'; document.body.style.opacity = '0.05'; } catch(_){}
+      } else if (!dh && !dw && devOpen) {
+        devOpen = false;
+        try { document.body.style.filter = ''; document.body.style.opacity = ''; } catch(_){}
+      }
+    }, 1500);
+  } catch(_){}
+})();
+</script><div id="three-bg"></div>
 
 <div class="app">
   <!-- Spatial Dock -->
