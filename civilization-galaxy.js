@@ -129,10 +129,10 @@ class CivilizationGalaxy {
     const GALAXY_R = 100;
     const GALAXY_H = 8;
 
-    // Background star placement: 3 zones
+    // Background star placement: 3 zones —— 旋臂占主导，核心与弥散晕做点缀
     let idx = 0;
-    // Core disk (20%)
-    const coreCount = Math.floor(bgCount * 0.2);
+    // Core disk (12%)
+    const coreCount = Math.floor(bgCount * 0.12);
     for (let i = 0; i < coreCount; i++) {
       const r = Math.random() * GALAXY_R * 0.15;
       const theta = Math.random() * Math.PI * 2;
@@ -147,22 +147,23 @@ class CivilizationGalaxy {
       idx++;
     }
 
-    // Spiral arms (60%) — 8 arms
-    const armCount = Math.floor(bgCount * 0.6);
+    // Spiral arms (78%) — 8 arms 旋臂为骨架，亮度更高，对数螺旋走向严谨
+    const armCount = Math.floor(bgCount * 0.78);
     for (let i = 0; i < armCount; i++) {
       const arm = i % totalArms;
       const armAngle = (arm / totalArms) * Math.PI * 2;
-      const t = 0.05 + Math.random() * 0.95; // position along arm (full range)
-      const r = 12 + t * 80; // linear radius 12→92
+      const t = 0.05 + Math.random() * 0.95;        // position along arm (full range)
+      const r = 12 + t * 80;                         // linear radius 12→92
       const clampedR = Math.min(r, GALAXY_R);
-      const jitter = (Math.random() - 0.5) * 2.5; // tight arm width
-      const aJitter = (Math.random() - 0.5) * 0.15; // narrow angular spread
-      const theta = armAngle + t * 6.5 + aJitter; // 6.5 radians ≈ 1 full turn
+      const jitter = (Math.random() - 0.5) * 1.8;   // 旋臂宽度收窄，骨架更清
+      const aJitter = (Math.random() - 0.5) * 0.10; // 角度抖动收窄
+      const theta = armAngle + t * 6.5 + aJitter;
       const y = (Math.random() - 0.5) * GALAXY_H * (1 - t * 0.6);
       positions[idx*3]   = clampedR * Math.cos(theta) + jitter * 0.3;
       positions[idx*3+1] = y;
       positions[idx*3+2] = clampedR * Math.sin(theta) + jitter * 0.3;
-      const bright = 0.3 + Math.random() * 0.5;
+      // 旋臂亮度提升一档：让旋臂"亮成线"
+      const bright = 0.45 + Math.random() * 0.55;
       const hueShift = Math.random();
       if (hueShift < 0.3) { // warm
         colors[idx*3] = bright; colors[idx*3+1] = bright * 0.85; colors[idx*3+2] = bright * 0.6;
@@ -171,12 +172,12 @@ class CivilizationGalaxy {
       } else { // white
         colors[idx*3] = bright; colors[idx*3+1] = bright; colors[idx*3+2] = bright;
       }
-      sizes[idx] = 1.0 + Math.random() * 2.0;
+      sizes[idx] = 1.2 + Math.random() * 2.0;
       phases[idx] = Math.random() * 6.28;
       idx++;
     }
 
-    // Diffuse halo (20%)
+    // Diffuse halo (10%) —— 弥散晕调暗 & 缩量，仅做边缘氛围
     const haloCount = bgCount - coreCount - armCount;
     for (let i = 0; i < haloCount; i++) {
       const r = 15 + Math.random() * (GALAXY_R - 15);
@@ -185,9 +186,9 @@ class CivilizationGalaxy {
       positions[idx*3]   = r * Math.cos(theta);
       positions[idx*3+1] = y;
       positions[idx*3+2] = r * Math.sin(theta);
-      const bright = 0.15 + Math.random() * 0.35;
-      colors[idx*3] = bright; colors[idx*3+1] = bright; colors[idx*3+2] = bright + 0.08;
-      sizes[idx] = 0.6 + Math.random() * 1.4;
+      const bright = 0.08 + Math.random() * 0.22;   // 0.15-0.5 → 0.08-0.30，降亮
+      colors[idx*3] = bright; colors[idx*3+1] = bright; colors[idx*3+2] = bright + 0.06;
+      sizes[idx] = 0.5 + Math.random() * 1.0;
       phases[idx] = Math.random() * 6.28;
       idx++;
     }
@@ -222,28 +223,31 @@ class CivilizationGalaxy {
       const col = (dimIdx >= 0 && dimIdx < 6) ? dimColors[dimIdx] : [0.85, 0.85, 0.95];
       const baseSize = 3.4 + (fig.influence || 5) * 0.6;
 
-      // 每位人物的 6 颗粒子完全独立采样位置 —— 全部撒到星轨各处，不再聚成团块
+      // 每位人物的 6 颗粒子完全独立采样位置 —— 全部贴着旋臂走，但分散到星轨各处
       // 共享同一 fid：点击任一颗都展开同一位人物（_pickFigure 按屏幕距离选最近）
       // 第 0 颗作为"主星锚点"被记入 figureIndex，仅用于相机重置归位
       for (let s = 0; s < PARTICLES_PER_FIG; s++) {
         // 旋臂选择：维度色谱在视觉上仍可识别，但每颗粒子独立漂移
         let armPick = dimIdx % totalArms;
         const stray = Math.random();
-        if (stray < 0.22) armPick = (armPick + 1) % totalArms;
-        else if (stray < 0.40) armPick = (armPick + totalArms - 1) % totalArms;
-        else if (stray < 0.55) armPick = Math.floor(Math.random() * totalArms); // 15% 完全随机
+        if (stray < 0.20) armPick = (armPick + 1) % totalArms;
+        else if (stray < 0.36) armPick = (armPick + totalArms - 1) % totalArms;
+        else if (stray < 0.50) armPick = Math.floor(Math.random() * totalArms); // 14% 完全随机
         const armBase = (armPick / totalArms) * Math.PI * 2;
-        // 半径：以 era 为提示，但叠加 ±20 的大幅随机；每颗粒子半径独立
+        // 半径：以 era 为提示，叠加 ±12 的随机；让人物沿着旋臂的不同位置散布
         const eraDistHint = eraIdx >= 0 ? 22 + eraIdx * 11 : 28 + Math.random() * 50;
         const r = Math.max(14, Math.min(GALAXY_R - 2,
-          eraDistHint + (Math.random() - 0.5) * 40
+          eraDistHint + (Math.random() - 0.5) * 24
         ));
-        const spiralAngle = armBase + Math.log(Math.max(r, 1)) * ARM_B * 1.5;
-        // 角度抖动 ±0.65 弧度（约 ±37°），人物粒子在旋臂宽度内自由错落
-        const theta = spiralAngle + (Math.random() - 0.5) * 1.3;
-        // 高度：22% 概率冒出盘面 1.5× 厚度，形成立体星海
-        const y = Math.random() < 0.22 ? (Math.random() - 0.5) * GALAXY_H * 1.5
-                                        : (Math.random() - 0.5) * GALAXY_H * 0.5;
+        // 旋臂骨架：对数螺旋走向严格跟随背景旋臂
+        const t = (r - 12) / 80;
+        const armBackbone = armBase + t * 6.5;
+        // 角度抖动收紧到 ±0.30 弧度（约 ±17°），人物粒子贴在旋臂宽度内
+        const theta = armBackbone + (Math.random() - 0.5) * 0.6;
+        // 高度：10% 概率冒出盘面 1.2× 厚度，立体感保留但不破坏盘面骨架
+        const y = Math.random() < 0.10
+          ? (Math.random() - 0.5) * GALAXY_H * 1.2
+          : (Math.random() - 0.5) * GALAXY_H * 0.4;
         const x = r * Math.cos(theta);
         const z = r * Math.sin(theta);
 
