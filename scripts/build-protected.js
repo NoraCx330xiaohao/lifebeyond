@@ -52,12 +52,26 @@ function buildLoaderHtml({ title, payload, keyJsLiteral }) {
 <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 <title>${title}</title>
 <style>
-  html,body{margin:0;padding:0;background:#03060e;color:#9ee9ff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;}
-  .boot-stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;}
-  .boot-title{font-size:20px;letter-spacing:8px;color:#bfe9ff;text-shadow:0 0 20px rgba(110,200,255,.5);}
-  .boot-sub{font-size:12px;color:#5b7da3;letter-spacing:3px;}
-  .boot-orb{width:40px;height:40px;border-radius:50%;background:radial-gradient(circle,#8ce0ff 0%,#3a78c8 60%,transparent 100%);animation:orb 1.6s ease-in-out infinite;}
-  @keyframes orb{0%,100%{transform:scale(0.8);opacity:.5;}50%{transform:scale(1.2);opacity:1;}}
+  html,body{margin:0;padding:0;background:#03060e;color:#9ee9ff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;overflow:hidden;}
+  .boot-stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:22px;background:#03060e;}
+  .boot-stage::before,.boot-stage::after{content:"";position:absolute;inset:-20%;background:
+    radial-gradient(circle at 20% 30%, rgba(120,180,255,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(180,140,255,0.06) 0%, transparent 55%);
+    pointer-events:none;}
+  .boot-stage::after{background:
+    radial-gradient(1px 1px at 12% 22%, rgba(220,235,255,0.7), transparent 60%),
+    radial-gradient(1px 1px at 28% 78%, rgba(220,235,255,0.5), transparent 60%),
+    radial-gradient(1px 1px at 44% 18%, rgba(220,235,255,0.6), transparent 60%),
+    radial-gradient(1px 1px at 60% 56%, rgba(220,235,255,0.55), transparent 60%),
+    radial-gradient(1px 1px at 76% 38%, rgba(220,235,255,0.6), transparent 60%),
+    radial-gradient(1px 1px at 88% 80%, rgba(220,235,255,0.5), transparent 60%);
+    opacity:.85;animation:bootStarTwinkle 6.5s ease-in-out infinite;}
+  @keyframes bootStarTwinkle{0%,100%{opacity:.45;}50%{opacity:.95;}}
+  .boot-title{font-size:20px;letter-spacing:8px;color:#bfe9ff;text-shadow:0 0 14px rgba(110,200,255,.35);position:relative;z-index:1;}
+  .boot-sub{font-size:11px;color:#5b7da3;letter-spacing:3px;position:relative;z-index:1;opacity:.85;}
+  .boot-orb{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle,rgba(140,224,255,.65) 0%,rgba(58,120,200,.4) 60%,transparent 100%);animation:orb 2.8s ease-in-out infinite;position:relative;z-index:1;}
+  @keyframes orb{0%,100%{transform:scale(0.95);opacity:.55;}50%{transform:scale(1.05);opacity:.85;}}
+  .boot-stage.fading{transition:opacity .8s ease;opacity:0;pointer-events:none;}
 </style>
 </head>
 <body>
@@ -84,7 +98,7 @@ function buildLoaderHtml({ title, payload, keyJsLiteral }) {
     },1500);
   } catch(_){}
 })();
-// === Decrypt + Boot ===
+// === Decrypt + Boot（无爆闪柔光过渡）===
 (function(){
   var __k=${keyJsLiteral};
   var __p="${payload}";
@@ -95,17 +109,41 @@ function buildLoaderHtml({ title, payload, keyJsLiteral }) {
     for(var i=0;i<bin.length;i++){out[i]=bin.charCodeAt(i)^keyBytes[i%keyBytes.length];}
     return new TextDecoder('utf-8').decode(out);
   }
+  // 注入到解码后 HTML 中的「过渡保护层」+ 防爆闪 CSS
+  var TRANSITION_GUARD = '\\n<style id="__pb_style">html,body{background:#03060e!important;}#__post_boot{position:fixed;inset:0;background:#03060e;z-index:2147483647;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#bfe9ff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:6px;font-size:13px;transition:opacity 1.1s ease;pointer-events:none;}#__post_boot .__pb_orb{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle,rgba(140,224,255,.55) 0%,rgba(58,120,200,.3) 60%,transparent 100%);animation:__pb_orb 2.4s ease-in-out infinite;}@keyframes __pb_orb{0%,100%{transform:scale(.95);opacity:.55;}50%{transform:scale(1.05);opacity:.85;}}#__post_boot.gone{opacity:0;}</style>\\n';
+  var TRANSITION_HTML = '<div id="__post_boot"><div class="__pb_orb"></div><div>已抵达 · 数字彼岸</div></div><script data-pb="1">window.addEventListener(\\'load\\',function(){setTimeout(function(){var pb=document.getElementById(\\'__post_boot\\');if(pb){pb.classList.add(\\'gone\\');setTimeout(function(){if(pb.parentNode)pb.parentNode.removeChild(pb);var st=document.getElementById(\\'__pb_style\\');if(st&&st.parentNode)st.parentNode.removeChild(st);},1300);}},650);});<\\/script>';
+
+  function injectGuard(html){
+    // 在 </head> 前插入样式
+    if(html.indexOf('</head>')!==-1){
+      html=html.replace('</head>', TRANSITION_GUARD + '</head>');
+    } else {
+      html=TRANSITION_GUARD+html;
+    }
+    // 在 <body ...> 之后立刻插入遮罩
+    html=html.replace(/(<body[^>]*>)/, '$1'+TRANSITION_HTML);
+    return html;
+  }
+
   setTimeout(function(){
     try {
-      var html=dec(__p,__k);
-      document.open();
-      document.write(html);
-      document.close();
-    } catch(e) {
+      var html = injectGuard(dec(__p,__k));
+      // 先把启动器淡出（与新文档过渡叠加，避免硬切）
       var st=document.getElementById('__boot_stage');
-      if(st){st.innerHTML='<div style="color:#ff8aa8">启动失败：'+ (e&&e.message||e) +'</div>';}
+      if(st){st.classList.add('fading');}
+      // 锁定 documentElement 背景，防止 document.open 瞬间出现白底
+      document.documentElement.style.background='#03060e';
+      // 短暂等淡出 + 浏览器吸收 → 再写入新文档
+      setTimeout(function(){
+        document.open();
+        document.write(html);
+        document.close();
+      }, 280);
+    } catch(e) {
+      var st2=document.getElementById('__boot_stage');
+      if(st2){st2.innerHTML='<div style="color:#ff8aa8">启动失败：'+ (e&&e.message||e) +'</div>';}
     }
-  }, 600);
+  }, 700);
 })();
 </script>
 </body>
