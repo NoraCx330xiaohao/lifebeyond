@@ -32,7 +32,8 @@ class CivilizationGalaxy {
     if (opts.onVoidClick) this.onVoidClick = opts.onVoidClick;
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x000005);
+    // 背景配色贴合「彼岸足迹」：#0c1f3a → #071426 → #03080f 的深蓝
+    this.scene.background = new THREE.Color(0x03080f);
 
     const w = this.canvas.clientWidth || window.innerWidth;
     const h = this.canvas.clientHeight || window.innerHeight;
@@ -95,8 +96,11 @@ class CivilizationGalaxy {
   _buildGalaxy() {
     const figures = this.figures;
     const figCount = figures.length;
-    const bgCount = 12000;
-    const N = figCount + bgCount;
+    // 每位人物产出 1 颗主星 + 5 颗伴星，共享 fid，视觉上"星点更多"，点击任一颗都能展开
+    const SAT_PER_FIG = 5;
+    const figParticleCount = figCount * (1 + SAT_PER_FIG);
+    const bgCount = 18000;
+    const N = figParticleCount + bgCount;
     const totalArms = 8;
 
     const positions = new Float32Array(N * 3);
@@ -207,28 +211,56 @@ class CivilizationGalaxy {
       // log-spiral placement matching background stars
       const r = eraDist + (Math.random() - 0.5) * 8;
       const spiralAngle = armBase + Math.log(Math.max(r, 1)) * ARM_B * 1.5;
-      const theta = spiralAngle + (dimIdx / 6) * 0.4 + (Math.random() - 0.5) * 0.15;
-      const y = (Math.random() - 0.5) * GALAXY_H * 0.3;
-
-      positions[idx*3]   = r * Math.cos(theta);
-      positions[idx*3+1] = y;
-      positions[idx*3+2] = r * Math.sin(theta);
+      const baseTheta = spiralAngle + (dimIdx / 6) * 0.4 + (Math.random() - 0.5) * 0.15;
+      const baseY = (Math.random() - 0.5) * GALAXY_H * 0.3;
+      const baseX = r * Math.cos(baseTheta);
+      const baseZ = r * Math.sin(baseTheta);
 
       const col = eraIdx >= 0 ? eraColors[eraIdx] : [0.8, 0.8, 0.9];
+      const baseSize = 3.4 + (fig.influence || 5) * 0.6;
+
+      // 主星（中心节点）
+      positions[idx*3]   = baseX;
+      positions[idx*3+1] = baseY;
+      positions[idx*3+2] = baseZ;
       colors[idx*3]   = col[0];
       colors[idx*3+1] = col[1];
       colors[idx*3+2] = col[2];
-
-      sizes[idx] = 3.4 + (fig.influence || 5) * 0.6;
+      sizes[idx] = baseSize;
       ids[idx] = fi;
       filters[idx] = 1.0;
       focus[idx] = 0;
       phases[idx] = Math.random() * 6.28;
       eraArr[idx] = eraIdx;
       dimArr[idx] = dimIdx;
-
-      this.figureIndex.set(fi, idx);
+      this.figureIndex.set(fi, idx); // 主星索引（飞行目标）
       idx++;
+
+      // 伴星（共享 fid，点击任一颗都展开同一位人物）
+      for (let s = 0; s < SAT_PER_FIG; s++) {
+        const orbit = 1.4 + Math.random() * 3.2;          // 与主星的距离
+        const phi = Math.random() * Math.PI * 2;          // 球面角
+        const elev = (Math.random() - 0.5) * 0.55;        // 抬升角（控制 y）
+        const ox = orbit * Math.cos(phi) * Math.cos(elev);
+        const oy = orbit * Math.sin(elev) * 0.6;          // 压扁
+        const oz = orbit * Math.sin(phi) * Math.cos(elev);
+        positions[idx*3]   = baseX + ox;
+        positions[idx*3+1] = baseY + oy;
+        positions[idx*3+2] = baseZ + oz;
+        // 色调与主星相近，略带闪烁的随机偏移
+        const tint = 0.85 + Math.random() * 0.25;
+        colors[idx*3]   = Math.min(1, col[0] * tint);
+        colors[idx*3+1] = Math.min(1, col[1] * tint);
+        colors[idx*3+2] = Math.min(1, col[2] * tint);
+        sizes[idx] = baseSize * (0.45 + Math.random() * 0.35); // 比主星小
+        ids[idx] = fi;        // 共享 fid
+        filters[idx] = 1.0;
+        focus[idx] = 0;
+        phases[idx] = Math.random() * 6.28;
+        eraArr[idx] = eraIdx;
+        dimArr[idx] = dimIdx;
+        idx++;
+      }
     }
 
     const geo = new THREE.BufferGeometry();
@@ -604,17 +636,28 @@ class CivilizationGalaxy {
       // Camera fly-to
       if (this._focusTarget) {
         const f = this._focusTarget;
-        f.t = Math.min(1, f.t + dt * 0.35);
+        f.t = Math.min(1, f.t + dt * 0.6); // 提速：0.35 → 0.6
         const ease = 1 - Math.pow(1 - f.t, 3);
-        this.controls.target.lerp(new THREE.Vector3(f.x, f.y, f.z), 0.09);
+        this.controls.target.lerp(new THREE.Vector3(f.x, f.y, f.z), 0.16);
         const cam = this.camera;
         const dir = new THREE.Vector3().subVectors(cam.position, this.controls.target).normalize();
         const targetDist = 18 + (1 - ease) * 90;
         const want = new THREE.Vector3().copy(this.controls.target).add(dir.multiplyScalar(targetDist));
-        cam.position.lerp(want, 0.09);
+        cam.position.lerp(want, 0.16);
+        // 详情卡早触发：飞行行进 42% 时就调起 onClick，让人物面板与镜头推进同时进行
+        if (!f._cbFired && f.t >= 0.42 && this._flyCallback) {
+          f._cbFired = true;
+          const cb = this._flyCallback;
+          this._flyCallback = null;
+          cb();
+        }
         if (f.t >= 1) {
+          if (!f._cbFired && this._flyCallback) {
+            const cb = this._flyCallback;
+            this._flyCallback = null;
+            cb();
+          }
           this._focusTarget = null;
-          if (this._flyCallback) { const cb = this._flyCallback; this._flyCallback = null; cb(); }
         }
       }
 
