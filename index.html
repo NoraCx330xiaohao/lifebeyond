@@ -548,6 +548,45 @@ footer a:hover { color: var(--gold); }
   .craft-stats { gap: 32px; flex-wrap: wrap; }
   footer { flex-direction: column; align-items: start; padding: 32px 24px; }
 }
+  /* ========== 星球跳跃过渡 ========== */
+  .portal-overlay{position:fixed;inset:0;z-index:2147483647;pointer-events:none;overflow:hidden;background:transparent;}
+  .portal-planet{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#5eead4 0%,#0e7490 30%,#064e5c 55%,#021e2b 100%);
+    box-shadow:0 0 30px 8px rgba(56,189,248,0.35),0 0 80px 20px rgba(6,78,92,0.25),inset -6px -4px 14px rgba(0,0,0,0.55);
+    transform:scale(0);opacity:0;transition:none;}
+  .portal-planet.land{animation:planetLand 2.2s cubic-bezier(.2,.8,.3,1) forwards;}
+  .portal-ring{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;
+    border:1.5px solid rgba(56,189,248,0.6);transform:scale(0);opacity:0;pointer-events:none;}
+  .portal-ring.go{animation:ringExpand 1.6s ease-out forwards;}
+  .portal-flash{position:absolute;inset:0;background:radial-gradient(circle,rgba(180,240,255,0.95) 0%,rgba(20,80,120,0.7) 35%,transparent 70%);
+    opacity:0;pointer-events:none;}
+  .portal-flash.go{animation:portalFlash 1.4s ease-out forwards;}
+  .portal-warp{position:absolute;inset:0;background:radial-gradient(circle,transparent 18%,rgba(4,15,35,0.7) 55%,rgba(2,6,14,0.96) 100%);
+    opacity:0;pointer-events:none;}
+  .portal-warp.go{animation:warpIn 1.3s ease-in forwards;}
+  @keyframes planetLand{
+    0%{transform:scale(0) rotate(0deg);opacity:0;}
+    12%{transform:scale(1.2) rotate(25deg);opacity:1;}
+    28%{transform:scale(2.5) rotate(90deg);opacity:1;}
+    50%{transform:scale(9) rotate(240deg);opacity:1;}
+    70%{transform:scale(25) rotate(420deg);opacity:1;}
+    88%{transform:scale(55) rotate(580deg);opacity:1;}
+    100%{transform:scale(90) rotate(720deg);opacity:1;}
+  }
+  @keyframes ringExpand{
+    0%{transform:scale(0);opacity:0.85;border-color:rgba(56,189,248,0.7);}
+    30%{opacity:0.6;}
+    100%{transform:scale(160);opacity:0;border-color:rgba(56,189,248,0);}
+  }
+  @keyframes portalFlash{
+    0%{opacity:0;}
+    25%{opacity:1;}
+    100%{opacity:0;}
+  }
+  @keyframes warpIn{
+    0%{opacity:0;}
+    100%{opacity:1;}
+  }
 </style>
 </head>
 <body>
@@ -1166,6 +1205,61 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
+})();
+
+/* ========== 星球跳跃过渡 ========== */
+(function(){
+  function launchPortal(url){
+    // 若已有 overlay，直接跳
+    if(document.getElementById('portal-overlay')){location.href=url;return;}
+    var ov=document.createElement('div');ov.id='portal-overlay';ov.className='portal-overlay';
+
+    // 扭曲叠加层
+    var warp=document.createElement('div');warp.className='portal-warp';ov.appendChild(warp);
+
+    // 星球
+    var pl=document.createElement('div');pl.className='portal-planet';ov.appendChild(pl);
+
+    // 冲击波环 x 3（错峰）
+    for(var i=0;i<3;i++){
+      var ring=document.createElement('div');ring.className='portal-ring';ring.dataset.d=(i*0.18).toFixed(2);
+      ov.appendChild(ring);
+    }
+
+    // 闪光
+    var fl=document.createElement('div');fl.className='portal-flash';ov.appendChild(fl);
+
+    document.body.appendChild(ov);
+
+    // 冻结滚动
+    document.body.style.overflow='hidden';
+
+    // 动画时间线
+    requestAnimationFrame(function(){
+      pl.classList.add('land');               // 星球飞入
+      warp.classList.add('go');               // 边缘暗角
+      var rings=ov.querySelectorAll('.portal-ring');
+      rings.forEach(function(r){
+        var d=parseFloat(r.dataset.d)||0;
+        setTimeout(function(){r.classList.add('go');},d*1000);
+      });
+      setTimeout(function(){fl.classList.add('go');},750);  // 闪光
+    });
+
+    setTimeout(function(){location.href=url;},2200);
+  }
+
+  // 拦截所有跳转到功能页的链接
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a[href]');
+    if(!a)return;
+    var h=a.getAttribute('href')||'';
+    if(h.indexOf('lifebeyond.byzmy')!==-1 || h.indexOf('experience')!== -1){
+      e.preventDefault();
+      e.stopPropagation();
+      launchPortal(h);
+    }
+  },true);
 })();
 </script>
 </body>
