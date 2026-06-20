@@ -32,17 +32,18 @@ class CivilizationGalaxy {
     if (opts.onVoidClick) this.onVoidClick = opts.onVoidClick;
 
     this.scene = new THREE.Scene();
-    // 背景配色贴合「彼岸足迹」：#0c1f3a → #071426 → #03080f 的深蓝
-    this.scene.background = new THREE.Color(0x03080f);
+    // 让 WebGL 透明，露出 CSS 渐变（与彼岸足迹等模块同款）
+    this.scene.background = null;
 
     const w = this.canvas.clientWidth || window.innerWidth;
     const h = this.canvas.clientHeight || window.innerHeight;
     this.camera = new THREE.PerspectiveCamera(55, w / h, 0.5, 2000);
     this.camera.position.set(0, 55, 150);
 
-    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: false });
+    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setSize(w, h, false);
+    this.renderer.setClearColor(0x000000, 0); // 完全透明，叠在 #view-civilization 渐变上
 
     this.controls = new OrbitControls(this.camera, this.canvas);
     this.controls.enableDamping = true;
@@ -190,6 +191,7 @@ class CivilizationGalaxy {
     }
 
     // Figure particles — placed near their era/dim coordinates
+    // 时代色（仍保留供时代壳层背景用）
     const eraColors = [
       [0.55, 0.85, 1.0],  // 当代 — 冰蓝
       [1.0, 0.65, 0.2],   // 工业革命 — 暖橙
@@ -200,6 +202,16 @@ class CivilizationGalaxy {
       [0.95, 0.8, 0.25],  // 古埃及 — 金
     ];
     const eraList = ['当代','工业革命','文艺复兴','丝绸之路','古代中国','古希腊','古埃及'];
+    // 维度色（不同类型人物 = 不同颜色，与 civilizationDimensions 完全对应）
+    // 0 social 金 / 1 innovation 青 / 2 peace 紫 / 3 humanity 粉 / 4 education 灰青 / 5 era 橙
+    const dimColors = [
+      [1.00, 0.83, 0.48], // social      #FFD37A
+      [0.39, 0.90, 1.00], // innovation  #63E6FF
+      [0.64, 0.52, 1.00], // peace       #A285FF
+      [1.00, 0.56, 0.70], // humanity    #FF8FB3
+      [0.44, 0.70, 0.71], // education   #6fb3b6
+      [1.00, 0.69, 0.48], // era         #FFB07A
+    ];
 
     for (let fi = 0; fi < figCount; fi++) {
       const fig = figures[fi];
@@ -216,7 +228,7 @@ class CivilizationGalaxy {
       const baseX = r * Math.cos(baseTheta);
       const baseZ = r * Math.sin(baseTheta);
 
-      const col = eraIdx >= 0 ? eraColors[eraIdx] : [0.8, 0.8, 0.9];
+      const col = (dimIdx >= 0 && dimIdx < 6) ? dimColors[dimIdx] : [0.85, 0.85, 0.95];
       const baseSize = 3.4 + (fig.influence || 5) * 0.6;
 
       // 主星（中心节点）
@@ -442,9 +454,10 @@ class CivilizationGalaxy {
       const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
       this._mouseNDC.set(x, y);
-      const fid = this._pickFigure();
-      if (fid >= 0 && this.figures[fid]) {
-        this.flyToFigure(fid);
+      const hit = this._pickFigure();
+      if (hit && hit.fid >= 0 && this.figures[hit.fid]) {
+        // 飞到「被点击的那颗实际粒子」（不是固定主星），点击与飞行视觉一致
+        this.flyToFigure(hit.fid, { x: hit.x, y: hit.y, z: hit.z, particleIdx: hit.particleIdx });
       } else {
         // Void click → summon memory from void
         this.onVoidClick(e.clientX, e.clientY);
@@ -453,40 +466,82 @@ class CivilizationGalaxy {
     canvas.addEventListener('mousemove', this._onMove);
     canvas.addEventListener('pointerdown', this._onPointerDown);
     canvas.addEventListener('pointerup', this._onPointerUp);
+
+    // WASD 键盘平移：记录按键状态，render loop 中实际平移
+    this._keyState = { w:false, a:false, s:false, d:false, q:false, e:false };
+    this._onKeyDown = (ev) => {
+      // 输入框聚焦时不接管
+      const tag = (ev.target && ev.target.tagName) ? ev.target.tagName.toLowerCase() : '';
+      if (tag === 'input' || tag === 'textarea' || (ev.target && ev.target.isContentEditable)) return;
+      const k = (ev.key || '').toLowerCase();
+      if (k === 'w' || k === 'arrowup')    { this._keyState.w = true; ev.preventDefault?.(); }
+      else if (k === 's' || k === 'arrowdown') { this._keyState.s = true; ev.preventDefault?.(); }
+      else if (k === 'a' || k === 'arrowleft') { this._keyState.a = true; ev.preventDefault?.(); }
+      else if (k === 'd' || k === 'arrowright'){ this._keyState.d = true; ev.preventDefault?.(); }
+      else if (k === 'q') { this._keyState.q = true; }
+      else if (k === 'e') { this._keyState.e = true; }
+    };
+    this._onKeyUp = (ev) => {
+      const k = (ev.key || '').toLowerCase();
+      if (k === 'w' || k === 'arrowup')    this._keyState.w = false;
+      else if (k === 's' || k === 'arrowdown') this._keyState.s = false;
+      else if (k === 'a' || k === 'arrowleft') this._keyState.a = false;
+      else if (k === 'd' || k === 'arrowright')this._keyState.d = false;
+      else if (k === 'q') this._keyState.q = false;
+      else if (k === 'e') this._keyState.e = false;
+    };
+    window.addEventListener('keydown', this._onKeyDown);
+    window.addEventListener('keyup', this._onKeyUp);
   }
 
   _pickFigure() {
-    if (!this.galaxy) return -1;
+    if (!this.galaxy) return null;
     this.raycaster.setFromCamera(this._mouseNDC, this.camera);
     const intersects = this.raycaster.intersectObject(this.galaxy);
-    if (!intersects.length) return -1;
+    if (!intersects.length) return null;
     const idArr = this.galaxy.geometry.attributes.aId.array;
+    const posArr = this.galaxy.geometry.attributes.position.array;
     for (const it of intersects) {
       const id = idArr[it.index];
-      if (id >= 0) return id;
+      if (id >= 0) {
+        const pi = it.index;
+        return {
+          fid: id,
+          particleIdx: pi,
+          x: posArr[pi * 3],
+          y: posArr[pi * 3 + 1],
+          z: posArr[pi * 3 + 2]
+        };
+      }
     }
-    return -1;
+    return null;
   }
 
   /* ──── Fly camera to figure ──── */
-  flyToFigure(fid) {
+  flyToFigure(fid, override) {
     if (!this.figures[fid]) return;
     const idx = this.figureIndex.get(fid);
     if (idx === undefined) return;
     const pos = this.galaxy.geometry.attributes.position;
-    const tx = pos.array[idx * 3];
-    const ty = pos.array[idx * 3 + 1];
-    const tz = pos.array[idx * 3 + 2];
+    let tx, ty, tz, focusIdx;
+    if (override && typeof override.x === 'number') {
+      tx = override.x; ty = override.y; tz = override.z;
+      focusIdx = (typeof override.particleIdx === 'number') ? override.particleIdx : idx;
+    } else {
+      tx = pos.array[idx * 3];
+      ty = pos.array[idx * 3 + 1];
+      tz = pos.array[idx * 3 + 2];
+      focusIdx = idx;
+    }
     this._focusTarget = { x: tx, y: ty, z: tz, t: 0 };
     this.controls.autoRotate = false;
     if (this.uniforms && this.uniforms.uPickedId) {
       this.uniforms.uPickedId.value = fid;
     }
-    // Set focus attribute on the figure particle
+    // Set focus attribute on the picked particle (实际被点的那颗，而不是主星)
     const focusArr = this.galaxy.geometry.attributes.aFocus.array;
-    // Reset all focus
     for (let i = 0; i < focusArr.length; i++) focusArr[i] = 0;
-    focusArr[idx] = 1;
+    focusArr[focusIdx] = 1;
     this.galaxy.geometry.attributes.aFocus.needsUpdate = true;
     // Callback after flight
     const fig = this.figures[fid];
@@ -611,7 +666,8 @@ class CivilizationGalaxy {
       // Hover pick (throttled: every 4 frames)
       this._hoverFrame = (this._hoverFrame || 0) + 1;
       if (this._hoverFrame % 4 === 0) {
-        const fid = this._pickFigure();
+        const hit = this._pickFigure();
+        const fid = hit ? hit.fid : -1;
         if (fid !== this._hoveredId) {
           this._hoveredId = fid;
           if (fid >= 0 && this.figures[fid]) {
@@ -661,6 +717,33 @@ class CivilizationGalaxy {
         }
       }
 
+      // WASD 键盘平移：基于相机水平朝向 + 距离自适应步长
+      if (this._keyState && (this._keyState.w || this._keyState.a || this._keyState.s || this._keyState.d || this._keyState.q || this._keyState.e)) {
+        const dist = this.camera.position.distanceTo(this.controls.target);
+        const speed = Math.max(8, dist * 0.55) * dt; // 距离越远走得越快
+        // forward = 相机朝向投影到水平面
+        const fwd = new THREE.Vector3();
+        this.camera.getWorldDirection(fwd);
+        fwd.y = 0;
+        if (fwd.lengthSq() < 1e-6) fwd.set(0, 0, -1);
+        fwd.normalize();
+        const right = new THREE.Vector3().crossVectors(fwd, this.camera.up).normalize();
+        const move = new THREE.Vector3();
+        if (this._keyState.w) move.add(fwd);
+        if (this._keyState.s) move.sub(fwd);
+        if (this._keyState.d) move.add(right);
+        if (this._keyState.a) move.sub(right);
+        if (this._keyState.e) move.y += 1;
+        if (this._keyState.q) move.y -= 1;
+        if (move.lengthSq() > 0) {
+          move.normalize().multiplyScalar(speed);
+          this.camera.position.add(move);
+          this.controls.target.add(move);
+          // 用户主动操作时取消自动旋转
+          this.controls.autoRotate = false;
+        }
+      }
+
       this.controls.update();
       this.renderer.render(this.scene, this.camera);
       this._raf = requestAnimationFrame(loop);
@@ -678,6 +761,8 @@ class CivilizationGalaxy {
       if (this._onPointerDown) this.canvas.removeEventListener('pointerdown', this._onPointerDown);
       if (this._onPointerUp) this.canvas.removeEventListener('pointerup', this._onPointerUp);
     }
+    if (this._onKeyDown) window.removeEventListener('keydown', this._onKeyDown);
+    if (this._onKeyUp) window.removeEventListener('keyup', this._onKeyUp);
     if (this.galaxy) { this.galaxy.geometry.dispose(); this.galaxy.material.dispose(); }
     if (this.bgPoints) { this.bgPoints.geometry.dispose(); this.bgPoints.material.dispose(); }
     [this.coreSprite, this.coreSprite2, this.coreSprite3].forEach(s => {
