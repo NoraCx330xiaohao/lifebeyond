@@ -21,6 +21,7 @@ const VERTEX_SHADER = /* glsl */`
   uniform float uTime;
   uniform float uPickedId;
   uniform float uHoveredId;
+  uniform float uFlash;
   attribute float aSize;
   attribute float aSeed;
   attribute float aId;
@@ -35,7 +36,8 @@ const VERTEX_SHADER = /* glsl */`
     float focusBoost = 0.0;
     if (abs(aId - uPickedId) < 0.5) focusBoost = 2.4;
     else if (abs(aId - uHoveredId) < 0.5) focusBoost = 1.5;
-    gl_PointSize = (aSize + focusBoost) * persp * pulse;
+    float flashBoost = uFlash * 2.0;
+    gl_PointSize = (aSize + focusBoost + flashBoost) * persp * pulse;
     vColor = color;
     vAlpha = mix(0.18, 1.0, aFilter);
     vFocused = focusBoost;
@@ -298,7 +300,8 @@ class CivilizationGalaxy {
         uTime: { value: 0 },
         uPickedId: { value: -2 },
         uHoveredId: { value: -2 },
-        uFocusId: { value: -2 }
+        uFocusId: { value: -2 },
+        uFlash: { value: 0.0 }
       },
       vertexColors: true,
       transparent: true,
@@ -403,8 +406,10 @@ class CivilizationGalaxy {
       this._mouseNDC.set(x, y);
       const fid = this._pickFigure();
       if (fid >= 0 && this.figures[fid]) {
-        this.onClick(this.figures[fid]);
         this.flyToFigure(fid);
+        // 等飞行结束后再弹详情卡（飞行约 1.2s）
+        const fig = this.figures[fid];
+        setTimeout(() => this.onClick(fig), 1200);
       } else {
         // 点击空白 → 从虚空捞记忆
         this.onVoidClick(e.clientX, e.clientY);
@@ -469,6 +474,16 @@ class CivilizationGalaxy {
     this._focusTarget = null;
     this.controls.autoRotate = true;
     this.controls.target.set(0, 0, 0);
+    if (this.uniforms && this.uniforms.uPickedId) {
+      this.uniforms.uPickedId.value = -1;
+    }
+  }
+
+  /* 星系闪光 — 虚空捞记忆时全屏脉冲 */
+  flashGalaxy() {
+    if (!this.uniforms) return;
+    this._flashTime = performance.now();
+    this._flashActive = true;
   }
 
   _refreshFilter() {
@@ -536,6 +551,17 @@ class CivilizationGalaxy {
           } else {
             this.onHover(null, this._mouseScreen);
           }
+        }
+      }
+
+      // flash 脉冲衰减 — 虚空捞记忆时全屏闪光
+      if (this._flashActive) {
+        const age = (performance.now() - this._flashTime) / 1000;
+        if (age < 1.2) {
+          this.uniforms.uFlash.value = Math.max(0, 1.0 - age / 1.2) * 0.6;
+        } else {
+          this.uniforms.uFlash.value = 0;
+          this._flashActive = false;
         }
       }
 

@@ -492,8 +492,8 @@
     /* 文明记忆宇宙 · 顶层视图 */
     #view-civilization { background:#020210; }
     #view-civilization::before { content:""; position:absolute; inset:0; pointer-events:none; z-index:0; background:radial-gradient(ellipse at 28% 18%, rgba(45,22,72,0.32) 0%, rgba(20,8,42,0.20) 35%, rgba(2,1,12,0.10) 70%, rgba(0,0,0,0) 100%); mix-blend-mode:screen; }
-    #civilization-webgl { position:absolute !important; inset:0 !important; width:100% !important; height:100% !important; z-index:1 !important; pointer-events:none; }
-    #civilization-canvas { position:absolute !important; top:0; left:0; width:100% !important; height:100% !important; z-index:2 !important; cursor:grab; background:transparent; }
+    #civilization-webgl { position:absolute !important; inset:0 !important; width:100% !important; height:100% !important; z-index:1 !important; pointer-events:auto !important; cursor:grab; }
+    #civilization-canvas { position:absolute !important; top:0; left:0; width:100% !important; height:100% !important; z-index:2 !important; pointer-events:none !important; background:transparent; }
     .civilization-hud { position:absolute; top:96px; left:36px; z-index:25; max-width:248px; padding:12px 14px 10px; background:rgba(8,4,20,0.5); backdrop-filter:blur(20px); border:1px solid rgba(255,176,122,0.2); border-radius:14px; pointer-events:auto; }
     .civ-loader { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:30; text-align:center; pointer-events:none; transition:opacity 0.6s ease; }
     .civ-loader.hidden { opacity:0; pointer-events:none; visibility:hidden; }
@@ -6014,12 +6014,27 @@ function initCivilizationWebGL() {
           }
         },
         onClick: (fig) => {
-          try { openCivilizationFigure && openCivilizationFigure(fig); } catch(e) { console.warn(e); }
+          // 先飞向星球，完成后弹出详情卡
+          if (typeof CivGalaxy !== 'undefined' && CivGalaxy.isReady()) {
+            CivGalaxy.flyToFigure(fig);
+            const checkDone = setInterval(() => {
+              if (!CivGalaxy._focusTarget) {
+                clearInterval(checkDone);
+                try { openCivilizationFigure && openCivilizationFigure(fig); } catch(e) { console.warn(e); }
+              }
+            }, 80);
+          } else {
+            try { openCivilizationFigure && openCivilizationFigure(fig); } catch(e) { console.warn(e); }
+          }
         },
         onVoidClick: (sx, sy) => {
           // 沿用从虚空捞记忆功能 — 不动
           try { summonCivilizationWhisper && summonCivilizationWhisper(sx, sy); } catch(e) {}
           try { spawnCivClickRipple && spawnCivClickRipple(sx, sy); } catch(e) {}
+          // 星系闪光反馈
+          if (typeof CivGalaxy !== 'undefined' && CivGalaxy.isReady()) {
+            CivGalaxy.flashGalaxy();
+          }
         }
       });
       // loader fade out
