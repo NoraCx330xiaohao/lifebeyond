@@ -1251,8 +1251,34 @@
     @media (max-width:900px) {
       .user-orb { width:52px; height:52px; bottom:24px; right:24px; font-size:20px; }
       .profile-drawer-card { width:100vw; max-width:100vw; padding:24px 18px 24px; }
-      .auth-card, .upload-wizard, .first-memory-card, .capacity-unlock-card { width:94vw; padding:26px 22px 22px; }
+      .auth-card, .upload-wizard, .first-memory-card, .capacity-unlock-card, .ai-engine-card { width:94vw; padding:26px 22px 22px; }
     }
+    /* ============== AI Engine Settings Modal ============== */
+    .ai-engine-modal { position:fixed; inset:0; z-index:9700; background:rgba(3,8,15,0.78); backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px); display:none; align-items:center; justify-content:center; opacity:0; transition:opacity 0.32s ease; }
+    .ai-engine-modal.active { display:flex; opacity:1; }
+    .ai-engine-card { width:min(520px, 92vw); max-height:88vh; overflow-y:auto; background:linear-gradient(160deg, rgba(20,32,58,0.78) 0%, rgba(40,32,72,0.72) 60%, rgba(60,40,90,0.66) 100%); backdrop-filter:blur(32px) saturate(1.2); -webkit-backdrop-filter:blur(32px) saturate(1.2); border:1px solid rgba(180,200,255,0.18); border-radius:24px; padding:30px 28px 26px; position:relative; box-shadow:0 30px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08); animation:authEmerge 0.5s cubic-bezier(0.16,0.84,0.44,1); }
+    .ai-engine-title { font-family:var(--serif); font-size:22px; color:#f1f5ff; letter-spacing:1.2px; margin-bottom:6px; }
+    .ai-engine-sub { font-size:12px; color:rgba(200,210,255,0.65); margin-bottom:18px; line-height:1.7; }
+    .ai-engine-field { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+    .ai-engine-field label { font-size:11px; color:rgba(200,210,255,0.7); letter-spacing:0.5px; }
+    .ai-engine-field input, .ai-engine-field select, .ai-engine-field textarea { padding:11px 13px; background:rgba(255,255,255,0.04); border:1px solid rgba(180,200,255,0.16); border-radius:10px; color:#f1f5ff; font-size:13px; font-family:inherit; outline:none; transition:all 0.25s; }
+    .ai-engine-field input:focus, .ai-engine-field select:focus, .ai-engine-field textarea:focus { border-color:rgba(180,200,255,0.4); background:rgba(255,255,255,0.07); }
+    .ai-engine-field select option { background:#101830; }
+    .ai-engine-row { display:flex; gap:10px; margin-top:14px; }
+    .ai-engine-row button { flex:1; padding:12px; border-radius:11px; border:1px solid rgba(180,200,255,0.22); background:linear-gradient(135deg, rgba(120,160,255,0.18) 0%, rgba(180,140,255,0.18) 100%); color:#f1f5ff; cursor:pointer; font-size:13px; transition:all 0.25s; letter-spacing:0.4px; }
+    .ai-engine-row button.ghost { background:transparent; color:rgba(220,230,255,0.65); }
+    .ai-engine-row button:hover { transform:translateY(-1px); border-color:rgba(180,200,255,0.4); }
+    .ai-engine-status { margin-top:14px; padding:12px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(180,200,255,0.12); border-radius:12px; font-size:12px; color:rgba(220,230,255,0.7); line-height:1.7; min-height:42px; }
+    .ai-engine-status.ok { border-color:rgba(120,220,160,0.34); background:rgba(60,180,120,0.08); color:#bff5d5; }
+    .ai-engine-status.err { border-color:rgba(255,150,170,0.34); background:rgba(220,80,110,0.08); color:#ffb6c1; }
+    .ai-engine-presets { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .ai-engine-preset { padding:4px 10px; font-size:10px; border-radius:999px; background:rgba(120,160,255,0.12); border:1px solid rgba(180,200,255,0.16); color:rgba(220,230,255,0.78); cursor:pointer; transition:all 0.2s; letter-spacing:0.4px; }
+    .ai-engine-preset:hover { background:rgba(120,160,255,0.22); color:#fff; }
+    .ai-engine-link { font-size:11px; color:#a285ff; text-decoration:none; cursor:pointer; }
+    .ai-engine-link:hover { color:#c8b6ff; text-decoration:underline; }
+    .ai-engine-tip { font-size:11px; color:rgba(180,200,255,0.55); margin-top:6px; line-height:1.6; }
+    .stream-caret { display:inline-block; margin-left:2px; opacity:0.85; color:rgba(255,211,122,0.8); animation:streamBlink 0.95s steps(1,start) infinite; }
+    @keyframes streamBlink { 50% { opacity:0; } }
   </style>
 </head>
 <body>
@@ -1874,6 +1900,7 @@
     <div class="profile-actions">
       <button class="profile-action-btn" onclick="openUploadWizard()">+ 创造一颗记忆星</button>
       <button class="profile-action-btn" onclick="openCapacityUnlock()">⌬ 扩展星海容量</button>
+      <button class="profile-action-btn" onclick="openAIEngineModal()">✦ 配置 AI 引擎</button>
       <button class="profile-action-btn ghost" onclick="logout()">离开此宇宙 · Logout</button>
     </div>
   </div>
@@ -2016,6 +2043,54 @@
 
 <!-- Memory star spawn flash -->
 <div class="memory-spawn-flash" id="memory-spawn-flash"><div class="memory-spawn-orb"></div></div>
+
+<!-- AI Engine Settings Modal -->
+<div class="ai-engine-modal" id="ai-engine-modal">
+  <div class="ai-engine-card">
+    <div class="upload-close" onclick="closeAIEngineModal()">×</div>
+    <div class="ai-engine-title">✦ AI 引擎</div>
+    <div class="ai-engine-sub">为对话接入更聪明的大脑。<br/>密钥仅保存在你浏览器本地（localStorage），不会上传任何服务器。</div>
+
+    <div class="ai-engine-field">
+      <label>引擎 · Provider</label>
+      <select id="ai-engine-provider" onchange="onAIProviderChange()">
+        <option value="openrouter">OpenRouter（推荐 · 一站接 DeepSeek/Qwen/Llama/Mistral/Gemma）</option>
+        <option value="deepseek">DeepSeek 官方</option>
+        <option value="custom">自定义 OpenAI 兼容端点</option>
+        <option value="local">本地 Ollama（localhost:11434）</option>
+      </select>
+    </div>
+
+    <div class="ai-engine-field" id="ai-engine-baseurl-wrap" style="display:none;">
+      <label>Base URL</label>
+      <input id="ai-engine-baseurl" type="text" placeholder="https://api.example.com/v1" autocomplete="off" />
+    </div>
+
+    <div class="ai-engine-field" id="ai-engine-key-wrap">
+      <label>API Key</label>
+      <input id="ai-engine-key" type="password" placeholder="sk-or-v1-... / sk-..." autocomplete="off" />
+      <div class="ai-engine-tip">没有 OpenRouter Key？<a class="ai-engine-link" href="https://openrouter.ai/keys" target="_blank" rel="noopener">点这里免费申请 →</a></div>
+    </div>
+
+    <div class="ai-engine-field">
+      <label>模型 · Model</label>
+      <input id="ai-engine-model" type="text" placeholder="deepseek/deepseek-chat" autocomplete="off" />
+      <div class="ai-engine-presets" id="ai-engine-presets"></div>
+    </div>
+
+    <div class="ai-engine-field">
+      <label>温度 · Temperature</label>
+      <input id="ai-engine-temp" type="number" min="0" max="2" step="0.1" value="0.85" />
+    </div>
+
+    <div class="ai-engine-status" id="ai-engine-status">未配置时，对话会回退到内置温柔模板。配置成功后，每位人格的对话都将由真实大模型续写。</div>
+
+    <div class="ai-engine-row">
+      <button class="ghost" onclick="testAIEngine()">⚡ 测试连通</button>
+      <button onclick="saveAIEngine()">✦ 保存</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ==================== DATA ====================
@@ -2911,9 +2986,39 @@ async function sendChatMessage() {
     }[chatPersona.id];
     return fl[Math.floor(Math.random()*fl.length)];
   };
-  const reply = await callLocalModel(messages, fallback);
-  hideTyping();
-  appendMessage('ai', reply, chatPersona);
+  // 流式打字机：开启 AI 引擎时，逐 token 渲染到当前 AI 气泡
+  let streamBubble = null;
+  let streamFull = '';
+  const cfgPresent = !!(getAIEngineConfig() && (getAIEngineConfig().apiKey || getAIEngineConfig().provider === 'local') && getAIEngineConfig().model);
+  const onDelta = cfgPresent ? (delta, full) => {
+    if (!streamBubble) {
+      hideTyping();
+      const container = document.getElementById('chat-messages');
+      const now = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
+      const div = document.createElement('div');
+      div.className = 'msg-row ai';
+      div.style.animation = 'fadeIn 0.4s ease';
+      div.innerHTML = `<div class="msg-avatar" style="background:${hexToRgba(chatPersona.color, 0.15)}">${chatPersona.emoji}</div>
+        <div>
+          <div class="msg-bubble" data-stream="1"></div>
+          <div class="msg-time">${now}</div>
+        </div>`;
+      container.appendChild(div);
+      streamBubble = div.querySelector('.msg-bubble');
+    }
+    streamFull = full;
+    streamBubble.innerHTML = (full || '').replace(/\n/g,'<br>') + '<span class="stream-caret">▍</span>';
+    const c = document.getElementById('chat-messages'); c.scrollTop = c.scrollHeight;
+  } : null;
+  const reply = await callLocalModel(messages, fallback, { onDelta, maxTokens:500 });
+  if (streamBubble) {
+    // 流式完成，记录到历史并去掉光标
+    chatHistory[chatPersona.id].push({ role:'ai', content:reply });
+    streamBubble.innerHTML = (reply || streamFull).replace(/\n/g,'<br>');
+  } else {
+    hideTyping();
+    appendMessage('ai', reply, chatPersona);
+  }
 
   btn.disabled = false;
   renderChatPersonaList();
@@ -9490,7 +9595,181 @@ window.addEventListener('touchmove', e => {
 }, { passive: true });
 
 // ==================== PERSONA ENGINE FALLBACK ====================
-async function callLocalModel(messages, fallbackFn) {
+// ==================== AI Engine (OpenRouter / DeepSeek / Ollama) ====================
+const AI_ENGINE_KEY = 'lifebeyond_ai_engine_v1';
+const AI_PRESET_MODELS = {
+  openrouter: [
+    { id:'deepseek/deepseek-chat', name:'DeepSeek Chat' },
+    { id:'deepseek/deepseek-chat-v3-0324:free', name:'DeepSeek V3 · Free' },
+    { id:'qwen/qwen-2.5-72b-instruct:free', name:'Qwen 2.5 72B · Free' },
+    { id:'meta-llama/llama-3.3-70b-instruct:free', name:'Llama 3.3 70B · Free' },
+    { id:'mistralai/mistral-7b-instruct:free', name:'Mistral 7B · Free' },
+    { id:'google/gemma-2-9b-it:free', name:'Gemma 2 9B · Free' }
+  ],
+  deepseek: [
+    { id:'deepseek-chat', name:'DeepSeek Chat' },
+    { id:'deepseek-reasoner', name:'DeepSeek R1 推理' }
+  ],
+  custom: [],
+  local: [
+    { id:'qwen2.5', name:'Qwen 2.5（本地）' },
+    { id:'llama3.1', name:'Llama 3.1（本地）' },
+    { id:'mistral', name:'Mistral（本地）' }
+  ]
+};
+const AI_PROVIDER_DEFAULTS = {
+  openrouter: { baseUrl:'https://openrouter.ai/api/v1', model:'deepseek/deepseek-chat' },
+  deepseek:   { baseUrl:'https://api.deepseek.com/v1',  model:'deepseek-chat' },
+  custom:     { baseUrl:'https://api.openai.com/v1',     model:'gpt-4o-mini' },
+  local:      { baseUrl:'http://localhost:11434/v1',    model:'qwen2.5' }
+};
+function getAIEngineConfig() {
+  try { return JSON.parse(localStorage.getItem(AI_ENGINE_KEY) || 'null'); } catch(e) { return null; }
+}
+function setAIEngineConfig(cfg) {
+  try { localStorage.setItem(AI_ENGINE_KEY, JSON.stringify(cfg)); } catch(e) {}
+}
+function openAIEngineModal() {
+  const m = document.getElementById('ai-engine-modal'); if (!m) return;
+  const cfg = getAIEngineConfig() || { provider:'openrouter', baseUrl:AI_PROVIDER_DEFAULTS.openrouter.baseUrl, model:AI_PROVIDER_DEFAULTS.openrouter.model, apiKey:'', temperature:0.85 };
+  document.getElementById('ai-engine-provider').value = cfg.provider || 'openrouter';
+  document.getElementById('ai-engine-baseurl').value = cfg.baseUrl || '';
+  document.getElementById('ai-engine-key').value = cfg.apiKey || '';
+  document.getElementById('ai-engine-model').value = cfg.model || '';
+  document.getElementById('ai-engine-temp').value = (cfg.temperature ?? 0.85);
+  onAIProviderChange();
+  document.getElementById('ai-engine-status').className = 'ai-engine-status';
+  document.getElementById('ai-engine-status').textContent = cfg.apiKey
+    ? `当前已配置：${cfg.provider} · ${cfg.model || '(未设)'}。可点击"测试连通"验证。`
+    : '未配置时，对话会回退到内置温柔模板。配置成功后，每位人格的对话都将由真实大模型续写。';
+  m.classList.add('active');
+}
+function closeAIEngineModal() {
+  const m = document.getElementById('ai-engine-modal'); if (m) m.classList.remove('active');
+}
+function onAIProviderChange() {
+  const provider = document.getElementById('ai-engine-provider').value;
+  const baseInput = document.getElementById('ai-engine-baseurl');
+  const baseWrap = document.getElementById('ai-engine-baseurl-wrap');
+  const keyWrap = document.getElementById('ai-engine-key-wrap');
+  baseWrap.style.display = (provider === 'custom' || provider === 'local') ? '' : 'none';
+  keyWrap.style.display = (provider === 'local') ? 'none' : '';
+  if (!baseInput.value || provider !== 'custom') baseInput.value = AI_PROVIDER_DEFAULTS[provider].baseUrl;
+  const modelInput = document.getElementById('ai-engine-model');
+  if (!modelInput.value) modelInput.value = AI_PROVIDER_DEFAULTS[provider].model;
+  const presets = AI_PRESET_MODELS[provider] || [];
+  const wrap = document.getElementById('ai-engine-presets');
+  wrap.innerHTML = presets.map(p => `<div class="ai-engine-preset" onclick="document.getElementById('ai-engine-model').value='${p.id}'">${p.name}</div>`).join('');
+}
+function saveAIEngine() {
+  const cfg = {
+    provider: document.getElementById('ai-engine-provider').value,
+    baseUrl: document.getElementById('ai-engine-baseurl').value.trim() || AI_PROVIDER_DEFAULTS[document.getElementById('ai-engine-provider').value].baseUrl,
+    apiKey: document.getElementById('ai-engine-key').value.trim(),
+    model: document.getElementById('ai-engine-model').value.trim() || 'deepseek/deepseek-chat',
+    temperature: parseFloat(document.getElementById('ai-engine-temp').value) || 0.85
+  };
+  setAIEngineConfig(cfg);
+  const s = document.getElementById('ai-engine-status');
+  s.className = 'ai-engine-status ok';
+  s.textContent = `已保存：${cfg.provider} · ${cfg.model}。下次对话生效。`;
+}
+async function testAIEngine() {
+  const cfg = {
+    provider: document.getElementById('ai-engine-provider').value,
+    baseUrl: document.getElementById('ai-engine-baseurl').value.trim() || AI_PROVIDER_DEFAULTS[document.getElementById('ai-engine-provider').value].baseUrl,
+    apiKey: document.getElementById('ai-engine-key').value.trim(),
+    model: document.getElementById('ai-engine-model').value.trim() || 'deepseek/deepseek-chat',
+    temperature: 0.7
+  };
+  const s = document.getElementById('ai-engine-status');
+  s.className = 'ai-engine-status'; s.textContent = '正在请求 ' + cfg.model + ' …';
+  try {
+    const reply = await callAIEngineWithConfig(cfg, [
+      { role:'system', content:'You are a poetic companion in a digital cosmos.' },
+      { role:'user', content:'用一句温柔的话向我打个招呼。' }
+    ], { stream:false, maxTokens:120 });
+    if (!reply) throw new Error('empty');
+    s.className = 'ai-engine-status ok'; s.textContent = '✓ 连通成功 · 模型回复：' + reply.slice(0, 120);
+  } catch (e) {
+    s.className = 'ai-engine-status err'; s.textContent = '✗ 连通失败：' + (e.message || e);
+  }
+}
+async function callAIEngineWithConfig(cfg, messages, opts) {
+  opts = opts || {};
+  const headers = { 'Content-Type':'application/json' };
+  if (cfg.apiKey) headers['Authorization'] = 'Bearer ' + cfg.apiKey;
+  if (cfg.provider === 'openrouter') {
+    headers['HTTP-Referer'] = location.origin;
+    headers['X-Title'] = 'LifeBeyond Digital Cosmos';
+  }
+  const body = {
+    model: cfg.model,
+    messages,
+    temperature: opts.temperature ?? cfg.temperature ?? 0.85,
+    max_tokens: opts.maxTokens || 600,
+    stream: !!opts.stream
+  };
+  const url = cfg.baseUrl.replace(/\/$/, '') + '/chat/completions';
+  if (!opts.stream) {
+    const res = await fetch(url, { method:'POST', headers, body:JSON.stringify(body) });
+    if (!res.ok) {
+      const t = await res.text().catch(()=>'');
+      throw new Error(res.status + ' ' + t.slice(0, 160));
+    }
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content?.trim() || '';
+  }
+  // Streaming SSE
+  const res = await fetch(url, { method:'POST', headers, body:JSON.stringify(body) });
+  if (!res.ok || !res.body) {
+    const t = await (res.text?.().catch(()=>'') || '');
+    throw new Error(res.status + ' ' + t.slice(0, 160));
+  }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder('utf-8');
+  let full = '';
+  let buf = '';
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream:true });
+    const lines = buf.split('\n');
+    buf = lines.pop() || '';
+    for (const ln of lines) {
+      const line = ln.trim();
+      if (!line || !line.startsWith('data:')) continue;
+      const payload = line.slice(5).trim();
+      if (payload === '[DONE]') return full;
+      try {
+        const j = JSON.parse(payload);
+        const delta = j.choices?.[0]?.delta?.content || j.choices?.[0]?.message?.content || '';
+        if (delta) {
+          full += delta;
+          if (typeof opts.onDelta === 'function') opts.onDelta(delta, full);
+        }
+      } catch(e) {}
+    }
+  }
+  return full;
+}
+async function callLocalModel(messages, fallbackFn, options) {
+  options = options || {};
+  const cfg = getAIEngineConfig();
+  if (cfg && (cfg.apiKey || cfg.provider === 'local') && cfg.model) {
+    try {
+      const reply = await callAIEngineWithConfig(cfg, messages, {
+        stream: !!options.onDelta,
+        onDelta: options.onDelta,
+        maxTokens: options.maxTokens || 500,
+        temperature: options.temperature
+      });
+      if (reply && reply.trim()) return reply.trim();
+    } catch (e) {
+      console.warn('[AI] engine call failed, fallback:', e.message || e);
+    }
+  }
+  // Legacy fallback to local Ollama (kept for backwards compat with old setups)
   try {
     const res = await fetch('http://localhost:11434/v1/chat/completions', {
       method: 'POST',
