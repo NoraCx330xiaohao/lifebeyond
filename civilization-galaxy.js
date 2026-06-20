@@ -198,9 +198,9 @@ class CivilizationGalaxy {
     const ids = new Float32Array(total);
     const filters = new Float32Array(total);
 
-    const mainArms = 2;
-    const sideArms = 1;
-    const totalArms = mainArms + sideArms;
+    const mainArms = 6;
+    const sideArms = 2;
+    const totalArms = mainArms + sideArms; // 8 条旋臂
 
     const setColor = (idx, c) => {
       colors[idx * 3] = c.r;
@@ -297,7 +297,8 @@ class CivilizationGalaxy {
       uniforms: {
         uTime: { value: 0 },
         uPickedId: { value: -2 },
-        uHoveredId: { value: -2 }
+        uHoveredId: { value: -2 },
+        uFocusId: { value: -2 }
       },
       vertexColors: true,
       transparent: true,
@@ -308,6 +309,7 @@ class CivilizationGalaxy {
     this.galaxy = new THREE.Points(geom, mat);
     this.galaxy.frustumCulled = true;
     this.scene.add(this.galaxy);
+    this.uniforms = mat.uniforms;
 
     this._dustCount = dustCount;
     this._figStartIdx = dustCount;
@@ -381,7 +383,20 @@ class CivilizationGalaxy {
       this._mouseNDC.set(x, y);
       this._mouseScreen = { x: e.clientX, y: e.clientY };
     };
-    this._onClick = (e) => {
+    // 用 pointerdown/up 距离 + 时长判断 click，避免 OrbitControls 拖拽误触
+    this._pdown = null;
+    this._onPointerDown = (e) => {
+      this._pdown = { x: e.clientX, y: e.clientY, t: performance.now() };
+    };
+    this._onPointerUp = (e) => {
+      if (!this._pdown) return;
+      const dx = e.clientX - this._pdown.x;
+      const dy = e.clientY - this._pdown.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const dur = performance.now() - this._pdown.t;
+      this._pdown = null;
+      // 拖拽 / 长按 → 不当点击
+      if (dist > 6 || dur > 480) return;
       const rect = canvas.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -391,11 +406,14 @@ class CivilizationGalaxy {
         this.onClick(this.figures[fid]);
         this.flyToFigure(fid);
       } else {
+        // 点击空白 → 从虚空捞记忆
         this.onVoidClick(e.clientX, e.clientY);
       }
     };
+    this._onClick = (e) => { /* 兼容老监听，不做事 */ };
     canvas.addEventListener('mousemove', this._onMove);
-    canvas.addEventListener('click', this._onClick);
+    canvas.addEventListener('pointerdown', this._onPointerDown);
+    canvas.addEventListener('pointerup', this._onPointerUp);
   }
 
   _pickFigure() {
@@ -422,6 +440,10 @@ class CivilizationGalaxy {
     const tz = pos.array[idx * 3 + 2];
     this._focusTarget = { x: tx, y: ty, z: tz, t: 0 };
     this.controls.autoRotate = false;
+    // 高亮被点击的星球（持续放大 + 光环）— uPickedId 用 figure id
+    if (this.uniforms && this.uniforms.uPickedId) {
+      this.uniforms.uPickedId.value = fid;
+    }
   }
 
   setEraFilter(eraName) {
@@ -517,22 +539,23 @@ class CivilizationGalaxy {
         }
       }
 
-      // focus animate
+      // focus animate — 相机跟随飞向目标星球
       if (this._focusTarget) {
         const f = this._focusTarget;
-        f.t = Math.min(1, f.t + dt * 0.6);
+        f.t = Math.min(1, f.t + dt * 0.42);
         const ease = 1 - Math.pow(1 - f.t, 3);
         const tx = f.x;
         const ty = f.y;
         const tz = f.z;
-        this.controls.target.lerp(new THREE.Vector3(tx, ty, tz), 0.04);
-        // 同时把相机拉近
+        this.controls.target.lerp(new THREE.Vector3(tx, ty, tz), 0.085);
+        // 把相机拉近到目标星球附近
         const cam = this.camera;
         const dir = new THREE.Vector3().subVectors(cam.position, this.controls.target).normalize();
-        const targetDist = 35 + (1 - ease) * 60;
+        const targetDist = 22 + (1 - ease) * 70; // 起点远 → 终点 22
         const want = new THREE.Vector3().copy(this.controls.target).add(dir.multiplyScalar(targetDist));
-        cam.position.lerp(want, 0.04);
+        cam.position.lerp(want, 0.085);
         if (f.t >= 1) {
+          // 飞行结束，保持焦点高亮（不清 uFocusId），但解锁自由控制
           this._focusTarget = null;
         }
       }
@@ -551,6 +574,8 @@ class CivilizationGalaxy {
     if (this.canvas) {
       if (this._onMove) this.canvas.removeEventListener('mousemove', this._onMove);
       if (this._onClick) this.canvas.removeEventListener('click', this._onClick);
+      if (this._onPointerDown) this.canvas.removeEventListener('pointerdown', this._onPointerDown);
+      if (this._onPointerUp) this.canvas.removeEventListener('pointerup', this._onPointerUp);
     }
     if (this.galaxy) {
       this.galaxy.geometry.dispose();
