@@ -1092,6 +1092,167 @@
       .community-feed { padding:24px 24px 80px; }
       .diary-content { padding:24px 32px 80px; }
     }
+
+    /* ==================== USER ACCOUNT & MEMORY SYSTEM ==================== */
+    .user-orb { position:fixed; bottom:28px; right:48px; width:62px; height:62px; border-radius:50%; background:radial-gradient(circle at 35% 30%, rgba(160,200,255,0.45) 0%, rgba(80,110,200,0.32) 45%, rgba(20,30,60,0.85) 100%); border:1px solid rgba(180,210,255,0.35); box-shadow:0 12px 40px rgba(60,80,180,0.35), inset 0 1px 0 rgba(255,255,255,0.18); z-index:1500; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:24px; color:#dfe9ff; backdrop-filter:blur(20px); transition:transform 0.35s cubic-bezier(.2,.9,.4,1.4), box-shadow 0.3s; }
+    .user-orb:hover { transform:scale(1.12) translateY(-3px); box-shadow:0 18px 56px rgba(80,110,200,0.55), inset 0 1px 0 rgba(255,255,255,0.28); }
+    .user-orb::before { content:''; position:absolute; inset:-6px; border-radius:50%; background:radial-gradient(circle, rgba(160,200,255,0.22) 0%, transparent 70%); pointer-events:none; animation:user-orb-halo 4s ease-in-out infinite; }
+    .user-orb-badge { position:absolute; top:-4px; right:-4px; min-width:20px; height:20px; padding:0 6px; border-radius:10px; background:linear-gradient(135deg, #ffd37a 0%, #ff8fb3 100%); color:#1a0d24; font-size:11px; font-weight:600; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(255,143,179,0.5); }
+    @keyframes user-orb-halo { 0%,100% { opacity:0.6; transform:scale(1); } 50% { opacity:1; transform:scale(1.15); } }
+
+    /* Auth Modal */
+    .auth-modal { position:fixed; inset:0; z-index:5000; display:none; align-items:center; justify-content:center; background:radial-gradient(ellipse at 50% 50%, rgba(12,31,58,0.55) 0%, rgba(3,8,15,0.92) 80%); backdrop-filter:blur(14px); animation:auth-fade 0.5s ease both; }
+    .auth-modal.active { display:flex; }
+    @keyframes auth-fade { from { opacity:0; } to { opacity:1; } }
+    .auth-card { position:relative; width:440px; max-width:92vw; padding:36px 38px 28px; background:linear-gradient(160deg, rgba(28,42,82,0.68) 0%, rgba(12,20,38,0.78) 100%); border:1px solid rgba(180,200,255,0.18); border-radius:24px; backdrop-filter:blur(28px); box-shadow:0 30px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08); overflow:hidden; animation:auth-emerge 0.8s cubic-bezier(.2,.7,.3,1.1) both; }
+    @keyframes auth-emerge { from { opacity:0; transform:translateY(40px) scale(0.94); filter:blur(8px); } to { opacity:1; transform:translateY(0) scale(1); filter:blur(0); } }
+    .auth-stars { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+    .auth-stars span { position:absolute; width:2px; height:2px; border-radius:50%; background:#fff; opacity:0; animation:auth-star-twinkle 3s ease-in-out infinite; }
+    @keyframes auth-star-twinkle { 0%,100% { opacity:0; } 50% { opacity:0.85; transform:scale(1.3); } }
+    .auth-header { position:relative; text-align:center; margin-bottom:22px; }
+    .auth-title { font-size:22px; font-weight:600; color:#f4f7ff; letter-spacing:0.3px; }
+    .auth-sub { font-size:12px; color:rgba(220,230,255,0.65); margin-top:6px; letter-spacing:1.5px; }
+    .auth-tabs { position:relative; display:flex; gap:0; padding:4px; background:rgba(8,14,28,0.5); border:1px solid rgba(180,200,255,0.1); border-radius:14px; margin-bottom:22px; }
+    .auth-tab { flex:1; padding:10px 0; text-align:center; font-size:13px; color:rgba(200,210,235,0.7); cursor:pointer; border-radius:10px; transition:all 0.3s; }
+    .auth-tab.active { background:linear-gradient(135deg, rgba(120,160,255,0.32) 0%, rgba(180,140,255,0.32) 100%); color:#fff; box-shadow:0 4px 14px rgba(120,160,255,0.22); }
+    .auth-form { position:relative; display:flex; flex-direction:column; gap:12px; }
+    .auth-form[hidden] { display:none; }
+    .auth-input { width:100%; padding:12px 14px; background:rgba(8,14,28,0.55); border:1px solid rgba(180,200,255,0.14); border-radius:12px; color:#f1f5ff; font-size:13px; outline:none; transition:all 0.25s; box-sizing:border-box; }
+    .auth-input:focus { border-color:rgba(160,200,255,0.5); background:rgba(20,30,52,0.7); box-shadow:0 0 0 3px rgba(120,160,255,0.12); }
+    .auth-input::placeholder { color:rgba(180,195,225,0.4); }
+    .auth-row { display:flex; gap:8px; }
+    .auth-row .auth-input { flex:1; }
+    .auth-btn { width:100%; padding:13px; background:linear-gradient(135deg, #6f8eff 0%, #b48cff 100%); border:none; border-radius:12px; color:#fff; font-size:14px; font-weight:600; letter-spacing:0.5px; cursor:pointer; transition:all 0.3s; box-shadow:0 8px 24px rgba(110,140,240,0.32); margin-top:6px; }
+    .auth-btn:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(110,140,240,0.5); }
+    .auth-divider { position:relative; text-align:center; margin:20px 0 14px; font-size:11px; color:rgba(180,195,225,0.5); letter-spacing:1.5px; }
+    .auth-divider::before, .auth-divider::after { content:''; position:absolute; top:50%; width:30%; height:1px; background:linear-gradient(90deg, transparent, rgba(180,200,255,0.18), transparent); }
+    .auth-divider::before { left:5%; }
+    .auth-divider::after { right:5%; }
+    .auth-oauth-row { display:flex; gap:10px; justify-content:center; }
+    .auth-oauth { flex:1; padding:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(180,200,255,0.14); border-radius:12px; color:#dde6ff; font-size:18px; cursor:pointer; transition:all 0.25s; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .auth-oauth:hover { background:rgba(255,255,255,0.08); border-color:rgba(180,200,255,0.32); transform:translateY(-2px); }
+    .auth-oauth small { font-size:10px; color:rgba(180,195,225,0.55); }
+    .auth-guest-row { margin-top:18px; padding-top:16px; border-top:1px solid rgba(180,200,255,0.08); text-align:center; }
+    .auth-guest-btn { background:transparent; border:none; color:rgba(190,210,255,0.7); font-size:12px; cursor:pointer; letter-spacing:0.6px; transition:color 0.25s; }
+    .auth-guest-btn:hover { color:#dfe9ff; }
+    .auth-msg { font-size:11px; color:#ffb6c1; min-height:14px; text-align:center; margin-top:4px; }
+
+    /* Profile Drawer */
+    .profile-drawer { position:fixed; inset:0; z-index:1600; display:none; }
+    .profile-drawer.active { display:block; }
+    .profile-drawer-overlay { position:absolute; inset:0; background:rgba(3,8,15,0.55); backdrop-filter:blur(8px); animation:auth-fade 0.4s ease both; }
+    .profile-drawer-card { position:absolute; top:0; right:0; width:420px; max-width:96vw; height:100vh; background:linear-gradient(180deg, rgba(20,32,62,0.85) 0%, rgba(8,14,28,0.92) 100%); border-left:1px solid rgba(180,200,255,0.16); padding:32px 28px 28px; overflow-y:auto; backdrop-filter:blur(28px); animation:profile-slide 0.5s cubic-bezier(.2,.7,.3,1.1) both; box-sizing:border-box; }
+    @keyframes profile-slide { from { transform:translateX(100%); } to { transform:translateX(0); } }
+    .profile-close { position:absolute; top:18px; right:18px; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,0.05); border:1px solid rgba(180,200,255,0.14); color:rgba(220,230,255,0.7); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; transition:all 0.25s; }
+    .profile-close:hover { background:rgba(255,255,255,0.1); color:#fff; }
+    .profile-avatar { width:96px; height:96px; border-radius:50%; margin:0 auto 14px; background:linear-gradient(135deg, #6f8eff 0%, #b48cff 100%); display:flex; align-items:center; justify-content:center; font-size:38px; font-weight:600; color:#fff; box-shadow:0 12px 36px rgba(110,140,240,0.4), inset 0 2px 0 rgba(255,255,255,0.18); position:relative; }
+    .profile-avatar::after { content:''; position:absolute; inset:-8px; border-radius:50%; background:radial-gradient(circle, rgba(160,200,255,0.22) 0%, transparent 70%); pointer-events:none; }
+    .profile-name { text-align:center; font-size:20px; font-weight:600; color:#f4f7ff; letter-spacing:0.3px; }
+    .profile-id { text-align:center; font-size:11px; color:rgba(180,200,255,0.55); letter-spacing:1.2px; margin-top:4px; }
+    .profile-bio { text-align:center; font-size:12px; color:rgba(220,230,255,0.7); margin:14px 16px 4px; line-height:1.6; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(180,200,255,0.1); border-radius:12px; cursor:pointer; transition:all 0.25s; }
+    .profile-bio:hover { background:rgba(255,255,255,0.06); border-color:rgba(180,200,255,0.22); }
+    .profile-meta-row { display:flex; gap:8px; justify-content:center; margin-top:10px; flex-wrap:wrap; }
+    .profile-meta-chip { padding:5px 11px; background:rgba(120,160,255,0.12); border:1px solid rgba(180,200,255,0.18); border-radius:12px; font-size:11px; color:rgba(220,230,255,0.85); }
+    .profile-stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:22px; }
+    .profile-stat { padding:14px 12px; background:rgba(255,255,255,0.03); border:1px solid rgba(180,200,255,0.1); border-radius:14px; text-align:center; }
+    .profile-stat-num { font-size:22px; font-weight:600; color:#f4f7ff; letter-spacing:0.5px; }
+    .profile-stat-label { font-size:11px; color:rgba(190,205,235,0.65); margin-top:4px; letter-spacing:0.6px; }
+    .profile-capacity { margin-top:22px; padding:16px; background:linear-gradient(135deg, rgba(120,160,255,0.08) 0%, rgba(180,140,255,0.08) 100%); border:1px solid rgba(180,200,255,0.16); border-radius:14px; }
+    .profile-capacity-title { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(220,230,255,0.85); letter-spacing:0.5px; }
+    .profile-capacity-stars { font-size:18px; letter-spacing:1px; margin-top:8px; color:#ffd37a; }
+    .profile-capacity-stars .empty { color:rgba(180,200,255,0.22); }
+    .profile-capacity-warn { font-size:11px; color:#ffb6c1; margin-top:6px; opacity:0; transition:opacity 0.3s; }
+    .profile-capacity-warn.active { opacity:1; }
+    .profile-mini-galaxy { margin-top:18px; height:160px; background:radial-gradient(ellipse at 50% 50%, rgba(20,32,62,0.6) 0%, rgba(3,8,15,0.85) 100%); border:1px solid rgba(180,200,255,0.12); border-radius:14px; overflow:hidden; position:relative; }
+    .profile-mini-galaxy canvas { width:100%; height:100%; display:block; }
+    .profile-actions { display:flex; flex-direction:column; gap:10px; margin-top:18px; }
+    .profile-action-btn { padding:13px; border-radius:12px; border:1px solid rgba(180,200,255,0.18); background:linear-gradient(135deg, rgba(120,160,255,0.18) 0%, rgba(180,140,255,0.18) 100%); color:#f1f5ff; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.3s; letter-spacing:0.4px; }
+    .profile-action-btn:hover { transform:translateY(-2px); border-color:rgba(180,200,255,0.4); box-shadow:0 8px 24px rgba(120,160,255,0.18); }
+    .profile-action-btn.ghost { background:transparent; color:rgba(220,230,255,0.65); }
+    .profile-action-btn.ghost:hover { color:#fff; background:rgba(255,255,255,0.04); }
+
+    /* Upload Wizard Modal */
+    .upload-modal { position:fixed; inset:0; z-index:5500; display:none; align-items:center; justify-content:center; background:radial-gradient(ellipse at 50% 50%, rgba(12,31,58,0.55) 0%, rgba(3,8,15,0.92) 80%); backdrop-filter:blur(14px); }
+    .upload-modal.active { display:flex; }
+    .upload-wizard { position:relative; width:520px; max-width:94vw; max-height:88vh; padding:34px 36px 28px; background:linear-gradient(160deg, rgba(28,42,82,0.72) 0%, rgba(12,20,38,0.82) 100%); border:1px solid rgba(180,200,255,0.18); border-radius:24px; backdrop-filter:blur(28px); animation:auth-emerge 0.6s cubic-bezier(.2,.7,.3,1.1) both; overflow-y:auto; }
+    .upload-progress { display:flex; gap:6px; margin-bottom:22px; }
+    .upload-progress-dot { flex:1; height:4px; border-radius:2px; background:rgba(180,200,255,0.14); transition:background 0.4s; }
+    .upload-progress-dot.done { background:linear-gradient(90deg, #6f8eff, #b48cff); }
+    .upload-step { display:none; }
+    .upload-step.active { display:block; animation:auth-fade 0.4s ease both; }
+    .upload-step-title { font-size:18px; font-weight:600; color:#f4f7ff; }
+    .upload-step-sub { font-size:12px; color:rgba(190,205,235,0.7); margin-top:6px; margin-bottom:18px; }
+    .upload-type-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+    .upload-type-card { padding:18px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(180,200,255,0.14); border-radius:14px; cursor:pointer; transition:all 0.3s; text-align:center; }
+    .upload-type-card:hover { background:rgba(120,160,255,0.12); border-color:rgba(180,200,255,0.4); transform:translateY(-2px); }
+    .upload-type-emoji { font-size:30px; margin-bottom:8px; }
+    .upload-type-name { font-size:13px; color:#eaf0ff; font-weight:500; }
+    .upload-type-desc { font-size:10px; color:rgba(180,200,255,0.55); margin-top:3px; }
+    .upload-textarea { width:100%; min-height:140px; padding:14px; background:rgba(8,14,28,0.5); border:1px solid rgba(180,200,255,0.14); border-radius:14px; color:#eaf0ff; font-size:13px; line-height:1.7; outline:none; resize:vertical; box-sizing:border-box; font-family:inherit; }
+    .upload-attach-row { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+    .upload-attach { padding:8px 14px; background:rgba(255,255,255,0.04); border:1px dashed rgba(180,200,255,0.22); border-radius:10px; color:rgba(220,230,255,0.7); font-size:11px; cursor:pointer; transition:all 0.25s; }
+    .upload-attach:hover { background:rgba(120,160,255,0.1); color:#fff; }
+    .upload-extract { padding:18px; background:rgba(8,14,28,0.5); border:1px solid rgba(180,200,255,0.14); border-radius:14px; }
+    .upload-extract-row { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid rgba(180,200,255,0.06); }
+    .upload-extract-row:last-child { border-bottom:none; }
+    .upload-extract-key { width:78px; flex:none; font-size:11px; color:rgba(180,200,255,0.6); letter-spacing:0.5px; padding-top:3px; }
+    .upload-extract-val { flex:1; font-size:13px; color:#eaf0ff; display:flex; gap:6px; flex-wrap:wrap; }
+    .upload-tag { padding:3px 10px; background:rgba(120,160,255,0.18); border:1px solid rgba(180,200,255,0.22); border-radius:10px; font-size:11px; color:#dfe9ff; }
+    .upload-privacy-row { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:14px; }
+    .upload-privacy { padding:14px; background:rgba(255,255,255,0.04); border:1px solid rgba(180,200,255,0.14); border-radius:12px; cursor:pointer; transition:all 0.25s; text-align:center; }
+    .upload-privacy.selected { background:linear-gradient(135deg, rgba(120,160,255,0.2) 0%, rgba(180,140,255,0.2) 100%); border-color:rgba(180,200,255,0.5); }
+    .upload-privacy-name { font-size:13px; color:#eaf0ff; font-weight:500; }
+    .upload-privacy-desc { font-size:10px; color:rgba(180,200,255,0.55); margin-top:3px; }
+    .upload-step-actions { display:flex; gap:10px; margin-top:22px; }
+    .upload-step-actions button { flex:1; padding:13px; border-radius:12px; border:none; cursor:pointer; font-size:13px; font-weight:500; transition:all 0.3s; }
+    .upload-back-btn { background:rgba(255,255,255,0.05); color:rgba(220,230,255,0.7); border:1px solid rgba(180,200,255,0.14) !important; }
+    .upload-back-btn:hover { background:rgba(255,255,255,0.1); color:#fff; }
+    .upload-next-btn { background:linear-gradient(135deg, #6f8eff 0%, #b48cff 100%); color:#fff; box-shadow:0 8px 24px rgba(110,140,240,0.3); }
+    .upload-next-btn:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(110,140,240,0.5); }
+    .upload-close { position:absolute; top:14px; right:14px; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.06); border:1px solid rgba(180,200,255,0.14); color:rgba(220,230,255,0.7); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+
+    /* First Memory Onboarding */
+    .first-memory-overlay { position:fixed; inset:0; z-index:6000; display:none; align-items:center; justify-content:center; background:radial-gradient(ellipse at 50% 50%, rgba(12,31,58,0.65) 0%, rgba(3,8,15,0.96) 80%); backdrop-filter:blur(18px); }
+    .first-memory-overlay.active { display:flex; }
+    .first-memory-card { width:480px; max-width:92vw; padding:48px 40px; text-align:center; background:linear-gradient(160deg, rgba(28,42,82,0.7) 0%, rgba(12,20,38,0.82) 100%); border:1px solid rgba(180,200,255,0.18); border-radius:24px; backdrop-filter:blur(28px); position:relative; }
+    .first-memory-stage { width:160px; height:160px; margin:0 auto 22px; position:relative; }
+    .first-memory-orb { position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 0%, rgba(120,160,255,0.18) 60%, rgba(20,30,60,0.05) 100%); border:1px solid rgba(180,200,255,0.18); animation:fm-pulse 4s ease-in-out infinite; }
+    @keyframes fm-pulse { 0%,100% { transform:scale(1); opacity:0.7; } 50% { transform:scale(1.1); opacity:1; } }
+    .first-memory-star { position:absolute; left:50%; top:50%; width:18px; height:18px; margin:-9px 0 0 -9px; border-radius:50%; background:radial-gradient(circle, #fff 0%, #ffd37a 50%, transparent 90%); animation:fm-star-rise 3.5s ease-in-out infinite; }
+    @keyframes fm-star-rise { 0% { transform:scale(0.2); opacity:0; } 30% { transform:scale(1.3); opacity:1; box-shadow:0 0 30px rgba(255,211,122,0.7); } 60% { transform:scale(1); opacity:0.85; } 100% { transform:scale(0.5) translateY(-40px); opacity:0; } }
+    .first-memory-title { font-size:22px; font-weight:600; color:#f4f7ff; letter-spacing:0.4px; }
+    .first-memory-text { font-size:13px; color:rgba(220,230,255,0.78); margin-top:12px; line-height:1.7; padding:0 12px; }
+    .first-memory-quote { font-size:14px; color:#ffd37a; margin-top:14px; font-style:italic; letter-spacing:0.5px; }
+    .first-memory-actions { display:flex; gap:10px; margin-top:26px; }
+    .first-memory-actions button { flex:1; padding:13px; border-radius:12px; border:none; cursor:pointer; font-size:13px; font-weight:500; transition:all 0.3s; }
+    .first-memory-skip { background:rgba(255,255,255,0.05); color:rgba(220,230,255,0.7); border:1px solid rgba(180,200,255,0.14) !important; }
+    .first-memory-go { background:linear-gradient(135deg, #6f8eff 0%, #b48cff 100%); color:#fff; box-shadow:0 8px 24px rgba(110,140,240,0.3); }
+    .first-memory-go:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(110,140,240,0.5); }
+
+    /* Capacity Unlock Modal */
+    .capacity-unlock-modal { position:fixed; inset:0; z-index:5800; display:none; align-items:center; justify-content:center; background:radial-gradient(ellipse at 50% 50%, rgba(12,31,58,0.55) 0%, rgba(3,8,15,0.92) 80%); backdrop-filter:blur(14px); }
+    .capacity-unlock-modal.active { display:flex; }
+    .capacity-unlock-card { width:480px; max-width:92vw; padding:36px 36px 28px; background:linear-gradient(160deg, rgba(28,42,82,0.72) 0%, rgba(12,20,38,0.82) 100%); border:1px solid rgba(180,200,255,0.18); border-radius:24px; backdrop-filter:blur(28px); position:relative; animation:auth-emerge 0.6s ease both; }
+    .capacity-unlock-title { font-size:18px; font-weight:600; color:#f4f7ff; }
+    .capacity-unlock-poetic { font-size:13px; color:rgba(220,230,255,0.75); margin-top:8px; line-height:1.7; }
+    .capacity-unlock-options { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+    .capacity-option { padding:14px 16px; background:rgba(255,255,255,0.04); border:1px solid rgba(180,200,255,0.14); border-radius:14px; display:flex; justify-content:space-between; align-items:center; gap:12px; cursor:pointer; transition:all 0.25s; }
+    .capacity-option:hover { background:rgba(120,160,255,0.1); border-color:rgba(180,200,255,0.32); transform:translateX(2px); }
+    .capacity-option-name { font-size:13px; color:#eaf0ff; font-weight:500; }
+    .capacity-option-desc { font-size:11px; color:rgba(180,200,255,0.6); margin-top:3px; }
+    .capacity-option-cta { font-size:12px; color:#ffd37a; padding:6px 12px; background:rgba(255,211,122,0.12); border:1px solid rgba(255,211,122,0.32); border-radius:10px; flex:none; }
+
+    /* Memory Star Spawn Flash */
+    .memory-spawn-flash { position:fixed; inset:0; z-index:6500; pointer-events:none; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.4s; }
+    .memory-spawn-flash.active { opacity:1; }
+    .memory-spawn-orb { width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, #fff 0%, #ffd37a 30%, transparent 70%); animation:msf-spawn 1.6s ease-out both; box-shadow:0 0 80px rgba(255,211,122,0.7); }
+    @keyframes msf-spawn { 0% { transform:scale(0); opacity:0; } 30% { transform:scale(1); opacity:1; } 100% { transform:scale(2.2); opacity:0; } }
+
+    @media (max-width:900px) {
+      .user-orb { width:52px; height:52px; bottom:24px; right:24px; font-size:20px; }
+      .profile-drawer-card { width:100vw; max-width:100vw; padding:24px 18px 24px; }
+      .auth-card, .upload-wizard, .first-memory-card, .capacity-unlock-card { width:94vw; padding:26px 22px 22px; }
+    }
   </style>
 </head>
 <body>
@@ -1616,6 +1777,245 @@
     <div id="oracle-modal-body"></div>
   </div>
 </div>
+
+<!-- ==================== USER ACCOUNT & MEMORY SYSTEM ==================== -->
+<div class="user-orb" id="user-orb" title="我的星座" onclick="onUserOrbClick()">
+  <span id="user-orb-icon">✦</span>
+  <span class="user-orb-badge" id="user-orb-badge" style="display:none;">0</span>
+</div>
+
+<!-- Auth Modal -->
+<div class="auth-modal" id="auth-modal">
+  <div class="auth-card">
+    <div class="auth-stars" id="auth-stars-canvas"></div>
+    <div class="auth-header">
+      <div class="auth-title">数字彼岸 · Digital Beyond</div>
+      <div class="auth-sub">DOCK YOUR UNIVERSE</div>
+    </div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" data-auth-tab="login" onclick="switchAuthTab('login')">登录</div>
+      <div class="auth-tab" data-auth-tab="register" onclick="switchAuthTab('register')">注册</div>
+    </div>
+
+    <!-- Login Form -->
+    <div class="auth-form" id="auth-login-form">
+      <input type="text" class="auth-input" id="login-id" placeholder="邮箱 / 手机号 / 昵称" />
+      <input type="password" class="auth-input" id="login-pw" placeholder="密码" />
+      <div class="auth-msg" id="login-msg"></div>
+      <button class="auth-btn" onclick="doLogin()">登录我的星海</button>
+    </div>
+
+    <!-- Register Form -->
+    <div class="auth-form" id="auth-register-form" hidden>
+      <input type="text" class="auth-input" id="reg-nick" placeholder="昵称（你在彼岸的代号）" />
+      <div class="auth-row">
+        <input type="email" class="auth-input" id="reg-email" placeholder="邮箱" />
+      </div>
+      <div class="auth-row">
+        <input type="tel" class="auth-input" id="reg-phone" placeholder="手机号（可选）" />
+      </div>
+      <input type="password" class="auth-input" id="reg-pw" placeholder="设置密码（≥6 位）" />
+      <div class="auth-msg" id="reg-msg"></div>
+      <button class="auth-btn" onclick="doRegister()">点亮我的第一颗星</button>
+    </div>
+
+    <div class="auth-divider">或继续以</div>
+    <div class="auth-oauth-row">
+      <div class="auth-oauth" onclick="doOAuth('google')" title="Google">
+        <span>G</span>
+      </div>
+      <div class="auth-oauth" onclick="doOAuth('wechat')" title="微信">
+        <span>💬</span>
+      </div>
+      <div class="auth-oauth" onclick="doOAuth('apple')" title="Apple">
+        <span></span>
+      </div>
+    </div>
+
+    <div class="auth-guest-row">
+      <button class="auth-guest-btn" onclick="enterGuestMode()">以访客身份漫游 · Continue as Guest →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Drawer -->
+<div class="profile-drawer" id="profile-drawer">
+  <div class="profile-drawer-overlay" onclick="closeProfileDrawer()"></div>
+  <div class="profile-drawer-card">
+    <div class="profile-close" onclick="closeProfileDrawer()">×</div>
+    <div class="profile-avatar" id="profile-avatar">?</div>
+    <div class="profile-name" id="profile-name">未命名漫游者</div>
+    <div class="profile-id" id="profile-id">beyond-xxxxxx</div>
+    <div class="profile-bio" id="profile-bio" onclick="editProfileBio()" title="点击编辑">正在书写自己的星海。</div>
+    <div class="profile-meta-row">
+      <div class="profile-meta-chip" id="profile-relationship">探索中</div>
+      <div class="profile-meta-chip" id="profile-level">Lv.1 漫游者</div>
+      <div class="profile-meta-chip" id="profile-days">第 1 天</div>
+    </div>
+    <div class="profile-stats">
+      <div class="profile-stat"><div class="profile-stat-num" id="stat-memories">0</div><div class="profile-stat-label">记忆星点</div></div>
+      <div class="profile-stat"><div class="profile-stat-num" id="stat-companions">0</div><div class="profile-stat-label">伴侣</div></div>
+      <div class="profile-stat"><div class="profile-stat-num" id="stat-public">0</div><div class="profile-stat-label">公开记忆</div></div>
+      <div class="profile-stat"><div class="profile-stat-num" id="stat-private">0</div><div class="profile-stat-label">私密记忆</div></div>
+      <div class="profile-stat"><div class="profile-stat-num" id="stat-influence">0</div><div class="profile-stat-label">社区影响力</div></div>
+      <div class="profile-stat"><div class="profile-stat-num" id="stat-growth">1</div><div class="profile-stat-label">成长等级</div></div>
+    </div>
+    <div class="profile-capacity">
+      <div class="profile-capacity-title">
+        <span>Galaxy Capacity 星海容量</span>
+        <span id="capacity-num">0/10</span>
+      </div>
+      <div class="profile-capacity-stars" id="capacity-stars">★★★★★★★★★★</div>
+      <div class="profile-capacity-warn" id="capacity-warn">Your universe is almost full · 你的宇宙快满了</div>
+    </div>
+    <div class="profile-mini-galaxy">
+      <canvas id="profile-galaxy-canvas"></canvas>
+    </div>
+    <div class="profile-actions">
+      <button class="profile-action-btn" onclick="openUploadWizard()">+ 创造一颗记忆星</button>
+      <button class="profile-action-btn" onclick="openCapacityUnlock()">⌬ 扩展星海容量</button>
+      <button class="profile-action-btn ghost" onclick="logout()">离开此宇宙 · Logout</button>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Memory Wizard -->
+<div class="upload-modal" id="upload-modal">
+  <div class="upload-wizard">
+    <div class="upload-close" onclick="closeUploadWizard()">×</div>
+    <div class="upload-progress">
+      <div class="upload-progress-dot done" id="up-prog-1"></div>
+      <div class="upload-progress-dot" id="up-prog-2"></div>
+      <div class="upload-progress-dot" id="up-prog-3"></div>
+      <div class="upload-progress-dot" id="up-prog-4"></div>
+    </div>
+
+    <!-- Step 1: choose type -->
+    <div class="upload-step active" id="up-step-1">
+      <div class="upload-step-title">选择记忆类型</div>
+      <div class="upload-step-sub">每一个类型都会被点亮成不同色的星 · Choose a memory type</div>
+      <div class="upload-type-grid">
+        <div class="upload-type-card" onclick="selectMemoryType('daily','日常生活')"><div class="upload-type-emoji">🌿</div><div class="upload-type-name">日常生活</div><div class="upload-type-desc">Daily life</div></div>
+        <div class="upload-type-card" onclick="selectMemoryType('growth','成长旅程')"><div class="upload-type-emoji">🌱</div><div class="upload-type-name">成长旅程</div><div class="upload-type-desc">Growth journey</div></div>
+        <div class="upload-type-card" onclick="selectMemoryType('pet','宠物记忆')"><div class="upload-type-emoji">🐾</div><div class="upload-type-name">宠物记忆</div><div class="upload-type-desc">Pet memories</div></div>
+        <div class="upload-type-card" onclick="selectMemoryType('family','家人记忆')"><div class="upload-type-emoji">🏡</div><div class="upload-type-name">家人记忆</div><div class="upload-type-desc">Family memories</div></div>
+        <div class="upload-type-card" onclick="selectMemoryType('love','恋人记忆')"><div class="upload-type-emoji">💗</div><div class="upload-type-name">恋人记忆</div><div class="upload-type-desc">Love memories</div></div>
+        <div class="upload-type-card" onclick="selectMemoryType('friend','朋友记忆')"><div class="upload-type-emoji">🤝</div><div class="upload-type-name">朋友记忆</div><div class="upload-type-desc">Friend memories</div></div>
+        <div class="upload-type-card" onclick="selectMemoryType('other','其他')" style="grid-column:span 2;"><div class="upload-type-emoji">✨</div><div class="upload-type-name">其他</div><div class="upload-type-desc">Other</div></div>
+      </div>
+    </div>
+
+    <!-- Step 2: upload content -->
+    <div class="upload-step" id="up-step-2">
+      <div class="upload-step-title">说说这段记忆</div>
+      <div class="upload-step-sub">文字、图像、声音、文档 · 都可以成为一颗星</div>
+      <textarea class="upload-textarea" id="up-text" placeholder="例：2024 年 8 月，在京都的祇园第一次和你看见祭典，灯笼下你说想被永远记得……"></textarea>
+      <div class="upload-attach-row">
+        <div class="upload-attach" onclick="fakeAttach('photo')">＋ 图像</div>
+        <div class="upload-attach" onclick="fakeAttach('video')">＋ 视频</div>
+        <div class="upload-attach" onclick="fakeAttach('audio')">＋ 录音</div>
+        <div class="upload-attach" onclick="fakeAttach('doc')">＋ 文档</div>
+        <div class="upload-attach" onclick="fakeAttach('chat')">＋ 聊天截图</div>
+      </div>
+      <div class="upload-extract-row" style="border:none; padding-top:12px;">
+        <div class="upload-extract-key">已附加</div>
+        <div class="upload-extract-val" id="up-attached"><span style="font-size:11px;color:rgba(180,200,255,0.5);">还没有附件</span></div>
+      </div>
+      <div class="upload-step-actions">
+        <button class="upload-back-btn" onclick="showUploadStep(1)">返回</button>
+        <button class="upload-next-btn" onclick="goExtract()">让 AI 提炼这颗星 →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: AI extraction -->
+    <div class="upload-step" id="up-step-3">
+      <div class="upload-step-title">AI 正在为你点亮这颗星</div>
+      <div class="upload-step-sub">解析人物 · 地点 · 时间 · 情绪 · 关系 · 关键词</div>
+      <div class="upload-extract" id="up-extract-result">
+        <!-- 由 JS 渲染 -->
+      </div>
+      <div class="upload-step-actions">
+        <button class="upload-back-btn" onclick="showUploadStep(2)">返回修改</button>
+        <button class="upload-next-btn" onclick="showUploadStep(4)">继续 →</button>
+      </div>
+    </div>
+
+    <!-- Step 4: privacy + commit -->
+    <div class="upload-step" id="up-step-4">
+      <div class="upload-step-title">这颗星的可见范围</div>
+      <div class="upload-step-sub">私密的星只会发光给你自己</div>
+      <div class="upload-privacy-row">
+        <div class="upload-privacy selected" data-privacy="private" onclick="selectPrivacy('private')"><div class="upload-privacy-name">🔒 私密</div><div class="upload-privacy-desc">只有自己可见</div></div>
+        <div class="upload-privacy" data-privacy="friends" onclick="selectPrivacy('friends')"><div class="upload-privacy-name">👥 好友可见</div><div class="upload-privacy-desc">添加为好友的伴侣</div></div>
+        <div class="upload-privacy" data-privacy="public" onclick="selectPrivacy('public')"><div class="upload-privacy-name">🌍 公开</div><div class="upload-privacy-desc">出现在社区星海</div></div>
+        <div class="upload-privacy" data-privacy="anonymous" onclick="selectPrivacy('anonymous')"><div class="upload-privacy-name">🌫 匿名公开</div><div class="upload-privacy-desc">公开但无姓名</div></div>
+      </div>
+      <div class="upload-step-actions">
+        <button class="upload-back-btn" onclick="showUploadStep(3)">返回</button>
+        <button class="upload-next-btn" onclick="commitMemory()">点亮记忆星 ✦</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- First Memory Onboarding -->
+<div class="first-memory-overlay" id="first-memory-overlay">
+  <div class="first-memory-card">
+    <div class="first-memory-stage">
+      <div class="first-memory-orb"></div>
+      <div class="first-memory-star"></div>
+    </div>
+    <div class="first-memory-title">Create your first star</div>
+    <div class="first-memory-text">这片宇宙是空的 —— 直到你点亮第一颗记忆。<br/>它会在你的星海里永远发光。</div>
+    <div class="first-memory-quote">"Every memory becomes a star. Every star becomes you."</div>
+    <div class="first-memory-actions">
+      <button class="first-memory-skip" onclick="dismissFirstMemoryGuide()">稍后再说</button>
+      <button class="first-memory-go" onclick="dismissFirstMemoryGuide(); openUploadWizard();">立刻点亮 ✦</button>
+    </div>
+  </div>
+</div>
+
+<!-- Capacity Unlock Modal -->
+<div class="capacity-unlock-modal" id="capacity-unlock-modal">
+  <div class="capacity-unlock-card">
+    <div class="upload-close" onclick="closeCapacityUnlock()">×</div>
+    <div class="capacity-unlock-title">扩展你的星海容量</div>
+    <div class="capacity-unlock-poetic">你的宇宙在膨胀。<br/>每一种解锁方式，都是为这片星海增添一道引力。</div>
+    <div class="capacity-unlock-options">
+      <div class="capacity-option" onclick="unlockCapacity('pro')">
+        <div>
+          <div class="capacity-option-name">⚝ Pro 订阅</div>
+          <div class="capacity-option-desc">解锁 ∞ 容量 · AI 深度提炼 · 私享银河</div>
+        </div>
+        <div class="capacity-option-cta">¥ 28/月</div>
+      </div>
+      <div class="capacity-option" onclick="unlockCapacity('points')">
+        <div>
+          <div class="capacity-option-name">✦ 购买记忆点</div>
+          <div class="capacity-option-desc">每 10 点 = 1 个记忆槽位</div>
+        </div>
+        <div class="capacity-option-cta">¥ 6/10 点</div>
+      </div>
+      <div class="capacity-option" onclick="unlockCapacity('activity')">
+        <div>
+          <div class="capacity-option-name">🌌 特别活动奖励</div>
+          <div class="capacity-option-desc">参与彼岸主题活动可解锁额外槽位</div>
+        </div>
+        <div class="capacity-option-cta">免费 →</div>
+      </div>
+      <div class="capacity-option" onclick="unlockCapacity('contribution')">
+        <div>
+          <div class="capacity-option-name">🤝 社区贡献奖励</div>
+          <div class="capacity-option-desc">公开优质记忆获得他人共鸣 · 自动扩容</div>
+        </div>
+        <div class="capacity-option-cta">免费 →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Memory star spawn flash -->
+<div class="memory-spawn-flash" id="memory-spawn-flash"><div class="memory-spawn-orb"></div></div>
 
 <script>
 // ==================== DATA ====================
@@ -9263,6 +9663,402 @@ window.addEventListener('keydown',e=>{if(e.key==='Escape'){closeOverlay();closeO
 // ==================== INIT ====================
 initUniverse();
 setTimeout(()=>{ if(currentView==='universe'){ const p=personas[Math.floor(Math.random()*2)]; console.log(`[${p.name}] 主动问候：${p.desc}`); } }, 10000);
+
+// ==================== USER ACCOUNT & MEMORY SYSTEM ====================
+(function(){
+  const USER_KEY = 'lifebeyond_user';
+  const SESSION_KEY = 'lifebeyond_session';
+  const MEM_KEY = 'lifebeyond_memories';
+  const PASSWORD_HINT = 'lifebeyond_pwhint';
+
+  let currentUser = null;
+  let isGuestMode = false;
+  let uploadDraft = { type:null, typeLabel:'', text:'', attachments:[], extraction:null, privacy:'private' };
+
+  function loadUser(){ try { return JSON.parse(localStorage.getItem(USER_KEY) || 'null'); } catch { return null; } }
+  function saveUser(u){ try { localStorage.setItem(USER_KEY, JSON.stringify(u)); } catch(e){} currentUser = u; }
+  function loadMemories(){ try { return JSON.parse(localStorage.getItem(MEM_KEY) || '[]'); } catch { return []; } }
+  function saveMemories(arr){ try { localStorage.setItem(MEM_KEY, JSON.stringify(arr)); } catch(e){} }
+
+  function makeUser(nick, email, phone){
+    return {
+      id: 'beyond-' + Math.random().toString(36).slice(2,10),
+      nickname: nick,
+      avatar: nick.slice(0,1).toUpperCase(),
+      email: email || '',
+      phone: phone || '',
+      bio: '正在书写自己的星海。',
+      relationship: '探索中',
+      growthLevel: 1,
+      createdAt: Date.now(),
+      slotMax: 10,
+      companions: 0,
+      influence: 0
+    };
+  }
+
+  function spawnAuthStars(){
+    const wrap = document.getElementById('auth-stars-canvas');
+    if (!wrap) return;
+    if (wrap.dataset.ready === '1') return;
+    wrap.dataset.ready = '1';
+    const frag = document.createDocumentFragment();
+    for (let i=0;i<60;i++){
+      const s = document.createElement('span');
+      s.style.left = (Math.random()*100) + '%';
+      s.style.top = (Math.random()*100) + '%';
+      s.style.animationDelay = (Math.random()*3) + 's';
+      s.style.transform = 'scale(' + (0.5 + Math.random()*1.5) + ')';
+      frag.appendChild(s);
+    }
+    wrap.appendChild(frag);
+    // 鼠标轻微视差
+    document.getElementById('auth-modal').addEventListener('mousemove', e => {
+      const r = wrap.getBoundingClientRect();
+      const dx = (e.clientX - r.left - r.width/2) / r.width;
+      const dy = (e.clientY - r.top - r.height/2) / r.height;
+      wrap.style.transform = 'translate(' + (dx*-8) + 'px,' + (dy*-8) + 'px)';
+    });
+  }
+
+  function showAuthModal(){ document.getElementById('auth-modal').classList.add('active'); spawnAuthStars(); }
+  function hideAuthModal(){ document.getElementById('auth-modal').classList.remove('active'); }
+  window.switchAuthTab = function(t){
+    document.querySelectorAll('[data-auth-tab]').forEach(el => el.classList.toggle('active', el.dataset.authTab===t));
+    document.getElementById('auth-login-form').hidden = (t!=='login');
+    document.getElementById('auth-register-form').hidden = (t!=='register');
+  };
+  window.doLogin = function(){
+    const id = (document.getElementById('login-id').value || '').trim();
+    const pw = (document.getElementById('login-pw').value || '').trim();
+    const u = loadUser();
+    if (!u) { document.getElementById('login-msg').textContent = '尚未注册 · 请先创建你的星海'; return; }
+    if (id !== u.email && id !== u.phone && id !== u.nickname && id !== u.id) { document.getElementById('login-msg').textContent = '账户与该宇宙不匹配'; return; }
+    if (pw.length < 1) { document.getElementById('login-msg').textContent = '请输入密码'; return; }
+    localStorage.setItem(SESSION_KEY, u.id);
+    currentUser = u;
+    isGuestMode = false;
+    hideAuthModal();
+    updateUserOrb();
+  };
+  window.doRegister = function(){
+    const nick = (document.getElementById('reg-nick').value || '').trim();
+    const email = (document.getElementById('reg-email').value || '').trim();
+    const phone = (document.getElementById('reg-phone').value || '').trim();
+    const pw = (document.getElementById('reg-pw').value || '').trim();
+    const msg = document.getElementById('reg-msg');
+    if (!nick) { msg.textContent = '请取一个昵称 · 你在彼岸的名字'; return; }
+    if (!email && !phone) { msg.textContent = '请至少填写邮箱或手机号其中一项'; return; }
+    if (pw.length < 6) { msg.textContent = '密码不少于 6 位'; return; }
+    const u = makeUser(nick, email, phone);
+    saveUser(u);
+    localStorage.setItem(SESSION_KEY, u.id);
+    isGuestMode = false;
+    hideAuthModal();
+    updateUserOrb();
+    setTimeout(showFirstMemoryGuide, 600);
+  };
+  window.doOAuth = function(provider){
+    // 预留接口：仅做演示态登录
+    const map = { google:'Google漫游者', wechat:'WeChat彼岸客', apple:'Apple星语者' };
+    const nick = map[provider] || provider;
+    let u = loadUser();
+    if (!u) { u = makeUser(nick, provider+'@beyond.example', ''); saveUser(u); }
+    localStorage.setItem(SESSION_KEY, u.id);
+    currentUser = u; isGuestMode = false;
+    hideAuthModal();
+    updateUserOrb();
+    if (loadMemories().length === 0) setTimeout(showFirstMemoryGuide, 600);
+  };
+  window.enterGuestMode = function(){
+    localStorage.setItem(SESSION_KEY, 'guest');
+    isGuestMode = true;
+    hideAuthModal();
+    updateUserOrb();
+  };
+  window.logout = function(){
+    localStorage.removeItem(SESSION_KEY);
+    currentUser = null; isGuestMode = false;
+    closeProfileDrawer();
+    updateUserOrb();
+    showAuthModal();
+  };
+
+  function updateUserOrb(){
+    const orb = document.getElementById('user-orb');
+    const icon = document.getElementById('user-orb-icon');
+    const badge = document.getElementById('user-orb-badge');
+    if (isGuestMode) {
+      icon.textContent = '✦';
+      badge.style.display = 'none';
+      orb.title = '访客 · 点击注册以创造你的星海';
+      return;
+    }
+    if (currentUser) {
+      icon.textContent = (currentUser.avatar || '✦');
+      orb.title = currentUser.nickname + ' · 我的星座';
+      const used = loadMemories().length;
+      if (used > 0) { badge.textContent = used; badge.style.display = 'flex'; }
+      else { badge.style.display = 'none'; }
+      return;
+    }
+    icon.textContent = '✦';
+    badge.style.display = 'none';
+    orb.title = '点亮你的星海';
+  }
+
+  window.onUserOrbClick = function(){
+    if (isGuestMode) { showAuthModal(); return; }
+    if (!currentUser) { showAuthModal(); return; }
+    openProfileDrawer();
+  };
+
+  // -------- Profile Drawer --------
+  function openProfileDrawer(){
+    if (!currentUser) { showAuthModal(); return; }
+    renderProfileCard();
+    document.getElementById('profile-drawer').classList.add('active');
+    requestAnimationFrame(drawProfileGalaxy);
+  }
+  function closeProfileDrawer(){ document.getElementById('profile-drawer').classList.remove('active'); }
+  window.closeProfileDrawer = closeProfileDrawer;
+
+  function renderProfileCard(){
+    const u = currentUser;
+    if (!u) return;
+    document.getElementById('profile-avatar').textContent = u.avatar || '?';
+    document.getElementById('profile-name').textContent = u.nickname || '未命名漫游者';
+    document.getElementById('profile-id').textContent = u.id;
+    document.getElementById('profile-bio').textContent = u.bio || '正在书写自己的星海。';
+    document.getElementById('profile-relationship').textContent = u.relationship || '探索中';
+    const lvl = computeGrowthLevel(loadMemories().length);
+    document.getElementById('profile-level').textContent = 'Lv.' + lvl + ' ' + growthName(lvl);
+    const days = Math.max(1, Math.floor((Date.now() - (u.createdAt || Date.now()))/86400000) + 1);
+    document.getElementById('profile-days').textContent = '第 ' + days + ' 天';
+    const mems = loadMemories();
+    const pubCnt = mems.filter(m => m.privacy==='public' || m.privacy==='anonymous').length;
+    const privCnt = mems.filter(m => m.privacy==='private' || m.privacy==='friends').length;
+    document.getElementById('stat-memories').textContent = mems.length;
+    document.getElementById('stat-companions').textContent = u.companions || 0;
+    document.getElementById('stat-public').textContent = pubCnt;
+    document.getElementById('stat-private').textContent = privCnt;
+    document.getElementById('stat-influence').textContent = (u.influence || 0) + pubCnt*3;
+    document.getElementById('stat-growth').textContent = lvl;
+    // capacity
+    const used = mems.length;
+    const max = u.slotMax || 10;
+    document.getElementById('capacity-num').textContent = used + '/' + max;
+    let stars = '';
+    for (let i=0;i<max;i++){ stars += (i<used) ? '★' : '<span class="empty">★</span>'; }
+    document.getElementById('capacity-stars').innerHTML = stars;
+    document.getElementById('capacity-warn').classList.toggle('active', used >= max - 2 && used < max);
+    document.getElementById('capacity-warn').textContent = (used >= max) ? 'Your universe is full · 这片星海已盛满 ✦' : 'Your universe is almost full · 你的宇宙快满了';
+  }
+
+  function computeGrowthLevel(memCount){
+    if (memCount === 0) return 1;
+    if (memCount <= 2) return 2;
+    if (memCount <= 5) return 3;
+    if (memCount <= 10) return 4;
+    if (memCount <= 20) return 5;
+    return 6;
+  }
+  function growthName(lvl){
+    return ['', '漫游者','星语者','造星人','银河织梦师','星海守护者','文明编年师'][lvl] || '漫游者';
+  }
+
+  window.editProfileBio = function(){
+    if (!currentUser) return;
+    const next = prompt('编辑你的星海签名', currentUser.bio || '');
+    if (next === null) return;
+    currentUser.bio = next.trim().slice(0,80) || '正在书写自己的星海。';
+    saveUser(currentUser);
+    renderProfileCard();
+  };
+
+  // -------- Mini Galaxy Canvas --------
+  function drawProfileGalaxy(){
+    const cv = document.getElementById('profile-galaxy-canvas');
+    if (!cv || !document.getElementById('profile-drawer').classList.contains('active')) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = cv.parentElement.getBoundingClientRect();
+    cv.width = rect.width * dpr; cv.height = rect.height * dpr;
+    const ctx = cv.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,rect.width, rect.height);
+    // 背景星尘
+    for (let i=0;i<60;i++){
+      const x = Math.random()*rect.width, y = Math.random()*rect.height;
+      ctx.fillStyle = 'rgba(180,200,255,' + (0.1 + Math.random()*0.25) + ')';
+      ctx.beginPath(); ctx.arc(x,y, Math.random()*1.2, 0, Math.PI*2); ctx.fill();
+    }
+    const cx = rect.width/2, cy = rect.height/2;
+    ctx.strokeStyle = 'rgba(180,200,255,0.12)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.ellipse(cx, cy, rect.width*0.4, rect.height*0.32, 0, 0, Math.PI*2); ctx.stroke();
+    // 用户记忆星
+    const memColor = { daily:'#A6D8FF', growth:'#7BFFC8', pet:'#FFC178', family:'#FF8FB3', love:'#FF7AA8', friend:'#B5A0FF', other:'#FFD37A' };
+    const mems = loadMemories();
+    mems.forEach((m, i) => {
+      const ang = (i / Math.max(mems.length, 1)) * Math.PI * 2 + (m.createdAt % 1000)/1000 * 0.8;
+      const r = rect.width * 0.18 + (i % 3) * 14 + Math.random()*4;
+      const x = cx + Math.cos(ang)*r;
+      const y = cy + Math.sin(ang)*r*0.7;
+      const c = memColor[m.type] || '#ffd37a';
+      ctx.fillStyle = c;
+      ctx.shadowColor = c; ctx.shadowBlur = 14;
+      ctx.beginPath(); ctx.arc(x,y, 3.2, 0, Math.PI*2); ctx.fill();
+      ctx.shadowBlur = 0;
+    });
+    // 中心
+    ctx.fillStyle = 'rgba(255,255,255,0.95)';
+    ctx.shadowColor = '#fff'; ctx.shadowBlur = 16;
+    ctx.beginPath(); ctx.arc(cx, cy, 4.5, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  // -------- Upload Wizard --------
+  window.openUploadWizard = function(){
+    if (isGuestMode || !currentUser) { showAuthModal(); return; }
+    const mems = loadMemories();
+    if (mems.length >= (currentUser.slotMax || 10)) { openCapacityUnlock(); return; }
+    uploadDraft = { type:null, typeLabel:'', text:'', attachments:[], extraction:null, privacy:'private' };
+    document.getElementById('up-text').value = '';
+    document.getElementById('up-attached').innerHTML = '<span style="font-size:11px;color:rgba(180,200,255,0.5);">还没有附件</span>';
+    document.querySelectorAll('.upload-privacy').forEach(el => el.classList.toggle('selected', el.dataset.privacy==='private'));
+    showUploadStep(1);
+    document.getElementById('upload-modal').classList.add('active');
+  };
+  window.closeUploadWizard = function(){ document.getElementById('upload-modal').classList.remove('active'); };
+  window.showUploadStep = function(n){
+    for (let i=1;i<=4;i++){
+      document.getElementById('up-step-'+i).classList.toggle('active', i===n);
+      document.getElementById('up-prog-'+i).classList.toggle('done', i<=n);
+    }
+  };
+  window.selectMemoryType = function(t, label){ uploadDraft.type = t; uploadDraft.typeLabel = label; showUploadStep(2); };
+  window.fakeAttach = function(kind){
+    const kindMap = { photo:'📷 图像', video:'🎞 视频', audio:'🎙 录音', doc:'📄 文档', chat:'💬 聊天截图' };
+    uploadDraft.attachments.push(kindMap[kind] || kind);
+    const wrap = document.getElementById('up-attached');
+    wrap.innerHTML = uploadDraft.attachments.map(k => '<span class="upload-tag">'+k+'</span>').join(' ');
+  };
+  window.goExtract = function(){
+    uploadDraft.text = document.getElementById('up-text').value.trim();
+    if (!uploadDraft.text && uploadDraft.attachments.length === 0) {
+      alert('至少写下一段文字 · 或附加一份内容'); return;
+    }
+    showUploadStep(3);
+    document.getElementById('up-extract-result').innerHTML = '<div style="text-align:center;padding:24px;color:rgba(220,230,255,0.7);font-size:13px;">正在让 AI 把这颗星点亮…</div>';
+    setTimeout(() => {
+      uploadDraft.extraction = fakeAiExtract(uploadDraft.text, uploadDraft.typeLabel);
+      renderExtraction(uploadDraft.extraction);
+    }, 900);
+  };
+  function renderExtraction(ex){
+    const rows = [
+      ['人物', ex.people],
+      ['地点', ex.places],
+      ['时间', [ex.time]],
+      ['情绪', [ex.emotion]],
+      ['关系', ex.relationships],
+      ['关键词', ex.keywords]
+    ];
+    document.getElementById('up-extract-result').innerHTML = rows.map(([k,arr]) => {
+      const tags = (arr||[]).filter(Boolean).map(v => '<span class="upload-tag">'+escapeHtml(v)+'</span>').join(' ') || '<span style="font-size:11px;color:rgba(180,200,255,0.45);">未识别</span>';
+      return '<div class="upload-extract-row"><div class="upload-extract-key">'+k+'</div><div class="upload-extract-val">'+tags+'</div></div>';
+    }).join('');
+  }
+  function fakeAiExtract(text, typeLabel){
+    const emotions = ['温柔','雀跃','思念','平静','勇敢','感激','怅然','炽热','怀念','释然'];
+    let emotion = emotions[Math.floor(Math.random()*emotions.length)];
+    if (/想念|思念|不再|离开|走了|消失/.test(text)) emotion = '思念';
+    if (/喜欢|爱|心动|温柔/.test(text)) emotion = '炽热';
+    if (/勇敢|出发|启程|启航|挑战/.test(text)) emotion = '勇敢';
+    const cnTokens = (text.match(/[\u4e00-\u9fa5A-Za-z]{2,5}/g) || []);
+    const placeMatch = text.match(/在([\u4e00-\u9fa5A-Za-z]{2,8})/);
+    const timeMatch = text.match(/(20\d{2}年\d+月)|(\d+月\d+日)|(\d+岁)|(那年)|(去年)|(今年)|(那天晚上)/);
+    const peopleMatch = text.match(/([\u4e00-\u9fa5]{2,4})(说|笑|哭|看|抱|握|和我|对我|跟我)/g);
+    const people = (peopleMatch || []).slice(0,3).map(s => s.replace(/(说|笑|哭|看|抱|握|和我|对我|跟我).*$/, '')).filter(s => s.length<=4);
+    return {
+      people: people.length ? people : (cnTokens.slice(0,1)),
+      places: placeMatch ? [placeMatch[1]] : ['未命名星点'],
+      time: timeMatch ? (timeMatch[0]) : '近期',
+      emotion,
+      relationships: typeLabel ? [typeLabel] : [],
+      keywords: Array.from(new Set(cnTokens.filter(t => t.length>=2 && t.length<=4))).slice(0,5)
+    };
+  }
+  window.selectPrivacy = function(p){
+    uploadDraft.privacy = p;
+    document.querySelectorAll('.upload-privacy').forEach(el => el.classList.toggle('selected', el.dataset.privacy === p));
+  };
+  window.commitMemory = function(){
+    if (!currentUser) { showAuthModal(); return; }
+    const mems = loadMemories();
+    if (mems.length >= (currentUser.slotMax || 10)) { closeUploadWizard(); openCapacityUnlock(); return; }
+    const star = {
+      id: 'mem-' + Math.random().toString(36).slice(2,10),
+      type: uploadDraft.type,
+      typeLabel: uploadDraft.typeLabel,
+      content: uploadDraft.text,
+      attachments: uploadDraft.attachments,
+      extraction: uploadDraft.extraction,
+      privacy: uploadDraft.privacy,
+      createdAt: Date.now()
+    };
+    mems.push(star);
+    saveMemories(mems);
+    closeUploadWizard();
+    spawnMemoryStarFlash();
+    updateUserOrb();
+    setTimeout(() => { if (document.getElementById('profile-drawer').classList.contains('active')) { renderProfileCard(); drawProfileGalaxy(); } }, 100);
+  };
+
+  function spawnMemoryStarFlash(){
+    const f = document.getElementById('memory-spawn-flash');
+    f.classList.add('active');
+    setTimeout(() => f.classList.remove('active'), 1600);
+  }
+
+  // -------- Capacity Unlock --------
+  window.openCapacityUnlock = function(){ document.getElementById('capacity-unlock-modal').classList.add('active'); };
+  window.closeCapacityUnlock = function(){ document.getElementById('capacity-unlock-modal').classList.remove('active'); };
+  window.unlockCapacity = function(plan){
+    if (!currentUser) return;
+    if (plan === 'pro') { currentUser.slotMax = 99999; }
+    else if (plan === 'points') { currentUser.slotMax = (currentUser.slotMax || 10) + 10; }
+    else if (plan === 'activity') { currentUser.slotMax = (currentUser.slotMax || 10) + 3; }
+    else if (plan === 'contribution') { currentUser.slotMax = (currentUser.slotMax || 10) + 5; }
+    saveUser(currentUser);
+    closeCapacityUnlock();
+    if (document.getElementById('profile-drawer').classList.contains('active')) renderProfileCard();
+  };
+
+  // -------- First Memory Guide --------
+  function showFirstMemoryGuide(){
+    if (!currentUser || isGuestMode) return;
+    if (loadMemories().length > 0) return;
+    document.getElementById('first-memory-overlay').classList.add('active');
+  }
+  window.dismissFirstMemoryGuide = function(){ document.getElementById('first-memory-overlay').classList.remove('active'); };
+
+  // -------- Init --------
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]); }
+  window.addEventListener('resize', () => { if (document.getElementById('profile-drawer').classList.contains('active')) drawProfileGalaxy(); });
+
+  function initSession(){
+    const session = localStorage.getItem(SESSION_KEY);
+    const u = loadUser();
+    if (session === 'guest') { isGuestMode = true; updateUserOrb(); return; }
+    if (session && u && u.id === session) { currentUser = u; isGuestMode = false; updateUserOrb(); return; }
+    // 未登录：延迟弹出 auth
+    setTimeout(showAuthModal, 1200);
+    updateUserOrb();
+  }
+  // 等其他脚本完成
+  if (document.readyState === 'complete') initSession();
+  else window.addEventListener('load', () => setTimeout(initSession, 400));
+})();
 </script>
 <script type="module" src="./civilization-galaxy.js"></script>
 </body>
