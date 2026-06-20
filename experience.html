@@ -9599,13 +9599,13 @@ window.addEventListener('touchmove', e => {
 const AI_ENGINE_KEY = 'lifebeyond_ai_engine_v1';
 const AI_PRESET_MODELS = {
   openrouter: [
-    { id:'deepseek/deepseek-chat-v3-0324:free', name:'DeepSeek V3 · Free ★' },
+    { id:'meta-llama/llama-3.3-70b-instruct:free', name:'Llama 3.3 70B · Free ★' },
     { id:'qwen/qwen-2.5-72b-instruct:free', name:'Qwen 2.5 72B · Free' },
-    { id:'meta-llama/llama-3.3-70b-instruct:free', name:'Llama 3.3 70B · Free' },
+    { id:'google/gemini-2.0-flash-exp:free', name:'Gemini 2.0 Flash · Free' },
     { id:'mistralai/mistral-7b-instruct:free', name:'Mistral 7B · Free' },
     { id:'google/gemma-2-9b-it:free', name:'Gemma 2 9B · Free' },
-    { id:'google/gemini-2.0-flash-exp:free', name:'Gemini 2.0 Flash · Free' },
-    { id:'nvidia/nemotron-nano-9b-v2:free', name:'Nemotron Nano · Free' },
+    { id:'meta-llama/llama-3.2-3b-instruct:free', name:'Llama 3.2 3B · Free' },
+    { id:'qwen/qwen-2.5-coder-32b-instruct:free', name:'Qwen2.5 Coder 32B · Free' },
     { id:'deepseek/deepseek-chat', name:'DeepSeek Chat（付费）' }
   ],
   deepseek: [
@@ -9620,7 +9620,7 @@ const AI_PRESET_MODELS = {
   ]
 };
 const AI_PROVIDER_DEFAULTS = {
-  openrouter: { baseUrl:'https://openrouter.ai/api/v1', model:'deepseek/deepseek-chat-v3-0324:free' },
+  openrouter: { baseUrl:'https://openrouter.ai/api/v1', model:'meta-llama/llama-3.3-70b-instruct:free' },
   deepseek:   { baseUrl:'https://api.deepseek.com/v1',  model:'deepseek-chat' },
   custom:     { baseUrl:'https://api.openai.com/v1',     model:'gpt-4o-mini' },
   local:      { baseUrl:'http://localhost:11434/v1',    model:'qwen2.5' }
@@ -9668,7 +9668,7 @@ function saveAIEngine() {
     provider: document.getElementById('ai-engine-provider').value,
     baseUrl: document.getElementById('ai-engine-baseurl').value.trim() || AI_PROVIDER_DEFAULTS[document.getElementById('ai-engine-provider').value].baseUrl,
     apiKey: document.getElementById('ai-engine-key').value.trim(),
-    model: document.getElementById('ai-engine-model').value.trim() || 'deepseek/deepseek-chat-v3-0324:free',
+    model: document.getElementById('ai-engine-model').value.trim() || 'meta-llama/llama-3.3-70b-instruct:free',
     temperature: parseFloat(document.getElementById('ai-engine-temp').value) || 0.85
   };
   setAIEngineConfig(cfg);
@@ -9681,7 +9681,7 @@ async function testAIEngine() {
     provider: document.getElementById('ai-engine-provider').value,
     baseUrl: document.getElementById('ai-engine-baseurl').value.trim() || AI_PROVIDER_DEFAULTS[document.getElementById('ai-engine-provider').value].baseUrl,
     apiKey: document.getElementById('ai-engine-key').value.trim(),
-    model: document.getElementById('ai-engine-model').value.trim() || 'deepseek/deepseek-chat-v3-0324:free',
+    model: document.getElementById('ai-engine-model').value.trim() || 'meta-llama/llama-3.3-70b-instruct:free',
     temperature: 0.7
   };
   const s = document.getElementById('ai-engine-status');
@@ -9696,12 +9696,17 @@ async function testAIEngine() {
   } catch (e) {
     const msg = (e && e.message) ? e.message : String(e);
     let hint = '';
-    if (/402/.test(msg) || /Insufficient credits/i.test(msg)) {
-      hint = '\n→ 该模型需要付费额度。请改用带 :free 后缀的免费模型，例如 deepseek/deepseek-chat-v3-0324:free 或 qwen/qwen-2.5-72b-instruct:free';
+    // OpenRouter 经常下架免费 slug，错误里常带 "use this slug instead"
+    const slugMatch = msg.match(/use this slug instead:\s*([\w\-./:]+)/i);
+    if (/unavailable for free/i.test(msg) || /Free version.*unavailable/i.test(msg)) {
+      hint = '\n→ 该免费模型已被 OpenRouter 下架。建议改用以下长期稳定的免费模型之一：\n   • meta-llama/llama-3.3-70b-instruct:free（推荐 ★）\n   • qwen/qwen-2.5-72b-instruct:free\n   • google/gemini-2.0-flash-exp:free\n   • mistralai/mistral-7b-instruct:free';
+      if (slugMatch) hint += '\n   官方建议替换为：' + slugMatch[1] + '（注意去掉 :free 即变付费）';
+    } else if (/402/.test(msg) || /Insufficient credits/i.test(msg)) {
+      hint = '\n→ 该模型需要付费额度。请改用带 :free 后缀的免费模型，例如 meta-llama/llama-3.3-70b-instruct:free 或 qwen/qwen-2.5-72b-instruct:free';
     } else if (/401/.test(msg) || /Unauthorized/i.test(msg) || /Invalid.+key/i.test(msg)) {
       hint = '\n→ Key 无效或未填。请到 openrouter.ai/keys 重新生成。';
-    } else if (/404/.test(msg) || /not.*found/i.test(msg)) {
-      hint = '\n→ 模型 ID 不存在。请从下方快捷模型 chip 中选一个免费模型。';
+    } else if (/404/.test(msg) || /not.*found/i.test(msg) || /No endpoints/i.test(msg)) {
+      hint = '\n→ 模型 ID 不存在或已下线。从下方快捷 chip 选一个，或试 meta-llama/llama-3.3-70b-instruct:free。';
     } else if (/429/.test(msg) || /rate.?limit/i.test(msg)) {
       hint = '\n→ 触发限流，稍等几秒重试，或换一个模型。';
     } else if (/Failed to fetch/i.test(msg) || /NetworkError/i.test(msg)) {
