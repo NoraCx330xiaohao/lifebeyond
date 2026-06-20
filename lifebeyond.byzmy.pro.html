@@ -10652,7 +10652,7 @@ setTimeout(()=>{ if(currentView==='universe'){ const p=personas[Math.floor(Math.
     isGuestMode = false;
     hideAuthModal();
     updateUserOrb();
-    setTimeout(showFirstMemoryGuide, 2800);
+    setTimeout(showFirstMemoryGuide, 6500);
   };
   window.doOAuth = function(provider){
     // 预留接口：仅做演示态登录
@@ -10664,7 +10664,7 @@ setTimeout(()=>{ if(currentView==='universe'){ const p=personas[Math.floor(Math.
     currentUser = u; isGuestMode = false;
     hideAuthModal();
     updateUserOrb();
-    if (loadMemories().length === 0) setTimeout(showFirstMemoryGuide, 2800);
+    if (loadMemories().length === 0) setTimeout(showFirstMemoryGuide, 6500);
   };
   window.enterGuestMode = function(){
     localStorage.setItem(SESSION_KEY, 'guest');
@@ -10948,7 +10948,7 @@ setTimeout(()=>{ if(currentView==='universe'){ const p=personas[Math.floor(Math.
     if (session === 'guest') { isGuestMode = true; updateUserOrb(); return; }
     if (session && u && u.id === session) { currentUser = u; isGuestMode = false; updateUserOrb(); return; }
     // 未登录：延迟弹出 auth
-    setTimeout(showAuthModal, 1200);
+    setTimeout(showAuthModal, 5500);
     updateUserOrb();
   }
   // 等其他脚本完成
