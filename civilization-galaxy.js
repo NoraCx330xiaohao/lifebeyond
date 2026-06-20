@@ -97,9 +97,11 @@ class CivilizationGalaxy {
   _buildGalaxy() {
     const figures = this.figures;
     const figCount = figures.length;
-    // 每位人物产出 1 颗主星 + 5 颗伴星，共享 fid，视觉上"星点更多"，点击任一颗都能展开
-    const SAT_PER_FIG = 5;
-    const figParticleCount = figCount * (1 + SAT_PER_FIG);
+    // 每位人物撒 6 颗粒子（其中第 0 颗作为"主星锚点"，用于相机重置归位定位），
+    // 6 颗位置完全独立采样到星轨各处，共享同一 fid——点击任一颗都展开同一位人物，
+    // 视觉上人物星点彻底打散，不再聚成团块
+    const PARTICLES_PER_FIG = 6;
+    const figParticleCount = figCount * PARTICLES_PER_FIG;
     const bgCount = 18000;
     const N = figParticleCount + bgCount;
     const totalArms = 8;
@@ -217,75 +219,53 @@ class CivilizationGalaxy {
       const fig = figures[fi];
       const eraIdx = eraList.indexOf(fig.era);
       const dimIdx = fig.dimIndex !== undefined ? fig.dimIndex : 0;
-      // 随机分布到 8 条旋臂的不同位置：
-      //   · 维度 dim 决定主要旋臂（6 维 → 6 条主臂），但允许 25% 概率落到相邻臂，避免同维聚团
-      //   · era 给出半径"档位"提示，但叠加大幅随机让人物在臂上各处都能出现
-      //   · 角度沿对数螺旋走，并叠加抖动让人物错落，不再按 fi % 8 排列
-      let armPick = dimIdx % totalArms;
-      const stray = Math.random();
-      if (stray < 0.18) armPick = (armPick + 1) % totalArms;
-      else if (stray < 0.30) armPick = (armPick + totalArms - 1) % totalArms;
-      else if (stray < 0.36) armPick = Math.floor(Math.random() * totalArms); // 6% 完全随机
-      const armBase = (armPick / totalArms) * Math.PI * 2;
-      // 半径：以 era 为提示，但叠加 ±18 的大幅随机，让同时代人也散落在不同半径
-      const eraDistHint = eraIdx >= 0 ? 22 + eraIdx * 11 : 28 + Math.random() * 50;
-      const r = Math.max(14, Math.min(GALAXY_R - 2,
-        eraDistHint + (Math.random() - 0.5) * 36
-      ));
-      const spiralAngle = armBase + Math.log(Math.max(r, 1)) * ARM_B * 1.5;
-      // 角度抖动加大到 ±0.55 弧度（约 ±31°），让人物在旋臂宽度内自然散开
-      const baseTheta = spiralAngle + (Math.random() - 0.5) * 1.1;
-      // 高度允许小概率冒出盘面上下（1.5× 厚度），形成立体星海
-      const yJitter = Math.random() < 0.22 ? (Math.random() - 0.5) * GALAXY_H * 1.5
-                                            : (Math.random() - 0.5) * GALAXY_H * 0.45;
-      const baseY = yJitter;
-      const baseX = r * Math.cos(baseTheta);
-      const baseZ = r * Math.sin(baseTheta);
-
       const col = (dimIdx >= 0 && dimIdx < 6) ? dimColors[dimIdx] : [0.85, 0.85, 0.95];
       const baseSize = 3.4 + (fig.influence || 5) * 0.6;
 
-      // 主星（中心节点）
-      positions[idx*3]   = baseX;
-      positions[idx*3+1] = baseY;
-      positions[idx*3+2] = baseZ;
-      colors[idx*3]   = col[0];
-      colors[idx*3+1] = col[1];
-      colors[idx*3+2] = col[2];
-      sizes[idx] = baseSize;
-      ids[idx] = fi;
-      filters[idx] = 1.0;
-      focus[idx] = 0;
-      phases[idx] = Math.random() * 6.28;
-      eraArr[idx] = eraIdx;
-      dimArr[idx] = dimIdx;
-      this.figureIndex.set(fi, idx); // 主星索引（飞行目标）
-      idx++;
+      // 每位人物的 6 颗粒子完全独立采样位置 —— 全部撒到星轨各处，不再聚成团块
+      // 共享同一 fid：点击任一颗都展开同一位人物（_pickFigure 按屏幕距离选最近）
+      // 第 0 颗作为"主星锚点"被记入 figureIndex，仅用于相机重置归位
+      for (let s = 0; s < PARTICLES_PER_FIG; s++) {
+        // 旋臂选择：维度色谱在视觉上仍可识别，但每颗粒子独立漂移
+        let armPick = dimIdx % totalArms;
+        const stray = Math.random();
+        if (stray < 0.22) armPick = (armPick + 1) % totalArms;
+        else if (stray < 0.40) armPick = (armPick + totalArms - 1) % totalArms;
+        else if (stray < 0.55) armPick = Math.floor(Math.random() * totalArms); // 15% 完全随机
+        const armBase = (armPick / totalArms) * Math.PI * 2;
+        // 半径：以 era 为提示，但叠加 ±20 的大幅随机；每颗粒子半径独立
+        const eraDistHint = eraIdx >= 0 ? 22 + eraIdx * 11 : 28 + Math.random() * 50;
+        const r = Math.max(14, Math.min(GALAXY_R - 2,
+          eraDistHint + (Math.random() - 0.5) * 40
+        ));
+        const spiralAngle = armBase + Math.log(Math.max(r, 1)) * ARM_B * 1.5;
+        // 角度抖动 ±0.65 弧度（约 ±37°），人物粒子在旋臂宽度内自由错落
+        const theta = spiralAngle + (Math.random() - 0.5) * 1.3;
+        // 高度：22% 概率冒出盘面 1.5× 厚度，形成立体星海
+        const y = Math.random() < 0.22 ? (Math.random() - 0.5) * GALAXY_H * 1.5
+                                        : (Math.random() - 0.5) * GALAXY_H * 0.5;
+        const x = r * Math.cos(theta);
+        const z = r * Math.sin(theta);
 
-      // 伴星（共享 fid，点击任一颗都展开同一位人物）
-      for (let s = 0; s < SAT_PER_FIG; s++) {
-        // 收紧轨道半径（0.8 ~ 2.2），避免与相邻人物星簇互相穿插，确保点中即对位
-        const orbit = 0.8 + Math.random() * 1.4;
-        const phi = Math.random() * Math.PI * 2;          // 球面角
-        const elev = (Math.random() - 0.5) * 0.55;        // 抬升角（控制 y）
-        const ox = orbit * Math.cos(phi) * Math.cos(elev);
-        const oy = orbit * Math.sin(elev) * 0.5;          // 压扁
-        const oz = orbit * Math.sin(phi) * Math.cos(elev);
-        positions[idx*3]   = baseX + ox;
-        positions[idx*3+1] = baseY + oy;
-        positions[idx*3+2] = baseZ + oz;
-        // 色调与主星相近，略带闪烁的随机偏移
-        const tint = 0.85 + Math.random() * 0.25;
+        positions[idx*3]   = x;
+        positions[idx*3+1] = y;
+        positions[idx*3+2] = z;
+        // 色相在维度色基础上微微抖动，每颗粒子亮度略不同
+        const tint = 0.86 + Math.random() * 0.22;
         colors[idx*3]   = Math.min(1, col[0] * tint);
         colors[idx*3+1] = Math.min(1, col[1] * tint);
         colors[idx*3+2] = Math.min(1, col[2] * tint);
-        sizes[idx] = baseSize * (0.45 + Math.random() * 0.35); // 比主星小
+        // 第 0 颗略大，作为主星；其余 5 颗略小，与背景星点区分但不刺眼
+        sizes[idx] = (s === 0)
+          ? baseSize
+          : baseSize * (0.55 + Math.random() * 0.35);
         ids[idx] = fi;        // 共享 fid
         filters[idx] = 1.0;
         focus[idx] = 0;
         phases[idx] = Math.random() * 6.28;
         eraArr[idx] = eraIdx;
         dimArr[idx] = dimIdx;
+        if (s === 0) this.figureIndex.set(fi, idx); // 主星锚点（重置相机时用）
         idx++;
       }
     }
