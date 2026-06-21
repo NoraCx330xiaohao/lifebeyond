@@ -89,3 +89,6 @@ logs/
 
 # Preview files
 .preview
+
+# Deploy 目录（由 scripts/prepare-deploy.js 生成，单独推到部署仓库）
+deploy/
