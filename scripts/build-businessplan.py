@@ -31,17 +31,17 @@ os.makedirs(ASSET_DIR, exist_ok=True)
 
 # 蓝色科技风配色 (hex 字符串, 不含 #)
 COLOR = {
-    'primary':  '0B2A5B',
-    'accent':   '1E88E5',
-    'neon':     '00E5FF',
-    'ink':      '1A1F36',
-    'muted':    '5A6B89',
-    'stroke':   'C8D7E8',
-    'panel':    'F0F6FF',
-    'warn':     'F4A11A',
-    'warning':  'F4A11A',
-    'danger':   'E0395E',
-    'success':  '1FAE6F',
+    'primary':  '1F3A5F',   # 深石板蓝（替换原 1F3A5F，降低对比度）
+    'accent':   '4A6FA5',   # 学术蓝（替换原 4A6FA5，去掉鲜艳度）
+    'neon':     '6B8CAE',   # 雾蓝（替换原 6B8CAE，霓虹去掉）
+    'ink':      '2C3E50',   # 墨蓝（文字主色）
+    'muted':    '7D8CA3',   # 中性灰蓝
+    'stroke':   'D6DEE8',   # 描边浅灰
+    'panel':    'F2F4F8',   # 面板底色（更柔和）
+    'warn':     'C99767',   # 哑光橙棕（原 C99767 太亮）
+    'warning':  'C99767',
+    'danger':   'B0556C',   # 暗玫红（原 B0556C 太鲜艳）
+    'success':  '6A9B7D',   # 哑光绿（原 6A9B7D 太鲜艳）
 }
 
 def RGB(h):
@@ -71,7 +71,7 @@ def set_cell_border(cell, color='C8D7E8', size='6'):
         tcBorders.append(b)
     tc_pr.append(tcBorders)
 
-def add_para(doc, text, *, size=10.5, bold=False, color='1A1F36',
+def add_para(doc, text, *, size=10.5, bold=False, color='2C3E50',
              align=WD_ALIGN_PARAGRAPH.JUSTIFY, indent_first=True,
              space_before=0, space_after=4, line_spacing=1.5):
     p = doc.add_paragraph()
@@ -250,14 +250,14 @@ def chart_market_size():
     core = [205.2, 320.4, 480.6]
     x = np.arange(len(years))
     w = 0.36
-    b1 = ax.bar(x - w/2, pull, w, label='带动产业规模', color='#1E88E5', edgecolor='#0B2A5B')
-    b2 = ax.bar(x + w/2, core, w, label='核心市场规模', color='#00E5FF', edgecolor='#0B2A5B')
+    b1 = ax.bar(x - w/2, pull, w, label='带动产业规模', color='#4A6FA5', edgecolor='#1F3A5F')
+    b2 = ax.bar(x + w/2, core, w, label='核心市场规模', color='#6B8CAE', edgecolor='#1F3A5F')
     for bars in (b1, b2):
         for b in bars:
             ax.text(b.get_x() + b.get_width()/2, b.get_height() + 80,
-                    f'{b.get_height():.1f}', ha='center', fontsize=9, color='#0B2A5B')
-    ax.set_ylabel('市场规模(亿元)', fontsize=10, color='#0B2A5B')
-    ax.set_title('中国虚拟数字人市场规模演进  数据来源：艾瑞咨询', fontsize=11, color='#0B2A5B', pad=12)
+                    f'{b.get_height():.1f}', ha='center', fontsize=9, color='#1F3A5F')
+    ax.set_ylabel('市场规模(亿元)', fontsize=10, color='#1F3A5F')
+    ax.set_title('中国虚拟数字人市场规模演进  数据来源：艾瑞咨询', fontsize=11, color='#1F3A5F', pad=12)
     ax.set_xticks(x)
     ax.set_xticklabels(years)
     ax.legend(loc='upper left', frameon=False)
@@ -280,20 +280,20 @@ def chart_user_radar():
     angles += angles[:1]
     fig, ax = plt.subplots(figsize=(8, 6), dpi=160, subplot_kw=dict(polar=True))
     for vals, label, col in [
-        (rational, '理性接受型', '#1E88E5'),
-        (emotional, '情感依赖型', '#E0395E'),
-        (ethical, '伦理顾虑型', '#F4A11A'),
+        (rational, '理性接受型', '#4A6FA5'),
+        (emotional, '情感依赖型', '#B0556C'),
+        (ethical, '伦理顾虑型', '#C99767'),
     ]:
         v = vals + vals[:1]
         ax.plot(angles, v, label=label, color=col, linewidth=2)
         ax.fill(angles, v, color=col, alpha=0.15)
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(dims, fontsize=9, color='#0B2A5B')
+    ax.set_xticklabels(dims, fontsize=9, color='#1F3A5F')
     ax.set_ylim(0, 5)
     ax.set_yticks([1, 2, 3, 4, 5])
-    ax.set_yticklabels(['1','2','3','4','5'], color='#5A6B89', fontsize=8)
+    ax.set_yticklabels(['1','2','3','4','5'], color='#7D8CA3', fontsize=8)
     ax.grid(color='#C8D7E8', linestyle='--', alpha=0.6)
-    ax.set_title('三类用户群体核心特征量化对比 (5 分制)', fontsize=11, color='#0B2A5B', pad=18)
+    ax.set_title('三类用户群体核心特征量化对比 (5 分制)', fontsize=11, color='#1F3A5F', pad=18)
     ax.legend(loc='lower center', bbox_to_anchor=(0.5, -0.12), ncol=3, frameon=False, fontsize=9)
     p = os.path.join(ASSET_DIR, 'user_radar.png')
     fig.savefig(p, dpi=180, bbox_inches='tight', facecolor='white')
@@ -306,19 +306,19 @@ def chart_acceptance_donut():
     labels = ['基本接受 41.8%', '部分接受 21.6%', '中立观望 19.6%',
               '部分反对 10.1%', '完全不接受 3.3%', '不了解 3.6%']
     vals  = [41.8, 21.6, 19.6, 10.1, 3.3, 3.6]
-    cols  = ['#1FAE6F', '#3FA9F5', '#5A6B89', '#F4A11A', '#E0395E', '#9CA3AF']
+    cols  = ['#6A9B7D', '#6B8CAE', '#7D8CA3', '#C99767', '#B0556C', '#A6ADB8']
     fig, ax = plt.subplots(figsize=(8.4, 4.8), dpi=160)
     wedges, _ = ax.pie(vals, colors=cols, startangle=90,
                         wedgeprops=dict(width=0.42, edgecolor='white', linewidth=2.2),
                         pctdistance=0.78)
-    ax.text(0, 0.18, 'N = 306', ha='center', fontsize=13, color='#0B2A5B', weight='bold')
-    ax.text(0, -0.05, '有效样本', ha='center', fontsize=9, color='#5A6B89')
-    ax.text(0, -0.28, '接受率  63.4%', ha='center', fontsize=10, color='#1FAE6F', weight='bold')
-    ax.text(0, -0.45, '反对率  13.4%', ha='center', fontsize=10, color='#E0395E', weight='bold')
+    ax.text(0, 0.18, 'N = 306', ha='center', fontsize=13, color='#1F3A5F', weight='bold')
+    ax.text(0, -0.05, '有效样本', ha='center', fontsize=9, color='#7D8CA3')
+    ax.text(0, -0.28, '接受率  63.4%', ha='center', fontsize=10, color='#6A9B7D', weight='bold')
+    ax.text(0, -0.45, '反对率  13.4%', ha='center', fontsize=10, color='#B0556C', weight='bold')
     ax.legend(wedges, labels, loc='center left', bbox_to_anchor=(1.04, 0.5),
               frameon=False, fontsize=9.5)
     ax.set_title('公众对 AI 数字复生技术整体接受度分布   (Q6  N=306)',
-                 fontsize=11.5, color='#0B2A5B', pad=12, weight='bold')
+                 fontsize=11.5, color='#1F3A5F', pad=12, weight='bold')
     p = os.path.join(ASSET_DIR, 'acceptance_donut.png')
     fig.savefig(p, dpi=180, bbox_inches='tight', facecolor='white')
     plt.close(fig)
@@ -331,14 +331,14 @@ def chart_sem_path():
     coefs = [0.452, 0.318, 0.276, 0.187]
     pvals = ['p<0.001', 'p<0.001', 'p<0.01', 'p<0.05']
     fig, ax = plt.subplots(figsize=(8, 3.6), dpi=160)
-    bars = ax.barh(paths, coefs, color=['#1E88E5', '#00E5FF', '#1FAE6F', '#F4A11A'], edgecolor='#0B2A5B')
+    bars = ax.barh(paths, coefs, color=['#4A6FA5', '#6B8CAE', '#6A9B7D', '#C99767'], edgecolor='#1F3A5F')
     for i, (b, pv) in enumerate(zip(bars, pvals)):
         ax.text(b.get_width() + 0.012, b.get_y() + b.get_height()/2,
-                f'β = {b.get_width():.3f}  ({pv})', va='center', fontsize=9, color='#0B2A5B')
+                f'β = {b.get_width():.3f}  ({pv})', va='center', fontsize=9, color='#1F3A5F')
     ax.set_xlim(0, 0.6)
-    ax.set_xlabel('标准化路径系数 β', fontsize=10, color='#0B2A5B')
+    ax.set_xlabel('标准化路径系数 β', fontsize=10, color='#1F3A5F')
     ax.set_title('结构方程模型 (SEM) 四项研究假设检验结果   χ²/df=2.31  CFI=0.942  RMSEA=0.058',
-                 fontsize=10, color='#0B2A5B', pad=12)
+                 fontsize=10, color='#1F3A5F', pad=12)
     ax.grid(axis='x', linestyle='--', alpha=0.3)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -359,13 +359,13 @@ def chart_revenue_forecast():
     fig, ax = plt.subplots(figsize=(8, 4.2), dpi=160)
     x = np.arange(len(years))
     w = 0.18
-    ax.bar(x - 1.5*w, c_token, w, label='C 端 Token 增值', color='#00E5FF', edgecolor='#0B2A5B')
-    ax.bar(x - 0.5*w, c_pro,   w, label='C 端 Pro 订阅',  color='#1E88E5', edgecolor='#0B2A5B')
-    ax.bar(x + 0.5*w, b_saas,  w, label='B 端 SaaS API', color='#1FAE6F', edgecolor='#0B2A5B')
-    ax.bar(x + 1.5*w, custom,  w, label='文旅文博定制',   color='#F4A11A', edgecolor='#0B2A5B')
+    ax.bar(x - 1.5*w, c_token, w, label='C 端 Token 增值', color='#6B8CAE', edgecolor='#1F3A5F')
+    ax.bar(x - 0.5*w, c_pro,   w, label='C 端 Pro 订阅',  color='#4A6FA5', edgecolor='#1F3A5F')
+    ax.bar(x + 0.5*w, b_saas,  w, label='B 端 SaaS API', color='#6A9B7D', edgecolor='#1F3A5F')
+    ax.bar(x + 1.5*w, custom,  w, label='文旅文博定制',   color='#C99767', edgecolor='#1F3A5F')
     ax.set_xticks(x); ax.set_xticklabels(years)
-    ax.set_ylabel('营业收入 (万元)', fontsize=10, color='#0B2A5B')
-    ax.set_title('LifeBeyond 三年营收结构预测  (中性情境)', fontsize=11, color='#0B2A5B', pad=12)
+    ax.set_ylabel('营业收入 (万元)', fontsize=10, color='#1F3A5F')
+    ax.set_title('LifeBeyond 三年营收结构预测  (中性情境)', fontsize=11, color='#1F3A5F', pad=12)
     ax.legend(loc='upper left', frameon=False, fontsize=9)
     ax.grid(axis='y', linestyle='--', alpha=0.3)
     ax.spines['top'].set_visible(False)
@@ -672,10 +672,10 @@ def build_chapter_3(doc, img_donut=None, img_radar=None, img_sem=None,
                   caption='图 3-2  四项研究假设的标准化路径系数（β）')
 
     add_para(doc,
-        '四项研究假设全部通过显著性检验：H4（功能吸引力 → 使用意愿，β = 0.452***）影响最强，'
-        '说明纪念与情感价值类功能是接受度核心驱动器；H3（开放性态度 → 使用意愿，β = 0.318***）'
-        '位居第二，验证了 18–35 岁青年群体作为种子用户的合理性；H1（付费偏好 → 使用意愿，β = 0.276**）'
-        '揭示了付费意愿与使用意愿之间的正向耦合；H2（伦理顾虑 → 使用意愿，β = 0.187*）'
+        '四项研究假设全部通过显著性检验：H4（功能吸引力 → 使用意愿，β = 0.452（p<0.001）影响最强，'
+        '说明纪念与情感价值类功能是接受度核心驱动器；H3（开放性态度 → 使用意愿，β = 0.318（p<0.001）'
+        '位居第二，验证了 18–35 岁青年群体作为种子用户的合理性；H1（付费偏好 → 使用意愿，β = 0.276（p<0.01）'
+        '揭示了付费意愿与使用意愿之间的正向耦合；H2（伦理顾虑 → 使用意愿，β = 0.187（p<0.05）'
         '呈现意外的正向作用——理性用户的伦理风险感知会推动其深入了解产品边界，'
         '反而提升对合规产品的包容度。')
 
@@ -760,7 +760,7 @@ def build_chapter_3(doc, img_donut=None, img_radar=None, img_sem=None,
 
     add_para(doc,
         '从年龄结构数据可以看出，18–34 岁的青年与中青年群体（合计 57.5%）'
-        '构成了核心市场。这一群体的关键特征是：技术开放度高（H3 路径系数 β=0.318***）、'
+        '构成了核心市场。这一群体的关键特征是：技术开放度高（H3 路径系数 β=0.318（p<0.001）、'
         '情感陪伴付费意愿强、内容传播主动性强。'
         '同时 35–54 岁的中坚群体（合计 31.7%）'
         '是丧亲经历集中爆发的主力年龄段，'
@@ -1217,13 +1217,13 @@ def build_chapter_4(doc):
         '入口位于宇宙界面右上角，'
         '通过深色玻璃拟态卡片浮层呈现，避免对主沉浸场景造成视觉割裂。')
     add_bullets(doc, [
-        '**登录路径**：邮箱 / 手机号 + 密码，第三方一键登录支持微信、Google；'
+        '登录路径：邮箱 / 手机号 + 密码，第三方一键登录支持微信、Google；'
         '勾选「记住我」后通过 Supabase Auth Session Token 持久化 7 天；忘记密码走邮箱验证码重置流程。',
-        '**注册路径**：邮箱 + 用户名 + 密码（6–20 位强度校验）+ 确认密码 + 用户协议同意；'
+        '注册路径：邮箱 + 用户名 + 密码（6–20 位强度校验）+ 确认密码 + 用户协议同意；'
         '邮箱验证为可选项，未验证账号仅可访问公开记忆，不可上传私密内容。',
-        '**安全策略**：密码 bcrypt 加盐哈希存储；登录失败 5 次后触发图形验证码；'
+        '安全策略：密码 bcrypt 加盐哈希存储；登录失败 5 次后触发图形验证码；'
         '异地登录通过邮件二次确认；账号删除遵循「7 天软删除 + 30 天彻底清除」机制，符合《个人信息保护法》。',
-        '**第三方授权**：微信开放平台 OAuth 2.0 / Google OIDC；仅获取最小必要字段（unionid + 昵称 + 头像）；'
+        '第三方授权：微信开放平台 OAuth 2.0 / Google OIDC；仅获取最小必要字段（unionid + 昵称 + 头像）；'
         '禁止读取手机通讯录、好友列表等敏感关系链。',
     ])
 
@@ -1240,18 +1240,18 @@ def build_chapter_4(doc):
         '采用「点击星空任意位置」的空间化交互方式打破传统表单的隔阂感，'
         '将上传行为本身仪式化为「在宇宙中点亮一颗记忆星点」。')
     add_bullets(doc, [
-        '**上传触发**：用户在沉浸式宇宙界面长按或双击空白处即唤起上传浮层；'
+        '上传触发：用户在沉浸式宇宙界面长按或双击空白处即唤起上传浮层；'
         '同时支持顶部工具栏「+ 新记忆」按钮入口与拖拽文件直接上传。',
-        '**内容类型**：文本 / 图片 / 视频 / 音频四类，单文件上限 100MB；'
+        '内容类型：文本 / 图片 / 视频 / 音频四类，单文件上限 100MB；'
         '支持格式 JPG / PNG / GIF / MP4 / MP3 / WAV / PDF / TXT；'
         '上传前自动检测 EXIF 隐私字段并提示用户是否擦除。',
-        '**元数据维护**：记忆标题（必填，1–40 字）+ 描述（选填，0–500 字）'
+        '元数据维护：记忆标题（必填，1–40 字）+ 描述（选填，0–500 字）'
         '+ 分类标签（多选，最多 5 个）+ 可见范围（公开 / 仅好友 / 私密）。',
-        '**免费槽位机制**：注册即赠 10 个永久免费槽位；'
+        '免费槽位机制：注册即赠 10 个永久免费槽位；'
         '槽位使用实时可视化（圆环进度图）；'
         '触达上限时弹出友好引导「升级获取无限槽位 / 一次性付费扩容 / 删除旧记忆释放槽位」三选一，'
         '严禁在情绪低谷场景（如「悼念」「忌日」标签上传时）触发付费提醒。',
-        '**审核与发布**：内容安全审核走「文本敏感词 + 图像 NSFW 模型 + 人工抽检」三层机制，'
+        '审核与发布：内容安全审核走「文本敏感词 + 图像 NSFW 模型 + 人工抽检」三层机制，'
         '通过后写入云端分布式对象存储并生成 IPFS 哈希指纹用于区块链溯源。',
     ])
 
@@ -1268,14 +1268,14 @@ def build_chapter_4(doc):
         '记忆管理是用户对已上传内容进行编辑、整理、隐私调控的中枢，'
         '位于「彼岸足迹」二级视图，采用瀑布流卡片 + 时间线轴双视图切换。')
     add_bullets(doc, [
-        '**记忆卡片预览**：标题 + 内容缩略 + 上传时间 + 公开 / 私密标识 + 操作按钮组（编辑 / 隐私 / 删除 / 分享）。',
-        '**批量管理**：长按多选支持批量改隐私、批量打标签、批量删除（删除即释放槽位）；'
+        '记忆卡片预览：标题 + 内容缩略 + 上传时间 + 公开 / 私密标识 + 操作按钮组（编辑 / 隐私 / 删除 / 分享）。',
+        '批量管理：长按多选支持批量改隐私、批量打标签、批量删除（删除即释放槽位）；'
         '批量操作前二次确认避免误删。',
-        '**位置移动**：在沉浸宇宙中支持拖拽记忆星点位置（仅 Pro 用户）；'
+        '位置移动：在沉浸宇宙中支持拖拽记忆星点位置（仅 Pro 用户）；'
         '免费用户仅可在管理面板进行排序调整。',
-        '**回收站**：删除操作进入 30 天回收站，期间可恢复；'
+        '回收站：删除操作进入 30 天回收站，期间可恢复；'
         '超过 30 天进入物理删除队列，区块链同步出具销毁凭证。',
-        '**导出权利**：所有用户可一键导出全部记忆为 ZIP 包（含元数据 JSON），'
+        '导出权利：所有用户可一键导出全部记忆为 ZIP 包（含元数据 JSON），'
         '尊重用户对数据的所有权（呼应调研中「数据控制权应属于使用者」的核心诉求）。',
     ])
 
@@ -1293,17 +1293,17 @@ def build_chapter_4(doc):
         '该模块严格遵守调研中受访者反复强调的「我能始终清楚它不是本人」原则，'
         '所有对话头部均显式标注「AI 数字人 · 非真实复活」声明。')
     add_bullets(doc, [
-        '**对话架构**：基于豆包大模型 Seed-1.6 + 用户上传的逝者数据微调'
+        '对话架构：基于豆包大模型 Seed-1.6 + 用户上传的逝者数据微调'
         '（语料、语音、性格特征卡 Persona Card）；'
         '上下文窗口 32K tokens，支持长程记忆持久化。',
-        '**多模态能力**：文字对话 / 语音消息 / 情景画面（基于 Seedance 2.0 文生视频）三种模式自由切换；'
+        '多模态能力：文字对话 / 语音消息 / 情景画面（基于 Seedance 2.0 文生视频）三种模式自由切换；'
         '语音合成采用 Volcengine TTS 个性化音色克隆，'
         '最少 30 秒音频样本即可生成专属音色（仅本地 + 用户授权云端存储）。',
-        '**安全机制**：每日单用户对话时长上限 60 分钟（Pro 90 分钟），'
+        '安全机制：每日单用户对话时长上限 60 分钟（Pro 90 分钟），'
         '超时自动暂停并推送心理援助提示；'
         '内置情绪低谷识别模型，检测到「自杀」「绝望」「无意义」等高危关键词时'
         '立即引导至专业心理援助渠道（北京心理危机干预 010-82951332）。',
-        '**对话留痕**：所有对话默认仅本地加密存储；'
+        '对话留痕：所有对话默认仅本地加密存储；'
         '用户主动选择上传云端后启用端到端加密；'
         '禁止任何形式的对话数据二次利用、模型训练或商业化。',
     ])
@@ -1322,15 +1322,15 @@ def build_chapter_4(doc):
         '严格采用匿名机制，'
         '为同样经历丧亲的用户提供低社交压力的情感支持空间。')
     add_bullets(doc, [
-        '**共鸣 (resonance)**：基于情绪向量相似度推荐相同心境的匿名故事；'
+        '共鸣 (resonance)：基于情绪向量相似度推荐相同心境的匿名故事；'
         '隐藏帖子流，全屏沉浸式翻页阅读。',
-        '**发现 (discover)** / **关注 (following)** / **热门 (trending)** / **附近 (nearby)**：'
+        '发现 (discover) / 关注 (following) / 热门 (trending) / 附近 (nearby)：'
         '右侧 360px 抽屉式帖子流；'
         '帖子卡片显示文字 + 图片缩略 + 点赞 / 评论数；'
         '所有用户身份脱敏，仅显示「彼岸来客」+ 随机星辰图标。',
-        '**心理援助资源**：固定置顶的「在你身边的力量」面板，'
+        '心理援助资源：固定置顶的「在你身边的力量」面板，'
         '汇集 24 小时心理援助热线、城市哀伤辅导团体、丧亲互助公益组织联络方式。',
-        '**社区治理**：「不打扰」原则贯穿全模块；'
+        '社区治理：「不打扰」原则贯穿全模块；'
         '任何形式的导流、广告、营销内容自动识别下架；'
         '严禁直接互动按钮（私信 / 关注），仅保留共鸣按钮（不可撤销）。',
     ])
@@ -1351,17 +1351,17 @@ def build_chapter_4(doc):
         '通过同心壳层（时代）× 角度扇区（影响力维度）的二维坐标网组织 60+ 位历史人物锚点。'
         '该模块对应产品设计需求文档中「构建沉浸式文明记忆宇宙」的愿景。')
     add_bullets(doc, [
-        '**自由漫游**：滚轮缩放 / 鼠标拖拽平移 / 点击星点查看人物详情，'
+        '自由漫游：滚轮缩放 / 鼠标拖拽平移 / 点击星点查看人物详情，'
         '操作逻辑与 Google Earth / 诗云 (诗集星图) 一致，零学习成本。',
-        '**记忆光线**：共享 related 标签的人物两两连线，'
+        '记忆光线：共享 related 标签的人物两两连线，'
         '鼠标悬停时高亮该人物全部关联，构建「文明纽带可视化」效果。',
-        '**记忆低语**：点击虚空触发匿名独白升起并淡出，'
+        '记忆低语：点击虚空触发匿名独白升起并淡出，'
         '内容池来自社区匿名用户的真实留言（脱敏处理），'
         '让用户感受到「我并非孤身一人在哀悼」。',
-        '**收藏记忆**：用户可将受触动的历史人物加入「我的记忆星座」'
+        '收藏记忆：用户可将受触动的历史人物加入「我的记忆星座」'
         '（写入 localStorage 与云端账户），'
         '与「彼岸足迹 → 阅读笔记」共享数据底座。',
-        '**跨星系联动**：人物详情卡片底部的 related 标签可直接跳转到对应时代 / 影响力子星系，'
+        '跨星系联动：人物详情卡片底部的 related 标签可直接跳转到对应时代 / 影响力子星系，'
         '形成无限漫游网络。',
     ])
 
@@ -1416,7 +1416,7 @@ def build_chapter_4(doc):
         headers=['设计维度', '规范说明', '技术实现'],
         rows=[
             ['色彩系统',
-             '主色深空蓝 #03060e；辅助色霓虹青 #00E5FF；点缀色暖紫 #B388FF；'
+             '主色深空蓝 #03060e；辅助色霓虹青 #6B8CAE；点缀色暖紫 #B388FF；'
              '严禁使用鲜红、亮黄等高刺激色',
              'CSS 自定义属性 + Tailwind 主题扩展'],
             ['玻璃拟态',
@@ -1461,7 +1461,7 @@ def add_screenshot_placeholder(doc, title, url, description):
         b = OxmlElement(f'w:{side}')
         b.set(qn('w:val'), 'dashed')
         b.set(qn('w:sz'), '8')
-        b.set(qn('w:color'), '1E88E5')
+        b.set(qn('w:color'), '4A6FA5')
         tcBorders.append(b)
     tcPr.append(tcBorders)
     # 占位内容
@@ -1733,7 +1733,7 @@ def build_chapter_6(doc, img_token=None):
     add_heading(doc, '6.6.2  Token 充值包阶梯', level=3)
     add_para(doc,
         '为照顾不同消费习惯，五类 Token 各设三档充值包，'
-        '充值越多单价越低，但**无任何上限或强制最低充值额**，'
+        '充值越多单价越低，但无任何上限或强制最低充值额，'
         '允许用户从 ¥6 起步尝试。')
     add_table(doc,
         headers=['Token 类型', '基础包', '标准包', '尊享包'],
@@ -2324,17 +2324,17 @@ def chart_age_distribution():
     ages   = ['18 岁\n以下', '18–24 岁', '25–34 岁', '35–44 岁', '45–54 岁', '55 岁\n以上']
     counts = [5, 87, 89, 56, 41, 28]
     pcts   = [c/sum(counts)*100 for c in counts]
-    cols = ['#9CA3AF', '#3FA9F5', '#1E88E5', '#0B5BC4', '#5A6B89', '#374D7A']
+    cols = ['#A6ADB8', '#6B8CAE', '#4A6FA5', '#0B5BC4', '#7D8CA3', '#374D7A']
     fig, ax = plt.subplots(figsize=(8.6, 4.2), dpi=160)
-    bars = ax.bar(ages, counts, color=cols, edgecolor='#0B2A5B', linewidth=1.2, width=0.65)
+    bars = ax.bar(ages, counts, color=cols, edgecolor='#1F3A5F', linewidth=1.2, width=0.65)
     for b, p in zip(bars, pcts):
         h = b.get_height()
         ax.text(b.get_x()+b.get_width()/2, h+1.5, f'{int(h)}\n({p:.1f}%)',
-                ha='center', va='bottom', fontsize=9.2, color='#0B2A5B', weight='bold')
+                ha='center', va='bottom', fontsize=9.2, color='#1F3A5F', weight='bold')
     ax.set_ylim(0, max(counts)*1.22)
-    ax.set_ylabel('样本数 (人)', fontsize=10, color='#0B2A5B')
+    ax.set_ylabel('样本数 (人)', fontsize=10, color='#1F3A5F')
     ax.set_title('受访样本年龄结构分布   18–35 岁青年群体占比 59.1%   (Q2  N=306)',
-                 fontsize=11, color='#0B2A5B', pad=12, weight='bold')
+                 fontsize=11, color='#1F3A5F', pad=12, weight='bold')
     ax.grid(axis='y', linestyle='--', alpha=0.35)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -2349,17 +2349,17 @@ def chart_payment_pref():
     labels = ['按次/按内容\n付费 36.3%', '一次性买断\n永久 25.8%',
               '按功能模块\n付费 16.0%', '其他 / 不接受\n10.5%', '长期订阅\n11.4%']
     vals = [36.3, 25.8, 16.0, 10.5, 11.4]
-    cols = ['#1E88E5', '#1FAE6F', '#00BFA6', '#9CA3AF', '#E0395E']
+    cols = ['#4A6FA5', '#6A9B7D', '#6A9B7D', '#A6ADB8', '#B0556C']
     fig, ax = plt.subplots(figsize=(8.0, 4.4), dpi=160)
     wedges, _ = ax.pie(vals, colors=cols, startangle=140,
                        wedgeprops=dict(width=0.46, edgecolor='white', linewidth=2),
                        labels=labels, labeldistance=1.14,
-                       textprops=dict(fontsize=9.5, color='#0B2A5B', weight='bold'))
+                       textprops=dict(fontsize=9.5, color='#1F3A5F', weight='bold'))
     ax.text(0, 0.12, 'Token /\n一次性\n买断', ha='center', fontsize=12,
-            color='#0B2A5B', weight='bold')
-    ax.text(0, -0.18, '78.1%', ha='center', fontsize=15, color='#1FAE6F', weight='bold')
+            color='#1F3A5F', weight='bold')
+    ax.text(0, -0.18, '78.1%', ha='center', fontsize=15, color='#6A9B7D', weight='bold')
     ax.set_title('用户付费模式偏好分布   高接受度模式合计 78.1%   (Q26  N=306)',
-                 fontsize=11, color='#0B2A5B', pad=12, weight='bold')
+                 fontsize=11, color='#1F3A5F', pad=12, weight='bold')
     p = os.path.join(ASSET_DIR, 'payment_pref.png')
     fig.savefig(p, dpi=180, bbox_inches='tight', facecolor='white')
     plt.close(fig)
@@ -2371,17 +2371,18 @@ def chart_function_likert():
              '数字纪念藏品', '虚拟纪念空间', '纪念日提醒', '语音提醒',
              'AI 对话陪伴', '家庭情感连接', '全息 / 投影']
     rates = [72.5, 67.6, 65.7, 62.4, 59.5, 57.5, 55.9, 52.6, 50.3, 48.7, 39.2]
-    cmap = plt.get_cmap('Blues')
-    cols = [cmap(0.45 + 0.5*i/len(funcs)) for i in range(len(funcs))]
+    # 自定义低饱和度蓝调（替代过亮的 Blues colormap）
+    pal = ['#B0BCD0', '#94A6C0', '#7991B0', '#607BA0', '#4A6890', '#3A5680', '#2E4870', '#243D60', '#1B3050', '#142540', '#0E1B30']
+    cols = [pal[i % len(pal)] for i in range(len(funcs))]
     fig, ax = plt.subplots(figsize=(9.0, 5.0), dpi=160)
-    bars = ax.barh(funcs[::-1], rates[::-1], color=cols[::-1], edgecolor='#0B2A5B', linewidth=0.9)
+    bars = ax.barh(funcs[::-1], rates[::-1], color=cols[::-1], edgecolor='#1F3A5F', linewidth=0.9)
     for b in bars:
         ax.text(b.get_width()+0.8, b.get_y()+b.get_height()/2,
-                f'{b.get_width():.1f}%', va='center', fontsize=9.2, color='#0B2A5B', weight='bold')
+                f'{b.get_width():.1f}%', va='center', fontsize=9.2, color='#1F3A5F', weight='bold')
     ax.set_xlim(0, 85)
-    ax.set_xlabel('高意愿率 (评分 ≥ 4 分占比 %)', fontsize=10, color='#0B2A5B')
+    ax.set_xlabel('高意愿率 (评分 ≥ 4 分占比 %)', fontsize=10, color='#1F3A5F')
     ax.set_title('11 项核心功能对使用意愿的提升度排名   (Q23  Likert-5  N=306)',
-                 fontsize=11, color='#0B2A5B', pad=12, weight='bold')
+                 fontsize=11, color='#1F3A5F', pad=12, weight='bold')
     ax.grid(axis='x', linestyle='--', alpha=0.32)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -2402,17 +2403,18 @@ def chart_ethics_concerns():
               '数据二次倒卖',
               '强制公开使用记录']
     pct    = [23.9, 23.9, 15.0, 12.1, 9.5, 7.8, 5.2, 2.6]
-    cmap   = plt.get_cmap('Reds')
-    cols   = [cmap(0.85 - 0.06*i) for i in range(len(items))]
+    # 暗玫红渐变（替代过亮的 Reds colormap）
+    pal = ['#9B4458', '#8E3F50', '#823B48', '#763742', '#69323C', '#5D2E36', '#502A30', '#44262A', '#382124']
+    cols = [pal[i % len(pal)] for i in range(len(items))]
     fig, ax = plt.subplots(figsize=(8.6, 4.6), dpi=160)
     bars = ax.barh(items[::-1], pct[::-1], color=cols[::-1], edgecolor='#7B1B26', linewidth=0.9)
     for b in bars:
         ax.text(b.get_width()+0.3, b.get_y()+b.get_height()/2,
-                f'{b.get_width():.1f}%', va='center', fontsize=9.2, color='#0B2A5B', weight='bold')
+                f'{b.get_width():.1f}%', va='center', fontsize=9.2, color='#1F3A5F', weight='bold')
     ax.set_xlim(0, 30)
-    ax.set_xlabel('用户选择占比 (%)', fontsize=10, color='#0B2A5B')
+    ax.set_xlabel('用户选择占比 (%)', fontsize=10, color='#1F3A5F')
     ax.set_title('产品"不可触碰"的伦理底线 Top 8   (Q22  N=306)',
-                 fontsize=11, color='#0B2A5B', pad=12, weight='bold')
+                 fontsize=11, color='#1F3A5F', pad=12, weight='bold')
     ax.grid(axis='x', linestyle='--', alpha=0.32)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -2426,16 +2428,16 @@ def chart_persona_distribution():
     """三类用户群体规模占比"""
     labels = ['理性接受型\n36.6% · 112 人', '情感依赖型\n33.0% · 101 人', '伦理顾虑型\n30.4% · 93 人']
     vals = [36.6, 33.0, 30.4]
-    cols = ['#1E88E5', '#E0395E', '#F4A11A']
+    cols = ['#4A6FA5', '#B0556C', '#C99767']
     fig, ax = plt.subplots(figsize=(7.6, 4.0), dpi=160)
     wedges, _ = ax.pie(vals, colors=cols, startangle=90,
                        wedgeprops=dict(width=0.5, edgecolor='white', linewidth=2),
                        labels=labels, labeldistance=1.18,
-                       textprops=dict(fontsize=10, color='#0B2A5B', weight='bold'))
-    ax.text(0, 0.05, 'K-Means', ha='center', fontsize=11, color='#0B2A5B', weight='bold')
-    ax.text(0, -0.18, 'k = 3', ha='center', fontsize=14, color='#0B2A5B', weight='bold')
+                       textprops=dict(fontsize=10, color='#1F3A5F', weight='bold'))
+    ax.text(0, 0.05, 'K-Means', ha='center', fontsize=11, color='#1F3A5F', weight='bold')
+    ax.text(0, -0.18, 'k = 3', ha='center', fontsize=14, color='#1F3A5F', weight='bold')
     ax.set_title('三类用户群体规模占比 (K-Means 聚类  k=3  肘部法则)',
-                 fontsize=11, color='#0B2A5B', pad=14, weight='bold')
+                 fontsize=11, color='#1F3A5F', pad=14, weight='bold')
     p = os.path.join(ASSET_DIR, 'persona_pie.png')
     fig.savefig(p, dpi=180, bbox_inches='tight', facecolor='white')
     plt.close(fig)
@@ -2447,19 +2449,19 @@ def chart_intent_funnel():
               '舒适价格区间 (¥100-500)', '一次性买断 / Token 偏好']
     nums   = [194, 121, 138, 116, 239]
     pcts   = [v/306*100 for v in nums]
-    cols   = ['#1FAE6F', '#1E88E5', '#00BFA6', '#F4A11A', '#0B2A5B']
+    cols   = ['#6A9B7D', '#4A6FA5', '#6A9B7D', '#C99767', '#1F3A5F']
     fig, ax = plt.subplots(figsize=(9.0, 4.4), dpi=160)
     y = np.arange(len(stages))[::-1]
     for i, (s, n, p, c) in enumerate(zip(stages, nums, pcts, cols)):
-        ax.barh(y[i], n, height=0.62, color=c, edgecolor='#0B2A5B', linewidth=1.0)
+        ax.barh(y[i], n, height=0.62, color=c, edgecolor='#1F3A5F', linewidth=1.0)
         ax.text(n+5, y[i], f'  {n} 人  ({p:.1f}%)', va='center', fontsize=10,
-                color='#0B2A5B', weight='bold')
+                color='#1F3A5F', weight='bold')
     ax.set_yticks(y)
-    ax.set_yticklabels(stages, fontsize=10, color='#0B2A5B')
+    ax.set_yticklabels(stages, fontsize=10, color='#1F3A5F')
     ax.set_xlim(0, 306*1.18)
-    ax.set_xlabel('样本数 / 占比', fontsize=10, color='#0B2A5B')
+    ax.set_xlabel('样本数 / 占比', fontsize=10, color='#1F3A5F')
     ax.set_title('用户态度 → 尝试 → 付费转化漏斗   (基于 N=306 真实问卷数据)',
-                 fontsize=11, color='#0B2A5B', pad=12, weight='bold')
+                 fontsize=11, color='#1F3A5F', pad=12, weight='bold')
     ax.grid(axis='x', linestyle='--', alpha=0.3)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -2475,18 +2477,19 @@ def chart_token_usage():
               '视频形象生成', '老照片动态化', '回忆视频合成',
               '高清模型训练', '私密纪念馆 / 月']
     costs = [1, 3, 80, 200, 30, 60, 500, 50]
-    cmap = plt.get_cmap('YlOrBr')
-    cols = [cmap(0.30 + i*0.06) for i in range(len(scenes))]
+    # 大地色渐变（替代过亮的 YlOrBr colormap）
+    pal = ['#B89878', '#A98869', '#9A795B', '#8B6A4E', '#7C5C42', '#6E4E37', '#60412D', '#523524']
+    cols = [pal[i % len(pal)] for i in range(len(scenes))]
     fig, ax = plt.subplots(figsize=(9.0, 4.6), dpi=160)
-    bars = ax.barh(scenes[::-1], costs[::-1], color=cols[::-1], edgecolor='#7B5B16', linewidth=0.9)
+    bars = ax.barh(scenes[::-1], costs[::-1], color=cols[::-1], edgecolor='#7D6650', linewidth=0.9)
     for b in bars:
         v = int(b.get_width())
         ax.text(b.get_width()+8, b.get_y()+b.get_height()/2,
-                f'{v}  Token', va='center', fontsize=9.4, color='#0B2A5B', weight='bold')
+                f'{v}  Token', va='center', fontsize=9.4, color='#1F3A5F', weight='bold')
     ax.set_xlim(0, 580)
-    ax.set_xlabel('单次消耗 Token 数', fontsize=10, color='#0B2A5B')
+    ax.set_xlabel('单次消耗 Token 数', fontsize=10, color='#1F3A5F')
     ax.set_title('LifeBeyond  Token 经济：核心场景标准消耗一览表',
-                 fontsize=11, color='#0B2A5B', pad=12, weight='bold')
+                 fontsize=11, color='#1F3A5F', pad=12, weight='bold')
     ax.grid(axis='x', linestyle='--', alpha=0.32)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
