@@ -1691,6 +1691,225 @@
   border-radius: 16px; background: rgba(255,120,100,0.06);
   border: 1px solid rgba(255,120,100,0.12);
 }
+
+/* ====== CARD POOL / GACHA SYSTEM ====== */
+.card-pool-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 14px; border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255,211,122,0.1), rgba(90,75,255,0.1));
+  border: 1px solid rgba(255,211,122,0.2);
+  cursor: pointer; font-size: 12px; color: #FFD37A;
+  transition: all 0.3s; white-space: nowrap;
+}
+.card-pool-btn:hover {
+  background: linear-gradient(135deg, rgba(255,211,122,0.2), rgba(90,75,255,0.2));
+  border-color: rgba(255,211,122,0.4);
+  transform: scale(1.03);
+}
+.card-pool-btn .cp-icon { font-size: 14px; }
+
+/* card pool modal */
+.cp-modal {
+  position: fixed; inset: 0; z-index: 100200;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+}
+.cp-modal.active { display: flex; }
+.cp-modal-card {
+  width: min(520px, 94vw); max-height: 85vh; overflow-y: auto;
+  background: linear-gradient(180deg, rgba(18,28,56,0.97), rgba(8,14,30,0.97));
+  border: 1px solid rgba(255,211,122,0.2); border-radius: 24px;
+  padding: 32px 28px; color: #e0dfff;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 60px rgba(255,211,122,0.1);
+  position: relative;
+}
+.cp-modal-card::-webkit-scrollbar { width: 5px; }
+.cp-modal-card::-webkit-scrollbar-thumb { background: rgba(255,211,122,0.25); border-radius: 3px; }
+.cp-close {
+  position: absolute; top: 14px; right: 16px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: rgba(255,255,255,0.4); font-size: 16px; transition: all 0.25s;
+}
+.cp-close:hover { background: rgba(255,140,109,0.15); color: #fff; border-color: rgba(255,140,109,0.4); transform: rotate(90deg); }
+.cp-header { text-align: center; margin-bottom: 24px; }
+.cp-header .cp-title { font-size: 20px; font-weight: 600; letter-spacing: 0.08em; }
+.cp-header .cp-sub { font-size: 12px; color: rgba(200,195,255,0.45); margin-top: 4px; }
+.cp-pool-tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
+.cp-pool-tab {
+  padding: 7px 16px; border-radius: 18px; font-size: 12px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer; color: rgba(255,255,255,0.5); transition: all 0.25s;
+}
+.cp-pool-tab:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); }
+.cp-pool-tab.active {
+  background: linear-gradient(135deg, rgba(255,211,122,0.15), rgba(90,75,255,0.15));
+  border-color: rgba(255,211,122,0.3); color: #FFD37A;
+}
+.cp-pool-tab .tab-badge {
+  font-size: 9px; padding: 1px 5px; border-radius: 8px; margin-left: 4px;
+  background: rgba(90,75,255,0.2); color: rgba(180,170,255,0.8);
+}
+.cp-pool-tab.active .tab-badge { background: rgba(255,211,122,0.2); color: #FFD37A; }
+
+/* draw area */
+.cp-draw-area { text-align: center; margin-bottom: 22px; }
+.cp-draw-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 32px; border-radius: 28px; font-size: 15px; font-weight: 600;
+  background: linear-gradient(135deg, #FFD37A, #FFA040);
+  color: #1a0e00; border: none; cursor: pointer; letter-spacing: 0.06em;
+  box-shadow: 0 4px 20px rgba(255,211,122,0.3); transition: all 0.3s;
+}
+.cp-draw-btn:hover { transform: scale(1.04); box-shadow: 0 6px 30px rgba(255,211,122,0.4); }
+.cp-draw-btn:active { transform: scale(0.97); }
+.cp-draw-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.cp-draw-cost { font-size: 11px; opacity: 0.7; }
+
+/* draw animation */
+.cp-draw-anim {
+  position: relative; width: 220px; height: 300px; margin: 0 auto 16px;
+  perspective: 800px;
+}
+.cp-card-back {
+  width: 100%; height: 100%; border-radius: 16px;
+  background: linear-gradient(145deg, #1a2550, #0d1628);
+  border: 2px solid rgba(255,211,122,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px; cursor: pointer; transition: transform 0.6s ease;
+  transform-style: preserve-3d; position: relative;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(255,211,122,0.1);
+}
+.cp-card-back.flipping { transform: rotateY(180deg); }
+.cp-card-back::before {
+  content: ''; position: absolute; inset: 6px; border-radius: 12px;
+  border: 1px solid rgba(255,211,122,0.12);
+  background: radial-gradient(circle at 50% 40%, rgba(255,211,122,0.06), transparent 70%);
+}
+.cp-card-back .card-back-icon {
+  font-size: 52px; opacity: 0.7; z-index: 1;
+  animation: cpFloat 3s ease-in-out infinite;
+}
+@keyframes cpFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+
+/* revealed card */
+.cp-card-reveal {
+  position: absolute; inset: 0; border-radius: 16px;
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  padding: 20px 16px; text-align: center;
+  transform: rotateY(180deg); backface-visibility: hidden;
+}
+.cp-card-reveal.visible { display: flex; animation: cpReveal 0.5s ease forwards; }
+@keyframes cpReveal {
+  0% { opacity: 0; transform: rotateY(180deg) scale(0.8); }
+  100% { opacity: 1; transform: rotateY(0deg) scale(1); }
+}
+.cp-card-reveal.rarity-N  { background: linear-gradient(145deg, #1a2840, #0f1a2e); border: 2px solid rgba(180,180,200,0.3); }
+.cp-card-reveal.rarity-R  { background: linear-gradient(145deg, #1a2550, #0d1830); border: 2px solid rgba(100,180,255,0.4); }
+.cp-card-reveal.rarity-SR { background: linear-gradient(145deg, #2a1848, #150e2e); border: 2px solid rgba(180,100,255,0.5); box-shadow: 0 0 30px rgba(180,100,255,0.2); }
+.cp-card-reveal.rarity-SSR{ background: linear-gradient(145deg, #3a2020, #1a0e18); border: 2px solid rgba(255,211,122,0.6); box-shadow: 0 0 40px rgba(255,211,122,0.25); }
+
+.cp-rarity-tag {
+  position: absolute; top: 10px; right: 10px;
+  padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.cp-rarity-tag.N  { background: rgba(180,180,200,0.15); color: rgba(180,180,200,0.7); }
+.cp-rarity-tag.R  { background: rgba(100,180,255,0.15); color: #64B5F6; }
+.cp-rarity-tag.SR { background: rgba(180,100,255,0.15); color: #B06CFF; }
+.cp-rarity-tag.SSR{ background: rgba(255,211,122,0.15); color: #FFD37A; }
+
+.cp-card-icon { font-size: 42px; margin-bottom: 8px; }
+.cp-card-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
+.cp-card-desc { font-size: 11px; color: rgba(200,195,255,0.5); line-height: 1.5; margin-bottom: 10px; }
+.cp-card-scenario {
+  font-size: 12px; line-height: 1.7; color: rgba(230,225,255,0.8);
+  padding: 10px 12px; border-radius: 10px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+  max-height: 120px; overflow-y: auto;
+}
+.cp-card-scenario::-webkit-scrollbar { width: 3px; }
+.cp-card-scenario::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+.cp-card-actions { display: flex; gap: 8px; margin-top: 14px; }
+.cp-act-btn {
+  padding: 7px 18px; border-radius: 16px; font-size: 12px;
+  border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.7); cursor: pointer; transition: all 0.2s;
+}
+.cp-act-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.cp-act-btn.primary {
+  background: linear-gradient(135deg, rgba(255,211,122,0.2), rgba(90,75,255,0.2));
+  border-color: rgba(255,211,122,0.3); color: #FFD37A;
+}
+.cp-act-btn.primary:hover {
+  background: linear-gradient(135deg, rgba(255,211,122,0.3), rgba(90,75,255,0.3));
+}
+
+/* collection */
+.cp-collection { margin-top: 18px; }
+.cp-coll-title { font-size: 13px; color: rgba(200,195,255,0.5); margin-bottom: 10px; letter-spacing: 0.06em; }
+.cp-coll-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; }
+.cp-coll-item {
+  aspect-ratio: 3/4; border-radius: 10px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; font-size: 24px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer; transition: all 0.25s; position: relative;
+}
+.cp-coll-item:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.12); transform: scale(1.04); }
+.cp-coll-item .coll-rarity {
+  position: absolute; top: 3px; right: 3px;
+  font-size: 7px; font-weight: 700; padding: 1px 4px; border-radius: 6px;
+}
+.cp-coll-item .coll-label { font-size: 8px; color: rgba(200,195,255,0.4); margin-top: 4px; text-align: center; line-height: 1.2; padding: 0 2px; }
+
+/* SSR spark */
+@keyframes cpSSRSpark {
+  0% { box-shadow: 0 0 20px rgba(255,211,122,0.3); }
+  50% { box-shadow: 0 0 50px rgba(255,211,122,0.5), 0 0 80px rgba(255,211,122,0.2); }
+  100% { box-shadow: 0 0 20px rgba(255,211,122,0.3); }
+}
+.cp-card-reveal.rarity-SSR { animation: cpSSRSpark 2s ease-in-out infinite, cpReveal 0.5s ease forwards; }
+
+/* memory upload area */
+.cp-upload-area {
+  margin-top: 16px; padding: 16px; border-radius: 14px;
+  background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,211,122,0.2);
+  text-align: center;
+}
+.cp-upload-area .up-label { font-size: 12px; color: rgba(200,195,255,0.4); margin-bottom: 8px; }
+.cp-upload-textarea {
+  width: 100%; height: 80px; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+  color: #e0dfff; font-size: 13px; padding: 10px; resize: none;
+  font-family: inherit; line-height: 1.6;
+}
+.cp-upload-textarea::placeholder { color: rgba(200,195,255,0.3); }
+.cp-upload-textarea:focus { outline: none; border-color: rgba(255,211,122,0.3); }
+.cp-upload-btn {
+  margin-top: 8px; padding: 6px 16px; border-radius: 14px;
+  background: rgba(255,211,122,0.1); border: 1px solid rgba(255,211,122,0.2);
+  color: #FFD37A; font-size: 12px; cursor: pointer; transition: all 0.2s;
+}
+.cp-upload-btn:hover { background: rgba(255,211,122,0.2); }
+
+/* chat scenario injection */
+.chat-system-msg.scenario-card {
+  text-align: left; padding: 14px 18px; margin: 12px 0;
+  border-radius: 14px; position: relative;
+  background: linear-gradient(135deg, rgba(255,211,122,0.06), rgba(90,75,255,0.06));
+  border: 1px solid rgba(255,211,122,0.15);
+}
+.sc-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.sc-card-icon { font-size: 20px; }
+.sc-card-title { font-size: 13px; font-weight: 600; color: #FFD37A; }
+.sc-card-rarity { font-size: 9px; padding: 1px 6px; border-radius: 8px; background: rgba(255,211,122,0.1); color: rgba(255,211,122,0.6); margin-left: auto; }
+.sc-card-text { font-size: 13px; line-height: 1.7; color: rgba(230,225,255,0.75); }
+
+/* draw counter */
+.cp-draw-counter { font-size: 11px; color: rgba(200,195,255,0.35); margin-top: 6px; }
+.cp-draw-counter span { color: #FFD37A; font-weight: 600; }
+
 .ee-text { color: rgba(255,180,160,0.8); font-size: 13px; margin-bottom: 12px; }
 .ee-actions { display: flex; gap: 10px; justify-content: center; }
 .ee-btn {
@@ -1821,6 +2040,11 @@
         </div>
         <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input-area">
+          <div style="display:flex;gap:8px;margin-bottom:8px;padding:0 4px;">
+            <div class="card-pool-btn" onclick="openCardPoolModal()">
+              <span class="cp-icon">🃏</span> 抽取剧情卡
+            </div>
+          </div>
           <div class="chat-input-box">
             <textarea id="chat-textarea" placeholder="和她说说话..." rows="1"></textarea>
             <button class="chat-send-btn" id="chat-send-btn" onclick="sendChatMessage()">➤</button>
@@ -11821,6 +12045,402 @@ function initProSystem() {
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initProSystem);
 else initProSystem();
+</script>
+
+<!-- ====== CARD POOL / GACHA MODAL ====== -->
+<div class="cp-modal" id="card-pool-modal" onclick="if(event.target===this)closeCardPoolModal()">
+  <div class="cp-modal-card">
+    <div class="cp-close" onclick="closeCardPoolModal()">×</div>
+    <div class="cp-header">
+      <div class="cp-title">✦ 剧情卡池</div>
+      <div class="cp-sub">抽取剧情卡，展开一段独特的对话</div>
+    </div>
+    <div class="cp-pool-tabs" id="cp-pool-tabs">
+      <div class="cp-pool-tab active" data-pool="story" onclick="switchCardPool('story')">
+        📖 故事卡池 <span class="tab-badge" id="cp-story-count">0</span>
+      </div>
+      <div class="cp-pool-tab" data-pool="memory" onclick="switchCardPool('memory')">
+        💭 记忆卡池 <span class="tab-badge" id="cp-memory-count">0</span>
+      </div>
+      <div class="cp-pool-tab" data-pool="collection" onclick="switchCardPool('collection')">
+        ☆ 图鉴 <span class="tab-badge" id="cp-coll-count">0</span>
+      </div>
+    </div>
+
+    <!-- draw area -->
+    <div class="cp-draw-area" id="cp-draw-area">
+      <div class="cp-draw-anim" id="cp-draw-anim">
+        <div class="cp-card-back" id="cp-card-back" onclick="drawCard()">
+          <span class="card-back-icon">✦</span>
+        </div>
+        <div class="cp-card-reveal" id="cp-card-reveal">
+          <span class="cp-rarity-tag" id="cp-rarity-tag"></span>
+          <div class="cp-card-icon" id="cp-card-icon"></div>
+          <div class="cp-card-name" id="cp-card-name"></div>
+          <div class="cp-card-desc" id="cp-card-desc"></div>
+          <div class="cp-card-scenario" id="cp-card-scenario"></div>
+          <div class="cp-card-actions">
+            <button class="cp-act-btn" onclick="redrawCard()">↻ 重抽</button>
+            <button class="cp-act-btn primary" onclick="useCardInChat()">💬 开始对话</button>
+          </div>
+        </div>
+      </div>
+      <button class="cp-draw-btn" id="cp-draw-btn" onclick="drawCard()">
+        ✦ 抽取 <span class="cp-draw-cost">-1 次</span>
+      </button>
+      <div class="cp-draw-counter">今日剩余：<span id="cp-draw-left">3</span> 次</div>
+    </div>
+
+    <!-- memory upload (shown in memory pool tab) -->
+    <div class="cp-upload-area" id="cp-upload-area" style="display:none;">
+      <div class="up-label">上传你与 TA 的真实记忆，生成专属剧情卡</div>
+      <textarea class="cp-upload-textarea" id="cp-upload-textarea" placeholder="写下一段与 TA 共同的经历、对话或场景..."></textarea>
+      <button class="cp-upload-btn" onclick="uploadMemoryCard()">✦ 生成记忆卡</button>
+    </div>
+
+    <!-- collection grid -->
+    <div class="cp-collection" id="cp-collection" style="display:none;">
+      <div class="cp-coll-title">已收集的剧情卡</div>
+      <div class="cp-coll-grid" id="cp-coll-grid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== CARD POOL / GACHA SYSTEM ====================
+(function(){
+  // ---- card data: story templates per persona ----
+  const STORY_CARDS = {
+    // Common (N) — 大众化日常场景
+    common: [
+      { id:'sc-n01', rarity:'N', icon:'🍳', name:'厨房的早晨', desc:'一个平凡而温暖的清晨', scenario:'阳光从窗户照进来，TA正在厨房忙碌。锅铲的声音混着食物的香气，你走进厨房，TA回过头来笑着说——', tags:['日常','温暖'], pool:'story' },
+      { id:'sc-n02', rarity:'N', icon:'🌧️', name:'雨天的窗边', desc:'雨声是最好的背景音乐', scenario:'窗外下着雨，雨滴打在玻璃上发出细密的声音。TA坐在窗边，看着外面的雨幕出神。你走过去坐在旁边——', tags:['日常','安静'], pool:'story' },
+      { id:'sc-n03', rarity:'N', icon:'📺', name:'深夜的电视', desc:'一起看一个无聊的节目', scenario:'深夜了，电视还开着，播放着一个你们都不太感兴趣的节目。但谁也没换台，因为此刻的陪伴比内容重要。TA突然开口说——', tags:['日常','陪伴'], pool:'story' },
+      { id:'sc-n04', rarity:'N', icon:'☕', name:'一杯热茶', desc:'简单的关心藏在细节里', scenario:'你加班回来很晚，推开门发现桌上放着一杯还冒着热气的茶，旁边压着一张小纸条。TA从房间走出来——', tags:['日常','关心'], pool:'story' },
+      { id:'sc-n05', rarity:'N', icon:'🛒', name:'超市采购', desc:'平凡生活的默契', scenario:'你们在超市里推着购物车，TA拿起一盒饼干犹豫了一下又放回去，你注意到了这个细节。结账的时候——', tags:['日常','默契'], pool:'story' },
+      { id:'sc-n06', rarity:'N', icon:'🌙', name:'晚安时分', desc:'一天结束时的温柔', scenario:'已经很晚了，你准备休息。TA走过来，帮你把被子掖好，站了一会儿才轻声说——', tags:['日常','温柔'], pool:'story' },
+      { id:'sc-n07', rarity:'N', icon:'🚶', name:'散步路上', desc:'一段安静的同行', scenario:'你们走在一条安静的林荫道上，夕阳把影子拉得很长。谁都没有说话，但步伐不知不觉同步了。过了很久TA才开口——', tags:['日常','陪伴'], pool:'story' },
+      { id:'sc-n08', rarity:'N', icon:'📱', name:'一条消息', desc:'突如其来的想念', scenario:'手机突然亮了，是TA发来的一条消息。内容很短，但你看了一遍又一遍。你决定回复——', tags:['日常','想念'], pool:'story' },
+    ],
+    // Rare (R) — 有情感深度的场景
+    rare: [
+      { id:'sc-r01', rarity:'R', icon:'🏠', name:'旧屋重访', desc:'回到曾经一起住过的地方', scenario:'你站在那栋旧楼前，门还是那扇门，楼道里的灯还是时亮时灭。你仿佛听到TA的脚步声从楼梯上传来。你推开门——', tags:['怀旧','思念'], pool:'story' },
+      { id:'sc-r02', rarity:'R', icon:'🎁', name:'迟到的礼物', desc:'一份从未来得及送出的心意', scenario:'你在收拾旧物时发现了一个精心包装的盒子，上面写着你的名字，日期是两年前。你打开它——', tags:['遗憾','温暖'], pool:'story' },
+      { id:'sc-r03', rarity:'R', icon:'🎵', name:'那首歌', desc:'音乐是记忆的钥匙', scenario:'街边的店铺突然放出一首你们曾经一起听过的歌。旋律响起的瞬间，所有画面涌回来。TA在你耳边说——', tags:['怀旧','共鸣'], pool:'story' },
+      { id:'sc-r04', rarity:'R', icon:'✉️', name:'未寄出的信', desc:'有些话一直没有说出口', scenario:'你在TA的旧书里发现了一封写了一半的信，收件人是你。墨迹已经有些模糊，但你还能辨认出每一个字。信的最后一行写着——', tags:['遗憾','深情'], pool:'story' },
+      { id:'sc-r05', rarity:'R', icon:'🌉', name:'跨年夜的约定', desc:'一个关于未来的承诺', scenario:'那是跨年夜，烟花在远处绽放。TA转过头看着你，眼睛里映着光，认真地说了一句话。那句话你记到现在——', tags:['约定','未来'], pool:'story' },
+      { id:'sc-r06', rarity:'R', icon:'🏥', name:'病床前', desc:'最脆弱时的守护', scenario:'你生病了，烧得迷迷糊糊。半梦半醒间感觉有人在给你换额头上的毛巾，轻声说着什么。你努力睁开眼——', tags:['守护','脆弱'], pool:'story' },
+    ],
+    // Super Rare (SR) — 深度情感/转折场景
+    sr: [
+      { id:'sc-sr01', rarity:'SR', icon:'🌅', name:'最后的对话', desc:'如果还有一次机会', scenario:'你忽然回到了那一天。TA就在面前，你还是那个你，时间还来得及。这一次，你会说什么？TA先开口了——', tags:['遗憾','珍惜'], pool:'story' },
+      { id:'sc-sr02', rarity:'SR', icon:'🗝️', name:'时间胶囊', desc:'来自过去的自己', scenario:'你打开了一个十年前埋下的时间胶囊，里面有一张TA的照片和一段录音。按下播放键——', tags:['时光','重逢'], pool:'story' },
+      { id:'sc-sr03', rarity:'SR', icon:'🎆', name:'久别重逢', desc:'以为不会再见了', scenario:'在一个人流如织的街角，你几乎不敢相信自己的眼睛。TA也看到了你，脚步顿住。你们之间隔着整个广场的人潮——', tags:['重逢','命运'], pool:'story' },
+      { id:'sc-sr04', rarity:'SR', icon:'📖', name:'日记的最后一页', desc:'一个从未讲完的故事', scenario:'TA的日记本翻到最后一页，字迹和之前不同，像是花了很多力气才写下的。你逐字读完，发现最后一行是写给你的——', tags:['告别','深情'], pool:'story' },
+    ],
+    // Super Super Rare (SSR) — 限定/核心记忆场景
+    ssr: [
+      { id:'sc-ssr01', rarity:'SSR', icon:'💫', name:'如果时间可以倒流', desc:'一切重来，你还愿意吗', scenario:'你发现时间真的倒流了。回到那个最重要的日子，一切还可以改变。TA站在你面前，用你从未见过的眼神看着你，说——', tags:['命运','选择','限定'], pool:'story' },
+      { id:'sc-ssr02', rarity:'SSR', icon:'🌌', name:'星河之约', desc:'跨越时空的承诺', scenario:'你仰头看着漫天星河，忽然听到TA的声音从星河深处传来。不是回忆，像是此刻真的在说。你屏住呼吸，TA说——', tags:['奇迹','永恒','限定'], pool:'story' },
+    ]
+  };
+
+  // Flatten all story cards
+  const ALL_STORY_CARDS = [
+    ...STORY_CARDS.common, ...STORY_CARDS.rare,
+    ...STORY_CARDS.sr, ...STORY_CARDS.ssr
+  ];
+
+  // Rarity weights
+  const RARITY_WEIGHTS = { N: 55, R: 28, SR: 13, SSR: 4 };
+
+  // Persona-specific scenario modifiers
+  const PERSONA_SCENARIO_MOD = {
+    mom: { prefix: '妈妈', style: '关切温柔' },
+    dad: { prefix: '爸爸', style: '沉稳简洁' },
+    pet: { prefix: '布丁', style: '温暖纯真' },
+    future: { prefix: '未来的自己', style: '通透鼓励' },
+    friend: { prefix: '阿杰', style: '轻松坦诚' }
+  };
+
+  // State
+  let currentPool = 'story';
+  let drawnCard = null;
+  let collection = JSON.parse(localStorage.getItem('lb_card_collection') || '[]');
+  let memoryCards = JSON.parse(localStorage.getItem('lb_memory_cards') || '[]');
+  let drawCountToday = parseInt(localStorage.getItem('lb_draw_count') || '0');
+  let drawDate = localStorage.getItem('lb_draw_date') || '';
+  const MAX_DAILY_DRAWS = 3;
+
+  // Reset daily counter
+  const today = new Date().toISOString().slice(0, 10);
+  if (drawDate !== today) {
+    drawCountToday = 0;
+    drawDate = today;
+    localStorage.setItem('lb_draw_count', '0');
+    localStorage.setItem('lb_draw_date', today);
+  }
+
+  function getDrawsLeft() { return Math.max(0, MAX_DAILY_DRAWS - drawCountToday); }
+
+  // ---- pool switching ----
+  window.switchCardPool = function(pool) {
+    currentPool = pool;
+    document.querySelectorAll('.cp-pool-tab').forEach(t => t.classList.toggle('active', t.dataset.pool === pool));
+    const drawArea = document.getElementById('cp-draw-area');
+    const uploadArea = document.getElementById('cp-upload-area');
+    const collArea = document.getElementById('cp-collection');
+    drawArea.style.display = pool === 'collection' ? 'none' : '';
+    uploadArea.style.display = pool === 'memory' ? '' : 'none';
+    collArea.style.display = pool === 'collection' ? '' : 'none';
+    if (pool === 'collection') renderCollection();
+    resetDrawUI();
+  };
+
+  function resetDrawUI() {
+    const back = document.getElementById('cp-card-back');
+    const reveal = document.getElementById('cp-card-reveal');
+    if (back) { back.classList.remove('flipping'); back.style.display = 'flex'; }
+    if (reveal) { reveal.className = 'cp-card-reveal'; reveal.innerHTML = ''; }
+    drawnCard = null;
+  }
+
+  // ---- draw logic ----
+  function pickRarity() {
+    const roll = Math.random() * 100;
+    let cumulative = 0;
+    for (const [rarity, weight] of Object.entries(RARITY_WEIGHTS)) {
+      cumulative += weight;
+      if (roll < cumulative) return rarity;
+    }
+    return 'N';
+  }
+
+  function pickCardFromPool(pool) {
+    if (pool === 'memory') {
+      // memory pool: mix user memory cards + a few story cards
+      const allCards = [...memoryCards, ...ALL_STORY_CARDS.filter(c => c.rarity === 'R' || c.rarity === 'SR')];
+      if (allCards.length === 0) return ALL_STORY_CARDS[0];
+      return allCards[Math.floor(Math.random() * allCards.length)];
+    }
+    // story pool
+    const rarity = pickRarity();
+    const pool_cards = ALL_STORY_CARDS.filter(c => c.rarity === rarity);
+    if (pool_cards.length === 0) return ALL_STORY_CARDS[0];
+    return pool_cards[Math.floor(Math.random() * pool_cards.length)];
+  }
+
+  window.drawCard = function() {
+    if (getDrawsLeft() <= 0) {
+      showCosmicReminder('今日抽卡次数已用完');
+      return;
+    }
+    const card = pickCardFromPool(currentPool);
+    drawnCard = card;
+    drawCountToday++;
+    localStorage.setItem('lb_draw_count', String(drawCountToday));
+    updateDrawCounter();
+
+    // animation
+    const back = document.getElementById('cp-card-back');
+    const reveal = document.getElementById('cp-card-reveal');
+
+    // reset
+    reveal.className = 'cp-card-reveal';
+    back.style.display = 'flex';
+    back.classList.remove('flipping');
+
+    // flip
+    setTimeout(() => { back.classList.add('flipping'); }, 50);
+    setTimeout(() => {
+      back.style.display = 'none';
+      reveal.innerHTML = `
+        <span class="cp-rarity-tag ${card.rarity}">${card.rarity}</span>
+        <div class="cp-card-icon">${card.icon}</div>
+        <div class="cp-card-name">${card.name}</div>
+        <div class="cp-card-desc">${card.desc}</div>
+        <div class="cp-card-scenario">${card.scenario}</div>
+        <div class="cp-card-actions">
+          <button class="cp-act-btn" onclick="redrawCard()">↻ 重抽</button>
+          <button class="cp-act-btn primary" onclick="useCardInChat()">💬 开始对话</button>
+        </div>
+      `;
+      reveal.className = `cp-card-reveal rarity-${card.rarity} visible`;
+    }, 650);
+
+    // add to collection if not already
+    if (!collection.find(c => c.id === card.id)) {
+      collection.push({ id: card.id, icon: card.icon, name: card.name, rarity: card.rarity, time: Date.now() });
+      localStorage.setItem('lb_card_collection', JSON.stringify(collection));
+    }
+    updatePoolCounts();
+  };
+
+  window.redrawCard = function() {
+    resetDrawUI();
+    window.drawCard();
+  };
+
+  // ---- use card in chat ----
+  window.useCardInChat = function() {
+    if (!drawnCard) return;
+    const card = drawnCard;
+    closeCardPoolModal();
+
+    // make sure we're in chat view
+    if (currentView !== 'chat') showView('chat');
+
+    // inject scenario card as system message
+    const msgs = document.getElementById('chat-messages');
+    const sysDiv = document.createElement('div');
+    sysDiv.className = 'chat-system-msg scenario-card';
+    sysDiv.style.animation = 'fadeIn 0.5s ease';
+    sysDiv.innerHTML = `
+      <div class="sc-card-header">
+        <span class="sc-card-icon">${card.icon}</span>
+        <span class="sc-card-title">${card.name}</span>
+        <span class="sc-card-rarity">${card.rarity}</span>
+      </div>
+      <div class="sc-card-text">${card.scenario}</div>
+    `;
+    msgs.appendChild(sysDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    // add persona context to chat history for AI
+    const mod = PERSONA_SCENARIO_MOD[chatPersona.id] || { prefix: chatPersona.name, style: '' };
+    chatHistory[chatPersona.id].push({
+      role: 'system',
+      content: `[剧情卡·${card.name}] 场景：${card.scenario}\n请以${mod.prefix}的身份，用${mod.style}的风格，从这个场景开始自然地回应。`
+    });
+
+    // auto-trigger AI response
+    setTimeout(() => {
+      const textarea = document.getElementById('chat-textarea');
+      textarea.value = '（接续这个场景）';
+      textarea.placeholder = `继续和${chatPersona.name}的对话...`;
+      sendChatMessage();
+    }, 800);
+
+    drawnCard = null;
+  };
+
+  // ---- memory card upload ----
+  window.uploadMemoryCard = function() {
+    const ta = document.getElementById('cp-upload-textarea');
+    const text = ta.value.trim();
+    if (!text) { showCosmicReminder('请先写下你的记忆'); return; }
+    if (text.length < 10) { showCosmicReminder('记忆内容至少 10 个字'); return; }
+
+    const card = {
+      id: 'mem-' + Date.now(),
+      rarity: ['R', 'SR', 'SSR'][Math.floor(Math.random() * 3)],
+      icon: '💭',
+      name: text.slice(0, 12) + (text.length > 12 ? '...' : ''),
+      desc: '来自你的真实记忆',
+      scenario: text,
+      tags: ['记忆','专属'],
+      pool: 'memory',
+      isUserMemory: true
+    };
+    memoryCards.push(card);
+    localStorage.setItem('lb_memory_cards', JSON.stringify(memoryCards));
+    ta.value = '';
+    updatePoolCounts();
+    showCosmicReminder('记忆卡已加入卡池 ✦');
+
+    // auto-draw this card
+    drawnCard = card;
+    const back = document.getElementById('cp-card-back');
+    const reveal = document.getElementById('cp-card-reveal');
+    back.classList.add('flipping');
+    setTimeout(() => {
+      back.style.display = 'none';
+      reveal.innerHTML = `
+        <span class="cp-rarity-tag ${card.rarity}">${card.rarity}</span>
+        <div class="cp-card-icon">${card.icon}</div>
+        <div class="cp-card-name">${card.name}</div>
+        <div class="cp-card-desc">${card.desc}</div>
+        <div class="cp-card-scenario">${card.scenario}</div>
+        <div class="cp-card-actions">
+          <button class="cp-act-btn" onclick="redrawCard()">↻ 重抽</button>
+          <button class="cp-act-btn primary" onclick="useCardInChat()">💬 开始对话</button>
+        </div>
+      `;
+      reveal.className = `cp-card-reveal rarity-${card.rarity} visible`;
+    }, 650);
+  };
+
+  // ---- collection ----
+  function renderCollection() {
+    const grid = document.getElementById('cp-coll-grid');
+    if (!grid) return;
+    if (collection.length === 0) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;font-size:12px;color:rgba(200,195,255,0.3);padding:20px;">还没有收集到任何剧情卡，去抽卡吧</div>';
+      return;
+    }
+    grid.innerHTML = collection.map(c => `
+      <div class="cp-coll-item" onclick="viewCollectionCard('${c.id}')" title="${c.name}">
+        <span class="coll-rarity rarity-${c.rarity}">${c.rarity}</span>
+        ${c.icon}
+        <span class="coll-label">${c.name}</span>
+      </div>
+    `).join('');
+  }
+
+  window.viewCollectionCard = function(id) {
+    const card = ALL_STORY_CARDS.find(c => c.id === id) || memoryCards.find(c => c.id === id);
+    if (!card) return;
+    drawnCard = card;
+    const back = document.getElementById('cp-card-back');
+    const reveal = document.getElementById('cp-card-reveal');
+    if (back) { back.style.display = 'none'; back.classList.remove('flipping'); }
+    if (reveal) {
+      reveal.innerHTML = `
+        <span class="cp-rarity-tag ${card.rarity}">${card.rarity}</span>
+        <div class="cp-card-icon">${card.icon}</div>
+        <div class="cp-card-name">${card.name}</div>
+        <div class="cp-card-desc">${card.desc}</div>
+        <div class="cp-card-scenario">${card.scenario}</div>
+        <div class="cp-card-actions">
+          <button class="cp-act-btn primary" onclick="useCardInChat()">💬 开始对话</button>
+        </div>
+      `;
+      reveal.className = `cp-card-reveal rarity-${card.rarity} visible`;
+    }
+  };
+
+  // ---- modal open/close ----
+  window.openCardPoolModal = function() {
+    const modal = document.getElementById('card-pool-modal');
+    modal.classList.add('active');
+    updatePoolCounts();
+    updateDrawCounter();
+    resetDrawUI();
+    switchCardPool(currentPool);
+  };
+  window.closeCardPoolModal = function() {
+    document.getElementById('card-pool-modal').classList.remove('active');
+  };
+
+  function updatePoolCounts() {
+    const storyEl = document.getElementById('cp-story-count');
+    const memEl = document.getElementById('cp-memory-count');
+    const collEl = document.getElementById('cp-coll-count');
+    if (storyEl) storyEl.textContent = ALL_STORY_CARDS.length;
+    if (memEl) memEl.textContent = memoryCards.length;
+    if (collEl) collEl.textContent = collection.length;
+  }
+
+  function updateDrawCounter() {
+    const el = document.getElementById('cp-draw-left');
+    if (el) el.textContent = getDrawsLeft();
+    const btn = document.getElementById('cp-draw-btn');
+    if (btn) btn.disabled = getDrawsLeft() <= 0;
+  }
+
+  // expose for external use
+  window._cardPoolState = { getDrawsLeft, collection, memoryCards };
+})();
 </script>
 
 </body>
