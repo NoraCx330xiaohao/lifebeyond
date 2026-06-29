@@ -415,7 +415,7 @@ add_top_bar(slide, '产品概念与架构', 'Product — 让告别成为温柔�
 # Philosophy quote
 add_rounded_rect(slide, Inches(0.6), Inches(1.3), Inches(11.5), Inches(0.55), fill_color=BG_MID, line_color=ACCENT)
 add_text_box(slide, Inches(0.8), Inches(1.35), Inches(11), Inches(0.45),
-             '"情感过渡的辅助工具，而非真实复活" — SEM 模型证实：清晰边界声明反向提升用户包容度',
+             '"情感过渡的辅助工具，而非替代真实关系" — SEM 模型证实：清晰边界声明反向提升用户包容度',
              font_size=12, color=ACCENT_LT, bold=True)
 
 # 5 Views
@@ -651,7 +651,7 @@ for j, (plat, channel, content, goal, color) in enumerate(platforms):
 # Brand narrative
 add_rounded_rect(slide, Inches(0.6), Inches(2.8), Inches(11.5), Inches(0.55), fill_color=BG_MID, line_color=ACCENT)
 add_text_box(slide, Inches(0.8), Inches(2.85), Inches(11), Inches(0.45),
-             '品牌叙事核心："科技应当成为对抗遗忘的温柔工具，而非制造虚假复活的傲慢机器"',
+             '品牌叙事核心："科技应当成为对抗遗忘的温柔工具，而非制造虚假幻觉的傲慢机器"',
              font_size=13, color=ACCENT_LT, bold=True)
 
 # User lifecycle
