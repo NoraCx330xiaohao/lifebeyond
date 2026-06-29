@@ -288,7 +288,7 @@ add_text_box(slide, Inches(0.8), Inches(1.0), Inches(8), Inches(0.6),
 add_text_box(slide, Inches(0.8), Inches(1.65), Inches(8), Inches(0.5),
              '数 字 彼 岸', font_size=28, color=WHITE, bold=True)
 add_text_box(slide, Inches(0.8), Inches(2.3), Inches(8), Inches(0.4),
-             '—— AI 数字复生 · 情感陪伴 · 数字纪念 · 文明记忆 ——', font_size=14, color=LGRAY)
+             '—— AI 情感陪伴 · 数字纪念 · 文明记忆 ——', font_size=14, color=LGRAY)
 
 add_accent_line(slide, Inches(0.8), Inches(2.85), Inches(3), ACCENT)
 
@@ -319,7 +319,7 @@ add_top_bar(slide, '执行摘要', 'Executive Summary')
 
 # One-liner
 add_text_box(slide, Inches(0.6), Inches(1.3), Inches(11.5), Inches(0.4),
-             '以低门槛、合规化的 AI 数字复生技术，为用户提供有温度、可信赖的情感过渡工具', 
+             '以低门槛、合规化的 AI 情感陪伴技术，为用户提供有温度、可信赖的思念寄托工具',
              font_size=15, color=ACCENT_LT, bold=True)
 
 # 4 KPI cards row
@@ -335,7 +335,7 @@ for i, (label, value, sub, color) in enumerate(cards):
 
 # Key points
 points = [
-    '产品定位：AI 数字复生情感陪伴平台，拒绝"数字永生"叙事，定义为"情感过渡辅助工具"',
+    '产品定位：AI 情感陪伴数字平台，拒绝"技术万能"叙事，定义为"思念陪伴辅助工具"',
     '实证驱动：基于 TAM 模型 + SEM 路径分析 + K-means 聚类，4 项假设全部 p<0.001',
     '已上线 MVP：6 个核心视图全部交付，Lighthouse Performance 92 / A11y 95 / SEO 100',
     '商业模式：四引擎收入（C端Token + Pro订阅 + B端SaaS + 文旅定制），Y3 营收 ¥4,302 万',
@@ -359,7 +359,7 @@ bullets = [
     ('市场规模', '2025E 中国虚拟人核心市场 480.6 亿元，带动产业 1,834 亿元'),
     ('成本下降', '数字人制作边际成本 2023-2025 年下降约 87%，技术平民化拐点已至'),
     ('政策驱动', '《互联网信息服务深度合成管理规定》2023 年施行，合规先发者获护城河'),
-    ('赛道空白', '数字纪念（AI 复现逝者）为 4 大场景中唯一无头部产品的赛道'),
+    ('赛道空白', '数字纪念（AI 陪伴思念之人）为 4 大场景中唯一无头部产品的赛道'),
     ('战略结论', '法规健全恰好构成合规护城河——监管真空期入场者将被出清'),
 ]
 for j, (title, desc) in enumerate(bullets):
@@ -398,7 +398,7 @@ txb = add_text_box(slide, Inches(0.8), Inches(2.95), Inches(6), Inches(0.6),
 # Three segments
 segs = [
     ('理性接受型 36.6%', '25-40岁 / 本科 / 在职', '技术信任度高，偏好买断+模块付费', '¥100-500 一次性', ACCENT),
-    ('情感依赖型 33.0%', '25-50岁 / 女性偏多 / 经历丧亲', '情感刚需，偏好短期订阅+Token', '¥30-80 月费', GOLD),
+    ('情感依赖型 33.0%', '25-50岁 / 女性偏多 / 经历离别', '情感刚需，偏好短期订阅+Token', '¥30-80 月费', GOLD),
     ('伦理顾虑型 30.4%', '40岁+ / 退休 / 主妇', '强伦理排斥，仅接受基础功能', '≤¥50 一次性', SUCCESS),
 ]
 for j, (name, demo, pref, price, color) in enumerate(segs):
@@ -420,7 +420,7 @@ add_text_box(slide, Inches(0.8), Inches(1.35), Inches(11), Inches(0.45),
 
 # 5 Views
 views = [
-    ('彼岸', '私密缅怀空间', '逝者数字形象 / 照片动态化 / 影像修复', ACCENT),
+    ('彼岸', '私密追忆空间', '重要之人的数字形象 / 照片动态化 / 影像修复', ACCENT),
     ('聊天', '跨时空对话', 'AI 多轮对话 / 语气还原 / 性格复现', ACCENT_LT),
     ('彼岸动态', '记忆时间线', '纪念日提醒 / 仪式设计 / 家庭连接', GOLD),
     ('社区', '私密互助网络', '匿名共鸣 / 故事分享 / 心理援助', SUCCESS),
@@ -443,7 +443,7 @@ add_text_box(slide, Inches(0.6), Inches(4.4), Inches(5), Inches(0.3),
              '三层场景金字塔（渐进式伦理深度）', font_size=12, color=WHITE, bold=True)
 layers = [
     ('L3 双向情感交互', '智能对话+性格复现 — 情感依赖型 — Token计费', GOLD),
-    ('L2 沉浸式情景缅怀', '虚拟场景+仪式设计 — 理性+情感型 — Pro订阅', ACCENT_LT),
+    ('L2 沉浸式情景追忆', '虚拟场景+仪式设计 — 理性+情感型 — Pro订阅', ACCENT_LT),
     ('L1 基础数字纪念', '照片动态化+影像修复 — 全用户含伦理型 — 免费/买断', SUCCESS),
 ]
 for j, (layer, desc, color) in enumerate(layers):
@@ -483,7 +483,7 @@ insights = [
     ('营销方向', '叙事内容+公益合作+学术背书，而非效果广告'),
     ('低门槛 Demo', '解决"接受→尝试"30% 流失，Live MVP 即为此而设'),
     ('付费偏好', '买断 3.41 分 > 订阅 2.74 分 → 摒弃单一订阅制'),
-    ('定价约束', '"逝者资产应永久归属我" → 一次性买断+Token包+模块解锁'),
+    ('定价约束', '"重要之人的记忆资产应永久归属我" → 一次性买断+Token包+模块解锁'),
 ]
 for j, (title, desc) in enumerate(insights):
     y = Inches(1.5 + j * 0.72)
@@ -495,7 +495,7 @@ for j, (title, desc) in enumerate(insights):
 # Bottom - ethical red lines
 add_accent_line(slide, Inches(0.6), Inches(5.3), Inches(11), WARN)
 add_text_box(slide, Inches(0.6), Inches(5.4), Inches(11), Inches(0.25),
-             '伦理红线 Top-3：①未授权使用逝者数据 23.9%  ②商业化哀悼 19.8%  ③情感操控 17.2%',
+             '伦理红线 Top-3：①未授权使用他人数据 23.9%  ②商业化情感 19.8%  ③情感操控 17.2%',
              font_size=10, color=WARN, bold=True)
 
 # ═══════════════════════════════════════════════════════════════════════
