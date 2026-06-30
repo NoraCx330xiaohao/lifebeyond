@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星野产品数据 · AI 情感陪伴赛道头部数据</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:linear-gradient(135deg,#050D1A 0%,#0A1E3D 50%,#0D2847 100%);
+    min-height:100vh;font-family:'PingFang SC','Microsoft YaHei','Helvetica Neue',sans-serif;
+    color:#E8EDF3;padding:40px 20px;
+  }
+  .container{max-width:1100px;margin:0 auto}
+  h1{
+    text-align:center;font-size:28px;font-weight:700;
+    background:linear-gradient(90deg,#4FC3F7,#81D4FA,#B3E5FC);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    margin-bottom:8px;letter-spacing:2px;
+  }
+  .subtitle{text-align:center;color:#7DA8CC;font-size:14px;margin-bottom:36px;letter-spacing:1px}
+  .source-tag{
+    display:inline-block;background:rgba(0,168,232,0.12);color:#4FC3F7;
+    font-size:11px;padding:2px 10px;border-radius:10px;margin-left:6px;
+    border:1px solid rgba(0,168,232,0.25);
+  }
+
+  /* Table styles */
+  table{
+    width:100%;border-collapse:separate;border-spacing:0;
+    margin-bottom:40px;border-radius:12px;overflow:hidden;
+    box-shadow:0 4px 24px rgba(0,80,160,0.18);
+  }
+  thead{background:linear-gradient(90deg,#0A3D6B,#0D4F8A)}
+  thead th{
+    padding:14px 18px;font-size:14px;font-weight:600;color:#B3E5FC;
+    text-align:left;border-bottom:2px solid rgba(0,168,232,0.3);
+    letter-spacing:0.5px;
+  }
+  thead th:first-child{padding-left:24px}
+  tbody{background:rgba(8,30,58,0.85)}
+  tbody tr{transition:background .2s}
+  tbody tr:hover{background:rgba(0,168,232,0.08)}
+  tbody tr:nth-child(even){background:rgba(10,40,75,0.5)}
+  tbody tr:nth-child(even):hover{background:rgba(0,168,232,0.1)}
+  tbody td{
+    padding:12px 18px;font-size:13.5px;color:#C8D8E8;
+    border-bottom:1px solid rgba(0,168,232,0.1);
+    line-height:1.7;
+  }
+  tbody td:first-child{padding-left:24px;font-weight:500;color:#E8EDF3}
+  .highlight{color:#4FC3F7;font-weight:600}
+  .rank-badge{
+    display:inline-block;width:28px;height:28px;border-radius:50%;
+    text-align:center;line-height:28px;font-size:13px;font-weight:700;
+    margin-right:8px;
+  }
+  .rank-1{background:linear-gradient(135deg,#FFD54F,#FFB300);color:#3E2723}
+  .rank-2{background:linear-gradient(135deg,#B0BEC5,#78909C);color:#263238}
+  .rank-3{background:linear-gradient(135deg,#BCAAA4,#8D6E63);color:#3E2723}
+
+  .section-title{
+    font-size:18px;font-weight:600;color:#81D4FA;
+    margin:32px 0 16px;padding-left:14px;
+    border-left:3px solid #00A8E8;
+  }
+
+  .footnote{
+    color:#5A7A9B;font-size:11.5px;line-height:1.8;
+    margin-top:8px;padding:12px 20px;
+    background:rgba(5,13,26,0.6);border-radius:8px;
+    border:1px solid rgba(0,168,232,0.1);
+  }
+  .footnote b{color:#7DA8CC}
+
+  .kpi-row{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px;
+  }
+  .kpi-card{
+    background:linear-gradient(135deg,rgba(10,50,90,0.8),rgba(13,79,138,0.5));
+    border:1px solid rgba(0,168,232,0.2);border-radius:12px;
+    padding:20px 18px;text-align:center;
+    box-shadow:0 2px 12px rgba(0,80,160,0.12);
+  }
+  .kpi-value{
+    font-size:32px;font-weight:700;
+    background:linear-gradient(90deg,#4FC3F7,#81D4FA);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    margin-bottom:4px;
+  }
+  .kpi-label{font-size:12px;color:#7DA8CC;letter-spacing:0.5px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>星野（Talkie）· AI 情感陪伴赛道头部数据</h1>
+<p class="subtitle">稀宇科技（MiniMax）旗下产品 · 数据来源：MiniMax 港股招股书 / QuestMobile / 七麦数据 / aicpb</p>
+
+<!-- KPI Cards -->
+<div class="kpi-row">
+  <div class="kpi-card">
+    <div class="kpi-value">1.47亿</div>
+    <div class="kpi-label">累计用户（截至 2025.09）</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">2,005万</div>
+    <div class="kpi-label">月活 MAU（2025.09）</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">664万</div>
+    <div class="kpi-label">国内月活榜首（2024.12）</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">$7,000万</div>
+    <div class="kpi-label">Talkie 海外年营收峰值</div>
+  </div>
+</div>
+
+<!-- Table 1: 国内 AI 陪伴赛道月活排名 -->
+<div class="section-title">一、国内 AI 情感陪伴赛道月活排名（2024 年 12 月 · QuestMobile）</div>
+<table>
+  <thead>
+    <tr><th>排名</th><th>产品</th><th>所属公司</th><th>月活 MAU</th><th>产品定位</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="rank-badge rank-1">1</span>星野</td>
+      <td>星野（国内版）/ Talkie（海外版）</td>
+      <td>稀宇科技（MiniMax）</td>
+      <td class="highlight">664 万</td>
+      <td>沉浸式 AI 扮演社交 · 情感陪伴</td>
+    </tr>
+    <tr>
+      <td><span class="rank-badge rank-2">2</span>猫箱</td>
+      <td>猫箱</td>
+      <td>字节跳动</td>
+      <td class="highlight">537 万</td>
+      <td>AI 剧情互动 · 角色扮演</td>
+    </tr>
+    <tr>
+      <td><span class="rank-badge rank-3">3</span>筑梦岛</td>
+      <td>筑梦岛</td>
+      <td>阅文集团</td>
+      <td class="highlight">91 万</td>
+      <td>AI 角色互动 · IP 衍生</td>
+    </tr>
+  </tbody>
+</table>
+<p class="footnote"><b>数据来源</b>：QuestMobile 2024 年底监测数据。国内垂直 AI 应用月活前 10 中有 5 款为 AI 陪伴产品，赛道占比 50%。</p>
+
+<!-- Table 2: 星野/Talkie 核心运营指标 -->
+<div class="section-title">二、星野 / Talkie 核心运营指标（MiniMax 招股书）</div>
+<table>
+  <thead>
+    <tr><th>指标</th><th>2023 年</th><th>2024 年</th><th>2025 年前三季度</th><th>备注</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>AI 原生产品收入</td>
+      <td>75.8 万美元</td>
+      <td>2,180 万美元</td>
+      <td class="highlight">3,802 万美元</td>
+      <td>含星野 + Talkie + 海螺 AI 等全部 C 端产品</td>
+    </tr>
+    <tr>
+      <td>其中 Talkie/星野收入</td>
+      <td>—</td>
+      <td>占公司营收 >60%</td>
+      <td class="highlight">1,875 万美元（占 35.1%）</td>
+      <td>2024 年为收入支柱，2025 年海螺 AI 分流后占比下降</td>
+    </tr>
+    <tr>
+      <td>平均月活用户（MAU）</td>
+      <td>310 万</td>
+      <td>—</td>
+      <td class="highlight">2,764 万</td>
+      <td>含全部 AI 原生产品；星野/Talkie 单品 MAU 约 2,005 万</td>
+    </tr>
+    <tr>
+      <td>累计用户</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="highlight">1.47 亿</td>
+      <td>星野 + Talkie 合计</td>
+    </tr>
+    <tr>
+      <td>付费用户数</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="highlight">139 万</td>
+      <td>星野/Talkie 单品</td>
+    </tr>
+    <tr>
+      <td>ARPPU（每位付费用户平均支出）</td>
+      <td>6 美元</td>
+      <td>—</td>
+      <td class="highlight">5 美元（星野）/ 15 美元（全产品线）</td>
+      <td>星野 ARPPU 远低于海螺 AI（56 美元），变现深度受限</td>
+    </tr>
+    <tr>
+      <td>付费转化率</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="highlight">约 6.9%</td>
+      <td>139 万付费 / 2,005 万 MAU</td>
+    </tr>
+  </tbody>
+</table>
+<p class="footnote"><b>数据来源</b>：MiniMax 港股招股书（2025 年 12 月披露）。ARPPU 差异反映情感陪伴类产品"高流量、低客单"的特征，对比海螺 AI 生产力工具 ARPPU 56 美元，星野仅 5 美元。</p>
+
+<!-- Table 3: 全球 AI 陪伴赛道对比 -->
+<div class="section-title">三、全球 AI 陪伴赛道核心玩家对比</div>
+<table>
+  <thead>
+    <tr><th>产品</th><th>所属公司</th><th>月活 MAU</th><th>年营收区间</th><th>核心变现模式</th><th>ARPPU</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Character.AI</td>
+      <td>Character.AI（Google 投资）</td>
+      <td class="highlight">约 2,000 万</td>
+      <td>—</td>
+      <td>订阅 + 广告</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Talkie / 星野</td>
+      <td>稀宇科技（MiniMax）</td>
+      <td class="highlight">2,005 万</td>
+      <td>$7,000 万（Talkie 峰值）</td>
+      <td>订阅 + 内购 + 广告（占 Talkie 收入 60%+）</td>
+      <td>$5</td>
+    </tr>
+    <tr>
+      <td>Replika</td>
+      <td>Luka, Inc.</td>
+      <td>约 3,000 万（累计）</td>
+      <td>$2,400–3,000 万</td>
+      <td>纯订阅</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>猫箱</td>
+      <td>字节跳动</td>
+      <td class="highlight">537 万（国内）</td>
+      <td>—</td>
+      <td>订阅 + 内购</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>筑梦岛</td>
+      <td>阅文集团</td>
+      <td class="highlight">91 万（国内）</td>
+      <td>—</td>
+      <td>订阅 + 内购</td>
+      <td>—</td>
+    </tr>
+  </tbody>
+</table>
+<p class="footnote"><b>数据来源</b>：a16z 全球 Top 100 AI 应用榜（2024.08）/ MiniMax 招股书 / 公开报道。Character.AI 在 a16z 榜单中月活排名全球第二，仅次于 ChatGPT。</p>
+
+<!-- Table 4: 市场规模 -->
+<div class="section-title">四、AI 情感陪伴赛道市场规模预测</div>
+<table>
+  <thead>
+    <tr><th>市场</th><th>2025E</th><th>2026E</th><th>2027E</th><th>2028E</th><th>CAGR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>中国 AI 情感陪伴市场</td>
+      <td class="highlight">38.66 亿元</td>
+      <td>约 95 亿元</td>
+      <td>约 230 亿元</td>
+      <td class="highlight">595.06 亿元</td>
+      <td class="highlight">约 149%</td>
+    </tr>
+    <tr>
+      <td>全球情感陪伴市场</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="highlight">突破 3,000 亿美元</td>
+      <td>—</td>
+    </tr>
+  </tbody>
+</table>
+<p class="footnote"><b>数据来源</b>：头豹研究院分析预测（2025–2028）。中国 AI 情感陪伴赛道 3 年 CAGR 约 149%，2028 年市场规模达 595 亿元，全球突破 3,000 亿美元。</p>
+
+<div style="text-align:center;margin-top:48px;padding:20px;border-top:1px solid rgba(0,168,232,0.15)">
+  <p style="color:#5A7A9B;font-size:12px;line-height:1.8">
+    数据采集时间：2025 年 12 月 – 2026 年 6 月 &nbsp;|&nbsp; 来源：MiniMax 港股招股书、QuestMobile、七麦数据、aicpb、头豹研究院、a16z、21 世纪经济报道<br>
+    本表仅用于学术研究与商业分析，不构成投资建议
+  </p>
+</div>
+
+</div>
+</body>
+</html>
